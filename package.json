@@ -16,11 +16,14 @@
     "@supabase/auth-ui-react": "^0.4.7",
     "@supabase/auth-ui-shared": "^0.1.8",
     "@supabase/supabase-js": "^2.45.4",
+    "@tanstack/react-router": "^1.57.13",
     "jotai": "^2.9.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@tanstack/router-devtools": "^1.57.13",
+    "@tanstack/router-plugin": "^1.57.13",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@typescript-eslint/eslint-plugin": "^7.13.1",

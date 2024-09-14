@@ -7,7 +7,9 @@ export {}
 declare global {
   const MantineProvider: typeof import('@mantine/core')['MantineProvider']
   const atom: typeof import('jotai')['atom']
+  const createLazyFileRoute: typeof import('@tanstack/react-router')['createLazyFileRoute']
   const createRef: typeof import('react')['createRef']
+  const createRootRoute: typeof import('@tanstack/react-router')['createRootRoute']
   const forwardRef: typeof import('react')['forwardRef']
   const lazy: typeof import('react')['lazy']
   const memo: typeof import('react')['memo']
