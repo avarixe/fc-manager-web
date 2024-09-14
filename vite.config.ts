@@ -4,6 +4,7 @@ import AutoImport from 'unplugin-auto-import/vite'
 import { TanStackRouterVite } from '@tanstack/router-plugin/vite'
 import jotaiDebugLabel from 'jotai/babel/plugin-debug-label'
 import jotaiReactRefresh from 'jotai/babel/plugin-react-refresh'
+import UnoCSS from 'unocss/vite'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -13,6 +14,7 @@ export default defineConfig({
         plugins: [jotaiDebugLabel, jotaiReactRefresh]
       }
     }),
+    UnoCSS(),
     TanStackRouterVite(),
     AutoImport({
       imports: [
@@ -20,7 +22,10 @@ export default defineConfig({
         'jotai',
         {
           '@mantine/core': [
-            'MantineProvider'
+            'MantineProvider',
+            'Title',
+            'Button',
+            ['Text', 'MText'],
           ],
           '@tanstack/react-router': [
             'createRootRoute',
