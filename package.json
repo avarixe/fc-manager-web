@@ -11,13 +11,19 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@radix-ui/react-dialog": "^1.1.1",
+    "@radix-ui/react-slot": "^1.1.0",
     "@supabase/auth-ui-react": "^0.4.7",
     "@supabase/auth-ui-shared": "^0.1.8",
     "@supabase/supabase-js": "^2.45.4",
     "@tanstack/react-router": "^1.57.13",
+    "@unocss/reset": "^0.62.3",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.1",
     "jotai": "^2.9.3",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "tailwind-merge": "^2.5.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
@@ -35,6 +41,8 @@
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.0.1",
     "unocss": "^0.62.3",
+    "unocss-preset-animations": "^1.1.0",
+    "unocss-preset-shadcn": "^0.3.1",
     "unplugin-auto-import": "^0.18.3",
     "vite": "^5.4.1"
   }

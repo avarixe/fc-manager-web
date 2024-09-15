@@ -24,11 +24,14 @@ export default defineConfig({
           '@tanstack/react-router': [
             'createRootRoute',
             'createLazyFileRoute',
+            'Link',
           ],
         }
       ],
       dirs: [
-        'src/atoms'
+        'src/atoms',
+        'src/components/*',
+        'src/lib',
       ]
     })
   ],
