@@ -11,8 +11,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@mantine/core": "7.12.2",
-    "@mantine/hooks": "7.12.2",
     "@supabase/auth-ui-react": "^0.4.7",
     "@supabase/auth-ui-shared": "^0.1.8",
     "@supabase/supabase-js": "^2.45.4",
@@ -34,9 +32,6 @@
     "eslint": "^8.57.0",
     "eslint-plugin-react-hooks": "^4.6.2",
     "eslint-plugin-react-refresh": "^0.4.7",
-    "postcss": "^8.4.38",
-    "postcss-preset-mantine": "1.17.0",
-    "postcss-simple-vars": "^7.0.1",
     "typescript": "^5.5.2",
     "unocss": "^0.62.3",
     "unplugin-auto-import": "^0.18.2",

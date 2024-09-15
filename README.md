@@ -1,5 +1,18 @@
-# Mantine Vite template
+# FC Manager
 
-Get started with the template by clicking `Use this template` button on the top of the page.
+### Gettings Started
 
-[Documentation](https://mantine.dev/guides/vite/)
+```
+# Install dependencies.
+pnpm i
+
+# Start development server.
+pnpm start
+
+# Build project.
+pnpm build
+```
+
+### References
+
+-

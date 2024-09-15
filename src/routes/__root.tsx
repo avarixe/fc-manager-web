@@ -1,11 +1,8 @@
-import { Outlet } from '@tanstack/react-router'
+import { Link, Outlet } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/router-devtools'
-import { theme } from "../theme";
 import { createClient } from '@supabase/supabase-js';
-import { AppShell, Burger, Container, Group, NavLink } from '@mantine/core';
 import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
-import { useDisclosure } from "@mantine/hooks";
 
 export const Route = createRootRoute({
   component: App,
@@ -15,14 +12,12 @@ const supabase = createClient(import.meta.env.VITE_APP_SUPABASE_URL, import.meta
 
 function App() {
   const [session, setSession] = useAtom(sessionAtom);
-
-  const [opened, { toggle }] = useDisclosure();
-
-  console.debug(session)
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
+      setLoading(false);
     })
 
     const {
@@ -37,39 +32,14 @@ function App() {
   }, [setSession])
 
   return (
-    <MantineProvider theme={theme} forceColorScheme="dark">
-      <AppShell
-        header={{ height: 60 }}
-        navbar={{ width: 300, breakpoint: 'sm', collapsed: { mobile: !opened } }}
-        padding="md"
-      >
-        <AppShell.Header>
-          <Group h="100%" px="md">
-            <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
-            FC Manager
-          </Group>
-        </AppShell.Header>
-        <AppShell.Navbar p="md">
-          <NavLink
-            href="/"
-            label="Home"
-            leftSection={<div className="i-tabler:home"></div>}
-          />
-          <NavLink
-            href="/teams"
-            label="Select Team"
-            leftSection={<div className="i-tabler:shield-cog"></div>}
-          />
-        </AppShell.Navbar>
-        <AppShell.Main>
-          <Container>
-            {!session ? (
-              <Auth supabaseClient={supabase} appearance={{ theme: ThemeSupa }} />
-            ) : <Outlet />}
-          </Container>
-        </AppShell.Main>
-      </AppShell>
+    <div>
+      <h1>FC Manager</h1>
+      <Link to="/">Home</Link>
+      <Link to="/teams">Select Team</Link>
+      {loading ? <></> : !session ? (
+        <Auth supabaseClient={supabase} appearance={{ theme: ThemeSupa }} />
+      ) : <Outlet />}
       <TanStackRouterDevtools />
-    </MantineProvider>
+    </div>
   )
 }

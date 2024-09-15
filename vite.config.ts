@@ -21,12 +21,6 @@ export default defineConfig({
         'react',
         'jotai',
         {
-          '@mantine/core': [
-            'MantineProvider',
-            'Title',
-            'Button',
-            ['Text', 'MText'],
-          ],
           '@tanstack/react-router': [
             'createRootRoute',
             'createLazyFileRoute',
