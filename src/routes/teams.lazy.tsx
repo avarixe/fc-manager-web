@@ -5,7 +5,7 @@ export const Route = createLazyFileRoute('/teams')({
 function Teams() {
   return (
     <div>
-      <Title>Teams</Title>
+      <h1>Teams</h1>
     </div>
   )
 }

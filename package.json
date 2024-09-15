@@ -1,13 +1,13 @@
 {
-  "name": "vite-min-template",
+  "name": "fc-manager-web",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "start": "vite --host",
     "dev": "vite",
-    "build": "tsc && vite build",
-    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -20,21 +20,22 @@
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@eslint/js": "^9.9.0",
     "@iconify-json/tabler": "^1.2.2",
-    "@tanstack/router-devtools": "^1.57.13",
-    "@tanstack/router-plugin": "^1.57.13",
+    "@tanstack/router-devtools": "^1.57.15",
+    "@tanstack/router-plugin": "^1.57.15",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
-    "@typescript-eslint/eslint-plugin": "^7.13.1",
-    "@typescript-eslint/parser": "^7.13.1",
     "@unocss/preset-icons": "^0.62.3",
     "@vitejs/plugin-react": "^4.3.1",
-    "eslint": "^8.57.0",
-    "eslint-plugin-react-hooks": "^4.6.2",
-    "eslint-plugin-react-refresh": "^0.4.7",
-    "typescript": "^5.5.2",
+    "eslint": "^9.9.0",
+    "eslint-plugin-react-hooks": "^5.1.0-rc.0",
+    "eslint-plugin-react-refresh": "^0.4.9",
+    "globals": "^15.9.0",
+    "typescript": "^5.5.3",
+    "typescript-eslint": "^8.0.1",
     "unocss": "^0.62.3",
-    "unplugin-auto-import": "^0.18.2",
-    "vite": "^5.3.1"
+    "unplugin-auto-import": "^0.18.3",
+    "vite": "^5.4.1"
   }
 }
