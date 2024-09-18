@@ -1,4 +1,4 @@
-import { Button } from "@mantine/core"
+import { Button, Title } from "@mantine/core"
 
 export const Route = createLazyFileRoute('/teams/')({
   component: Teams,
@@ -6,10 +6,10 @@ export const Route = createLazyFileRoute('/teams/')({
 
 function Teams() {
   return (
-    <div>
-      <h1>Teams</h1>
+    <>
+      <Title mb="xl">Teams</Title>
 
       <Button component={Link} to="/teams/new">Create Team</Button>
-    </div>
+    </>
   )
 }

@@ -1,11 +1,13 @@
+import { Title } from "@mantine/core"
+
 export const Route = createLazyFileRoute('/')({
   component: Index,
 })
 
 function Index() {
   return (
-    <div>
-      <h1>Welcome to FC Manager!</h1>
-    </div>
+    <>
+      <Title mb="xl">Welcome to FC Manager!</Title>
+    </>
   )
 }

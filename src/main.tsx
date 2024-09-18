@@ -5,6 +5,7 @@ import { Provider as JotaiProvider } from "jotai";
 import router from "./router";
 
 import '@mantine/core/styles.css'
+import '@mantine/dates/styles.css'
 import 'virtual:uno.css'
 import { MantineProvider } from "@mantine/core";
 

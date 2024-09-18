@@ -58,19 +58,13 @@ function App() {
       </AppShell.Header>
       <AppShell.Navbar p="md">
         <NavLink component={Link} label="Home" to="/" leftSection={<div className="i-tabler:home" />} />
-        <NavLink component={Link} label="Select Team" to="/teams" leftSection={<div className="i-tabler:shield-cog" />} />
+        <NavLink component={Link} label="Teams" to="/teams" leftSection={<div className="i-tabler:shield-half-filled" />} />
       </AppShell.Navbar>
       <AppShell.Main>
         <Container>
           {loading ? <></> : !session ? (
             <Login supabase={supabase} />
-          ) : <>
-            <h1 className="text-lg font-semibold md:text-2xl mb-4">
-              TODO: Page Title
-            </h1>
-
-            <Outlet />
-          </>}
+          ) : <Outlet />}
         </Container>
       </AppShell.Main>
       <TanStackRouterDevtools />
