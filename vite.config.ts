@@ -5,6 +5,7 @@ import { TanStackRouterVite } from '@tanstack/router-plugin/vite'
 import jotaiDebugLabel from 'jotai/babel/plugin-debug-label'
 import jotaiReactRefresh from 'jotai/babel/plugin-react-refresh'
 import UnoCSS from 'unocss/vite'
+import path from 'path'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -25,14 +26,25 @@ export default defineConfig({
             'createRootRoute',
             'createLazyFileRoute',
             'Link',
+            'useNavigate',
           ],
-        }
+          'dayjs': [
+            ['default', 'dayjs'],
+          ],
+          'react-usestateref': [
+            ['default', 'useStateRef'],
+          ],
+        },
       ],
       dirs: [
         'src/atoms',
         'src/components/*',
-        'src/lib',
       ]
     })
   ],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src')
+    }
+  }
 })

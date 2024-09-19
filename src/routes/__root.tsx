@@ -1,6 +1,6 @@
 import { Outlet } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/router-devtools'
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { SupabaseClient } from '@supabase/supabase-js';
 import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
 import { AppShell, Burger, Container, Group, NavLink } from '@mantine/core';
@@ -10,14 +10,10 @@ export const Route = createRootRoute({
   component: App,
 })
 
-const supabase = createClient(import.meta.env.VITE_APP_SUPABASE_URL, import.meta.env.VITE_APP_SUPABASE_KEY)
-
 function App() {
+  const [supabase] = useAtom(supabaseAtom);
   const [session, setSession] = useAtom(sessionAtom);
   const [loading, setLoading] = useState(true);
-
-  const [opened, { toggle }] = useDisclosure();
-
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
@@ -33,8 +29,9 @@ function App() {
     return () => {
       subscription.unsubscribe();
     }
-  }, [setSession])
+  }, [setSession, supabase.auth])
 
+  const [opened, { toggle }] = useDisclosure();
   return (
     <AppShell
       header={{ height: 60 }}

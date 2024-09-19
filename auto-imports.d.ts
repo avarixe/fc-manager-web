@@ -6,16 +6,20 @@
 // biome-ignore lint: disable
 export {}
 declare global {
+  const DatePickerInput: typeof import('./src/components/base/DatePickerInput')['DatePickerInput']
   const Link: typeof import('@tanstack/react-router')['Link']
+  const TeamForm: typeof import('./src/components/team/TeamForm')['TeamForm']
   const atom: typeof import('jotai')['atom']
   const createLazyFileRoute: typeof import('@tanstack/react-router')['createLazyFileRoute']
   const createRef: typeof import('react')['createRef']
   const createRootRoute: typeof import('@tanstack/react-router')['createRootRoute']
+  const dayjs: typeof import('dayjs')['default']
   const forwardRef: typeof import('react')['forwardRef']
   const lazy: typeof import('react')['lazy']
   const memo: typeof import('react')['memo']
   const sessionAtom: typeof import('./src/atoms/index')['sessionAtom']
   const startTransition: typeof import('react')['startTransition']
+  const supabaseAtom: typeof import('./src/atoms/index')['supabaseAtom']
   const useAtom: typeof import('jotai')['useAtom']
   const useAtomValue: typeof import('jotai')['useAtomValue']
   const useCallback: typeof import('react')['useCallback']
@@ -28,10 +32,12 @@ declare global {
   const useInsertionEffect: typeof import('react')['useInsertionEffect']
   const useLayoutEffect: typeof import('react')['useLayoutEffect']
   const useMemo: typeof import('react')['useMemo']
+  const useNavigate: typeof import('@tanstack/react-router')['useNavigate']
   const useReducer: typeof import('react')['useReducer']
   const useRef: typeof import('react')['useRef']
   const useSetAtom: typeof import('jotai')['useSetAtom']
   const useState: typeof import('react')['useState']
+  const useStateRef: typeof import('react-usestateref')['default']
   const useSyncExternalStore: typeof import('react')['useSyncExternalStore']
   const useTransition: typeof import('react')['useTransition']
 }
