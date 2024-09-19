@@ -6,6 +6,8 @@
 // biome-ignore lint: disable
 export {}
 declare global {
+  const DataTabl: typeof import('./src/components/base/DataTable')['DataTabl']
+  const DataTable: typeof import('./src/components/base/DataTable')['DataTable']
   const DatePickerInput: typeof import('./src/components/base/DatePickerInput')['DatePickerInput']
   const Link: typeof import('@tanstack/react-router')['Link']
   const TeamForm: typeof import('./src/components/team/TeamForm')['TeamForm']

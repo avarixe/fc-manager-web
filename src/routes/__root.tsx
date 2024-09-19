@@ -76,7 +76,12 @@ const Login = ({ supabase } : { supabase: SupabaseClient }) => {
         Welcome to FC Manager!
       </h1>
 
-      <Auth supabaseClient={supabase} providers={['google']} appearance={{ theme: ThemeSupa }} />
+      <Auth
+        supabaseClient={supabase}
+        providers={['google']}
+        onlyThirdPartyProviders
+        appearance={{ theme: ThemeSupa }}
+      />
     </>
   )
 }

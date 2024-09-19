@@ -19,6 +19,7 @@
     "@supabase/auth-ui-shared": "^0.1.8",
     "@supabase/supabase-js": "^2.45.4",
     "@tanstack/react-router": "^1.57.13",
+    "@tanstack/react-table": "^8.20.5",
     "@unocss/reset": "^0.62.3",
     "dayjs": "^1.11.13",
     "jotai": "^2.9.3",
