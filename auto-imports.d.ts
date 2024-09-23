@@ -10,7 +10,9 @@ declare global {
   const DataTable: typeof import('./src/components/base/DataTable')['DataTable']
   const DatePickerInput: typeof import('./src/components/base/DatePickerInput')['DatePickerInput']
   const Link: typeof import('@tanstack/react-router')['Link']
+  const MText: typeof import('@mantine/core')['Text']
   const TeamForm: typeof import('./src/components/team/TeamForm')['TeamForm']
+  const assertType: typeof import('./src/utils/assert')['assertType']
   const atom: typeof import('jotai')['atom']
   const createLazyFileRoute: typeof import('@tanstack/react-router')['createLazyFileRoute']
   const createRef: typeof import('react')['createRef']
@@ -35,6 +37,7 @@ declare global {
   const useLayoutEffect: typeof import('react')['useLayoutEffect']
   const useMemo: typeof import('react')['useMemo']
   const useNavigate: typeof import('@tanstack/react-router')['useNavigate']
+  const useProgress: typeof import('./src/hooks/useProgress')['useProgress']
   const useReducer: typeof import('react')['useReducer']
   const useRef: typeof import('react')['useRef']
   const useSetAtom: typeof import('jotai')['useSetAtom']
@@ -42,4 +45,10 @@ declare global {
   const useStateRef: typeof import('react-usestateref')['default']
   const useSyncExternalStore: typeof import('react')['useSyncExternalStore']
   const useTransition: typeof import('react')['useTransition']
+}
+// for type re-export
+declare global {
+  // @ts-ignore
+  export type { StateSetter } from 'src/hooks'
+  import('src/hooks')
 }

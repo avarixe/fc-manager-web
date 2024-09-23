@@ -19,6 +19,7 @@ import { Route as rootRoute } from './routes/__root'
 const IndexLazyImport = createFileRoute('/')()
 const TeamsIndexLazyImport = createFileRoute('/teams/')()
 const TeamsNewLazyImport = createFileRoute('/teams/new')()
+const TeamsImportLazyImport = createFileRoute('/teams/import')()
 
 // Create/Update Routes
 
@@ -37,6 +38,11 @@ const TeamsNewLazyRoute = TeamsNewLazyImport.update({
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/teams.new.lazy').then((d) => d.Route))
 
+const TeamsImportLazyRoute = TeamsImportLazyImport.update({
+  path: '/teams/import',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() => import('./routes/teams.import.lazy').then((d) => d.Route))
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -46,6 +52,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/teams/import': {
+      id: '/teams/import'
+      path: '/teams/import'
+      fullPath: '/teams/import'
+      preLoaderRoute: typeof TeamsImportLazyImport
       parentRoute: typeof rootRoute
     }
     '/teams/new': {
@@ -69,12 +82,14 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexLazyRoute
+  '/teams/import': typeof TeamsImportLazyRoute
   '/teams/new': typeof TeamsNewLazyRoute
   '/teams': typeof TeamsIndexLazyRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexLazyRoute
+  '/teams/import': typeof TeamsImportLazyRoute
   '/teams/new': typeof TeamsNewLazyRoute
   '/teams': typeof TeamsIndexLazyRoute
 }
@@ -82,27 +97,30 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexLazyRoute
+  '/teams/import': typeof TeamsImportLazyRoute
   '/teams/new': typeof TeamsNewLazyRoute
   '/teams/': typeof TeamsIndexLazyRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/teams/new' | '/teams'
+  fullPaths: '/' | '/teams/import' | '/teams/new' | '/teams'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/teams/new' | '/teams'
-  id: '__root__' | '/' | '/teams/new' | '/teams/'
+  to: '/' | '/teams/import' | '/teams/new' | '/teams'
+  id: '__root__' | '/' | '/teams/import' | '/teams/new' | '/teams/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexLazyRoute: typeof IndexLazyRoute
+  TeamsImportLazyRoute: typeof TeamsImportLazyRoute
   TeamsNewLazyRoute: typeof TeamsNewLazyRoute
   TeamsIndexLazyRoute: typeof TeamsIndexLazyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexLazyRoute: IndexLazyRoute,
+  TeamsImportLazyRoute: TeamsImportLazyRoute,
   TeamsNewLazyRoute: TeamsNewLazyRoute,
   TeamsIndexLazyRoute: TeamsIndexLazyRoute,
 }
@@ -120,12 +138,16 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
+        "/teams/import",
         "/teams/new",
         "/teams/"
       ]
     },
     "/": {
       "filePath": "index.lazy.tsx"
+    },
+    "/teams/import": {
+      "filePath": "teams.import.lazy.tsx"
     },
     "/teams/new": {
       "filePath": "teams.new.lazy.tsx"

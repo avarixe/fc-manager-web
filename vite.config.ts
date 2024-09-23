@@ -34,11 +34,21 @@ export default defineConfig({
           'react-usestateref': [
             ['default', 'useStateRef'],
           ],
+          '@mantine/core': [
+            ['Text', 'MText'],
+          ]
         },
+        {
+          from: 'src/hooks',
+          imports: ['StateSetter'],
+          type: true,
+        }
       ],
       dirs: [
         'src/atoms',
         'src/components/*',
+        'src/hooks',
+        'src/utils',
       ]
     })
   ],

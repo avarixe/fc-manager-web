@@ -54,6 +54,8 @@ function Teams() {
       <Title mb="xl">Teams</Title>
 
       <Button component={Link} to="/teams/new">Create Team</Button>
+      &nbsp;
+      <Button component={Link} to="/teams/import">Import Team</Button>
 
       <DataTable
         data={teams}

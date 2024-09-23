@@ -9,6 +9,92 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      appearances: {
+        Row: {
+          cleanSheet: boolean
+          created_at: string
+          id: number
+          injured: boolean
+          matchId: number | null
+          nextId: number | null
+          numAssists: number | null
+          numGoals: number
+          numRedCards: number | null
+          numYellowCards: number | null
+          playerId: number | null
+          pos: string
+          rating: number | null
+          startMinute: number
+          stopMinute: number
+          userId: string
+        }
+        Insert: {
+          cleanSheet?: boolean
+          created_at?: string
+          id?: number
+          injured?: boolean
+          matchId?: number | null
+          nextId?: number | null
+          numAssists?: number | null
+          numGoals?: number
+          numRedCards?: number | null
+          numYellowCards?: number | null
+          playerId?: number | null
+          pos: string
+          rating?: number | null
+          startMinute?: number
+          stopMinute?: number
+          userId?: string
+        }
+        Update: {
+          cleanSheet?: boolean
+          created_at?: string
+          id?: number
+          injured?: boolean
+          matchId?: number | null
+          nextId?: number | null
+          numAssists?: number | null
+          numGoals?: number
+          numRedCards?: number | null
+          numYellowCards?: number | null
+          playerId?: number | null
+          pos?: string
+          rating?: number | null
+          startMinute?: number
+          stopMinute?: number
+          userId?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "performances_matchId_fkey"
+            columns: ["matchId"]
+            isOneToOne: false
+            referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "performances_nextId_fkey"
+            columns: ["nextId"]
+            isOneToOne: false
+            referencedRelation: "appearances"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "performances_playerId_fkey"
+            columns: ["playerId"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "performances_userId_fkey"
+            columns: ["userId"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       competitions: {
         Row: {
           champion: string | null
@@ -64,11 +150,12 @@ export type Database = {
           awayScore: number
           awayTeam: string
           awayXg: number | null
+          bookings: Json | null
           competition: string | null
           created_at: string
-          events: Json | null
           extraTime: boolean
           friendly: boolean
+          goals: Json | null
           homePenaltyScore: number | null
           homePossession: number | null
           homeScore: number
@@ -87,11 +174,12 @@ export type Database = {
           awayScore?: number
           awayTeam: string
           awayXg?: number | null
+          bookings?: Json | null
           competition?: string | null
           created_at?: string
-          events?: Json | null
           extraTime?: boolean
           friendly?: boolean
+          goals?: Json | null
           homePenaltyScore?: number | null
           homePossession?: number | null
           homeScore?: number
@@ -110,11 +198,12 @@ export type Database = {
           awayScore?: number
           awayTeam?: string
           awayXg?: number | null
+          bookings?: Json | null
           competition?: string | null
           created_at?: string
-          events?: Json | null
           extraTime?: boolean
           friendly?: boolean
+          goals?: Json | null
           homePenaltyScore?: number | null
           homePossession?: number | null
           homeScore?: number
@@ -144,89 +233,6 @@ export type Database = {
           },
         ]
       }
-      performances: {
-        Row: {
-          cleanSheet: boolean
-          created_at: string
-          id: number
-          injured: boolean
-          matchId: number | null
-          nextId: number | null
-          numGoals: number
-          playerId: number | null
-          pos: string
-          rating: number | null
-          redCard: boolean
-          startMinute: number
-          stopMinute: number
-          userId: string
-          yellowCard: boolean
-        }
-        Insert: {
-          cleanSheet?: boolean
-          created_at?: string
-          id?: number
-          injured?: boolean
-          matchId?: number | null
-          nextId?: number | null
-          numGoals?: number
-          playerId?: number | null
-          pos: string
-          rating?: number | null
-          redCard?: boolean
-          startMinute?: number
-          stopMinute?: number
-          userId?: string
-          yellowCard?: boolean
-        }
-        Update: {
-          cleanSheet?: boolean
-          created_at?: string
-          id?: number
-          injured?: boolean
-          matchId?: number | null
-          nextId?: number | null
-          numGoals?: number
-          playerId?: number | null
-          pos?: string
-          rating?: number | null
-          redCard?: boolean
-          startMinute?: number
-          stopMinute?: number
-          userId?: string
-          yellowCard?: boolean
-        }
-        Relationships: [
-          {
-            foreignKeyName: "performances_matchId_fkey"
-            columns: ["matchId"]
-            isOneToOne: false
-            referencedRelation: "matches"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "performances_nextId_fkey"
-            columns: ["nextId"]
-            isOneToOne: false
-            referencedRelation: "performances"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "performances_playerId_fkey"
-            columns: ["playerId"]
-            isOneToOne: false
-            referencedRelation: "players"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "performances_userId_fkey"
-            columns: ["userId"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       players: {
         Row: {
           birthYear: number | null
@@ -247,6 +253,7 @@ export type Database = {
           transfers: Json | null
           userId: string
           value: number
+          wage: number | null
           youth: boolean
         }
         Insert: {
@@ -268,6 +275,7 @@ export type Database = {
           transfers?: Json | null
           userId?: string
           value: number
+          wage?: number | null
           youth?: boolean
         }
         Update: {
@@ -289,6 +297,7 @@ export type Database = {
           transfers?: Json | null
           userId?: string
           value?: number
+          wage?: number | null
           youth?: boolean
         }
         Relationships: [
@@ -352,6 +361,7 @@ export type Database = {
       }
       teams: {
         Row: {
+          badgePath: string | null
           created_at: string
           currency: string
           currentlyOn: string
@@ -364,6 +374,7 @@ export type Database = {
           userId: string
         }
         Insert: {
+          badgePath?: string | null
           created_at?: string
           currency?: string
           currentlyOn: string
@@ -376,6 +387,7 @@ export type Database = {
           userId?: string
         }
         Update: {
+          badgePath?: string | null
           created_at?: string
           currency?: string
           currentlyOn?: string
