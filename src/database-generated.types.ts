@@ -14,13 +14,15 @@ export type Database = {
           cleanSheet: boolean
           created_at: string
           id: number
+          importId: number | null
           injured: boolean
           matchId: number | null
           nextId: number | null
-          numAssists: number | null
+          numAssists: number
           numGoals: number
-          numRedCards: number | null
-          numYellowCards: number | null
+          numRedCards: number
+          numYellowCards: number
+          ovr: number
           playerId: number | null
           pos: string
           rating: number | null
@@ -32,13 +34,15 @@ export type Database = {
           cleanSheet?: boolean
           created_at?: string
           id?: number
+          importId?: number | null
           injured?: boolean
           matchId?: number | null
           nextId?: number | null
-          numAssists?: number | null
+          numAssists?: number
           numGoals?: number
-          numRedCards?: number | null
-          numYellowCards?: number | null
+          numRedCards?: number
+          numYellowCards?: number
+          ovr: number
           playerId?: number | null
           pos: string
           rating?: number | null
@@ -50,13 +54,15 @@ export type Database = {
           cleanSheet?: boolean
           created_at?: string
           id?: number
+          importId?: number | null
           injured?: boolean
           matchId?: number | null
           nextId?: number | null
-          numAssists?: number | null
+          numAssists?: number
           numGoals?: number
-          numRedCards?: number | null
-          numYellowCards?: number | null
+          numRedCards?: number
+          numYellowCards?: number
+          ovr?: number
           playerId?: number | null
           pos?: string
           rating?: number | null
@@ -162,6 +168,7 @@ export type Database = {
           homeTeam: string
           homeXg: number | null
           id: number
+          importId: number | null
           playedOn: string
           season: number | null
           stage: string | null
@@ -186,6 +193,7 @@ export type Database = {
           homeTeam: string
           homeXg?: number | null
           id?: number
+          importId?: number | null
           playedOn: string
           season?: number | null
           stage?: string | null
@@ -210,6 +218,7 @@ export type Database = {
           homeTeam?: string
           homeXg?: number | null
           id?: number
+          importId?: number | null
           playedOn?: string
           season?: number | null
           stage?: string | null
@@ -236,10 +245,12 @@ export type Database = {
       players: {
         Row: {
           birthYear: number | null
+          contractEndsOn: string | null
           contracts: Json | null
           created_at: string
           histories: Json | null
           id: number
+          importId: number | null
           injuries: Json | null
           kitNo: number | null
           loans: Json | null
@@ -258,10 +269,12 @@ export type Database = {
         }
         Insert: {
           birthYear?: number | null
+          contractEndsOn?: string | null
           contracts?: Json | null
           created_at?: string
           histories?: Json | null
           id?: number
+          importId?: number | null
           injuries?: Json | null
           kitNo?: number | null
           loans?: Json | null
@@ -280,10 +293,12 @@ export type Database = {
         }
         Update: {
           birthYear?: number | null
+          contractEndsOn?: string | null
           contracts?: Json | null
           created_at?: string
           histories?: Json | null
           id?: number
+          importId?: number | null
           injuries?: Json | null
           kitNo?: number | null
           loans?: Json | null
