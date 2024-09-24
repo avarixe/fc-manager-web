@@ -29,8 +29,11 @@ export function TeamForm({ record }: { record?: Tables<'teams'> }) {
     console.log(values)
 
     const { data, error } = await supabase.from('teams').upsert({ id: record?.id, ...values }).select()
-    console.log(data, error)
-    navigate({ to: '/teams' })
+    if (data) {
+      navigate({ to: `/teams/${data[0].id}` })
+    } else {
+      console.error(error)
+    }
   }, [form, navigate, record?.id, supabase])
 
   return (

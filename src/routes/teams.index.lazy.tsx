@@ -10,6 +10,10 @@ const columnHelper = createColumnHelper<Tables<'teams'>>()
 const columns = [
   columnHelper.accessor('name', {
     header: 'Name',
+    cell: info => {
+      const value = info.getValue()
+      return <Button component={Link} to={`/teams/${info.row.original.id}`} variant="subtle" size="xs">{value}</Button>
+    }
   }),
   columnHelper.accessor('startedOn', {
     header: 'Start Date',
@@ -55,7 +59,7 @@ function Teams() {
 
       <Button component={Link} to="/teams/new">Create Team</Button>
       &nbsp;
-      <Button component={Link} to="/teams/import">Import Team</Button>
+      <Button component={Link} to="/teams/import" variant="outline">Import Team</Button>
 
       <DataTable
         data={teams}

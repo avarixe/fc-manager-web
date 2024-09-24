@@ -37,6 +37,7 @@ declare global {
   const useLayoutEffect: typeof import('react')['useLayoutEffect']
   const useMemo: typeof import('react')['useMemo']
   const useNavigate: typeof import('@tanstack/react-router')['useNavigate']
+  const useParams: typeof import('@tanstack/react-router')['useParams']
   const useProgress: typeof import('./src/hooks/useProgress')['useProgress']
   const useReducer: typeof import('react')['useReducer']
   const useRef: typeof import('react')['useRef']

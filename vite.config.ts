@@ -27,6 +27,7 @@ export default defineConfig({
             'createLazyFileRoute',
             'Link',
             'useNavigate',
+            'useParams',
           ],
           'dayjs': [
             ['default', 'dayjs'],
