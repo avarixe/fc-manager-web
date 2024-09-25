@@ -3,7 +3,7 @@ import { TanStackRouterDevtools } from '@tanstack/router-devtools'
 import { SupabaseClient } from '@supabase/supabase-js';
 import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
-import { AppShell, Burger, Container, Group, NavLink } from '@mantine/core';
+import { AppShell, Burger, Container, Group } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 
 export const Route = createRootRoute({
@@ -53,10 +53,7 @@ function App() {
           <div>MyFC Manager</div>
         </Group>
       </AppShell.Header>
-      <AppShell.Navbar p="md">
-        <NavLink component={Link} label="Home" to="/" leftSection={<div className="i-tabler:home" />} />
-        <NavLink component={Link} label="Teams" to="/teams" leftSection={<div className="i-tabler:shield-half-filled" />} />
-      </AppShell.Navbar>
+      <AppNavbar />
       <AppShell.Main>
         <Container>
           {loading ? <></> : !session ? (

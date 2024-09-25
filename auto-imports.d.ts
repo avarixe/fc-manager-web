@@ -6,6 +6,7 @@
 // biome-ignore lint: disable
 export {}
 declare global {
+  const AppNavbar: typeof import('./src/components/app/AppNavbar')['AppNavbar']
   const DataTabl: typeof import('./src/components/base/DataTable')['DataTabl']
   const DataTable: typeof import('./src/components/base/DataTable')['DataTable']
   const DatePickerInput: typeof import('./src/components/base/DatePickerInput')['DatePickerInput']
@@ -24,6 +25,7 @@ declare global {
   const sessionAtom: typeof import('./src/atoms/index')['sessionAtom']
   const startTransition: typeof import('react')['startTransition']
   const supabaseAtom: typeof import('./src/atoms/index')['supabaseAtom']
+  const teamAtom: typeof import('./src/atoms/index')['teamAtom']
   const useAtom: typeof import('jotai')['useAtom']
   const useAtomValue: typeof import('jotai')['useAtomValue']
   const useCallback: typeof import('react')['useCallback']

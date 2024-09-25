@@ -21,7 +21,13 @@ const TeamsIndexLazyImport = createFileRoute('/teams/')()
 const TeamsNewLazyImport = createFileRoute('/teams/new')()
 const TeamsImportLazyImport = createFileRoute('/teams/import')()
 const TeamsTeamIdLazyImport = createFileRoute('/teams/$teamId')()
+const TeamsTeamIdSquadsLazyImport = createFileRoute('/teams/$teamId/squads')()
+const TeamsTeamIdPlayersLazyImport = createFileRoute('/teams/$teamId/players')()
+const TeamsTeamIdMatchesLazyImport = createFileRoute('/teams/$teamId/matches')()
 const TeamsTeamIdEditLazyImport = createFileRoute('/teams/$teamId/edit')()
+const TeamsTeamIdCompetitionsLazyImport = createFileRoute(
+  '/teams/$teamId/competitions',
+)()
 
 // Create/Update Routes
 
@@ -50,12 +56,41 @@ const TeamsTeamIdLazyRoute = TeamsTeamIdLazyImport.update({
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/teams.$teamId.lazy').then((d) => d.Route))
 
+const TeamsTeamIdSquadsLazyRoute = TeamsTeamIdSquadsLazyImport.update({
+  path: '/teams/$teamId/squads',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() =>
+  import('./routes/teams_.$teamId.squads.lazy').then((d) => d.Route),
+)
+
+const TeamsTeamIdPlayersLazyRoute = TeamsTeamIdPlayersLazyImport.update({
+  path: '/teams/$teamId/players',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() =>
+  import('./routes/teams_.$teamId.players.lazy').then((d) => d.Route),
+)
+
+const TeamsTeamIdMatchesLazyRoute = TeamsTeamIdMatchesLazyImport.update({
+  path: '/teams/$teamId/matches',
+  getParentRoute: () => rootRoute,
+} as any).lazy(() =>
+  import('./routes/teams_.$teamId.matches.lazy').then((d) => d.Route),
+)
+
 const TeamsTeamIdEditLazyRoute = TeamsTeamIdEditLazyImport.update({
   path: '/teams/$teamId/edit',
   getParentRoute: () => rootRoute,
 } as any).lazy(() =>
   import('./routes/teams_.$teamId.edit.lazy').then((d) => d.Route),
 )
+
+const TeamsTeamIdCompetitionsLazyRoute =
+  TeamsTeamIdCompetitionsLazyImport.update({
+    path: '/teams/$teamId/competitions',
+    getParentRoute: () => rootRoute,
+  } as any).lazy(() =>
+    import('./routes/teams_.$teamId.competitions.lazy').then((d) => d.Route),
+  )
 
 // Populate the FileRoutesByPath interface
 
@@ -96,11 +131,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TeamsIndexLazyImport
       parentRoute: typeof rootRoute
     }
+    '/teams/$teamId/competitions': {
+      id: '/teams/$teamId/competitions'
+      path: '/teams/$teamId/competitions'
+      fullPath: '/teams/$teamId/competitions'
+      preLoaderRoute: typeof TeamsTeamIdCompetitionsLazyImport
+      parentRoute: typeof rootRoute
+    }
     '/teams/$teamId/edit': {
       id: '/teams/$teamId/edit'
       path: '/teams/$teamId/edit'
       fullPath: '/teams/$teamId/edit'
       preLoaderRoute: typeof TeamsTeamIdEditLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/teams/$teamId/matches': {
+      id: '/teams/$teamId/matches'
+      path: '/teams/$teamId/matches'
+      fullPath: '/teams/$teamId/matches'
+      preLoaderRoute: typeof TeamsTeamIdMatchesLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/teams/$teamId/players': {
+      id: '/teams/$teamId/players'
+      path: '/teams/$teamId/players'
+      fullPath: '/teams/$teamId/players'
+      preLoaderRoute: typeof TeamsTeamIdPlayersLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/teams/$teamId/squads': {
+      id: '/teams/$teamId/squads'
+      path: '/teams/$teamId/squads'
+      fullPath: '/teams/$teamId/squads'
+      preLoaderRoute: typeof TeamsTeamIdSquadsLazyImport
       parentRoute: typeof rootRoute
     }
   }
@@ -114,7 +177,11 @@ export interface FileRoutesByFullPath {
   '/teams/import': typeof TeamsImportLazyRoute
   '/teams/new': typeof TeamsNewLazyRoute
   '/teams': typeof TeamsIndexLazyRoute
+  '/teams/$teamId/competitions': typeof TeamsTeamIdCompetitionsLazyRoute
   '/teams/$teamId/edit': typeof TeamsTeamIdEditLazyRoute
+  '/teams/$teamId/matches': typeof TeamsTeamIdMatchesLazyRoute
+  '/teams/$teamId/players': typeof TeamsTeamIdPlayersLazyRoute
+  '/teams/$teamId/squads': typeof TeamsTeamIdSquadsLazyRoute
 }
 
 export interface FileRoutesByTo {
@@ -123,7 +190,11 @@ export interface FileRoutesByTo {
   '/teams/import': typeof TeamsImportLazyRoute
   '/teams/new': typeof TeamsNewLazyRoute
   '/teams': typeof TeamsIndexLazyRoute
+  '/teams/$teamId/competitions': typeof TeamsTeamIdCompetitionsLazyRoute
   '/teams/$teamId/edit': typeof TeamsTeamIdEditLazyRoute
+  '/teams/$teamId/matches': typeof TeamsTeamIdMatchesLazyRoute
+  '/teams/$teamId/players': typeof TeamsTeamIdPlayersLazyRoute
+  '/teams/$teamId/squads': typeof TeamsTeamIdSquadsLazyRoute
 }
 
 export interface FileRoutesById {
@@ -133,7 +204,11 @@ export interface FileRoutesById {
   '/teams/import': typeof TeamsImportLazyRoute
   '/teams/new': typeof TeamsNewLazyRoute
   '/teams/': typeof TeamsIndexLazyRoute
+  '/teams/$teamId/competitions': typeof TeamsTeamIdCompetitionsLazyRoute
   '/teams/$teamId/edit': typeof TeamsTeamIdEditLazyRoute
+  '/teams/$teamId/matches': typeof TeamsTeamIdMatchesLazyRoute
+  '/teams/$teamId/players': typeof TeamsTeamIdPlayersLazyRoute
+  '/teams/$teamId/squads': typeof TeamsTeamIdSquadsLazyRoute
 }
 
 export interface FileRouteTypes {
@@ -144,7 +219,11 @@ export interface FileRouteTypes {
     | '/teams/import'
     | '/teams/new'
     | '/teams'
+    | '/teams/$teamId/competitions'
     | '/teams/$teamId/edit'
+    | '/teams/$teamId/matches'
+    | '/teams/$teamId/players'
+    | '/teams/$teamId/squads'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -152,7 +231,11 @@ export interface FileRouteTypes {
     | '/teams/import'
     | '/teams/new'
     | '/teams'
+    | '/teams/$teamId/competitions'
     | '/teams/$teamId/edit'
+    | '/teams/$teamId/matches'
+    | '/teams/$teamId/players'
+    | '/teams/$teamId/squads'
   id:
     | '__root__'
     | '/'
@@ -160,7 +243,11 @@ export interface FileRouteTypes {
     | '/teams/import'
     | '/teams/new'
     | '/teams/'
+    | '/teams/$teamId/competitions'
     | '/teams/$teamId/edit'
+    | '/teams/$teamId/matches'
+    | '/teams/$teamId/players'
+    | '/teams/$teamId/squads'
   fileRoutesById: FileRoutesById
 }
 
@@ -170,7 +257,11 @@ export interface RootRouteChildren {
   TeamsImportLazyRoute: typeof TeamsImportLazyRoute
   TeamsNewLazyRoute: typeof TeamsNewLazyRoute
   TeamsIndexLazyRoute: typeof TeamsIndexLazyRoute
+  TeamsTeamIdCompetitionsLazyRoute: typeof TeamsTeamIdCompetitionsLazyRoute
   TeamsTeamIdEditLazyRoute: typeof TeamsTeamIdEditLazyRoute
+  TeamsTeamIdMatchesLazyRoute: typeof TeamsTeamIdMatchesLazyRoute
+  TeamsTeamIdPlayersLazyRoute: typeof TeamsTeamIdPlayersLazyRoute
+  TeamsTeamIdSquadsLazyRoute: typeof TeamsTeamIdSquadsLazyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -179,7 +270,11 @@ const rootRouteChildren: RootRouteChildren = {
   TeamsImportLazyRoute: TeamsImportLazyRoute,
   TeamsNewLazyRoute: TeamsNewLazyRoute,
   TeamsIndexLazyRoute: TeamsIndexLazyRoute,
+  TeamsTeamIdCompetitionsLazyRoute: TeamsTeamIdCompetitionsLazyRoute,
   TeamsTeamIdEditLazyRoute: TeamsTeamIdEditLazyRoute,
+  TeamsTeamIdMatchesLazyRoute: TeamsTeamIdMatchesLazyRoute,
+  TeamsTeamIdPlayersLazyRoute: TeamsTeamIdPlayersLazyRoute,
+  TeamsTeamIdSquadsLazyRoute: TeamsTeamIdSquadsLazyRoute,
 }
 
 export const routeTree = rootRoute
@@ -199,7 +294,11 @@ export const routeTree = rootRoute
         "/teams/import",
         "/teams/new",
         "/teams/",
-        "/teams/$teamId/edit"
+        "/teams/$teamId/competitions",
+        "/teams/$teamId/edit",
+        "/teams/$teamId/matches",
+        "/teams/$teamId/players",
+        "/teams/$teamId/squads"
       ]
     },
     "/": {
@@ -217,8 +316,20 @@ export const routeTree = rootRoute
     "/teams/": {
       "filePath": "teams.index.lazy.tsx"
     },
+    "/teams/$teamId/competitions": {
+      "filePath": "teams_.$teamId.competitions.lazy.tsx"
+    },
     "/teams/$teamId/edit": {
       "filePath": "teams_.$teamId.edit.lazy.tsx"
+    },
+    "/teams/$teamId/matches": {
+      "filePath": "teams_.$teamId.matches.lazy.tsx"
+    },
+    "/teams/$teamId/players": {
+      "filePath": "teams_.$teamId.players.lazy.tsx"
+    },
+    "/teams/$teamId/squads": {
+      "filePath": "teams_.$teamId.squads.lazy.tsx"
     }
   }
 }

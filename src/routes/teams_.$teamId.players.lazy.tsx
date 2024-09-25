@@ -1,13 +1,13 @@
 import { Title } from '@mantine/core'
 
-export const Route = createLazyFileRoute('/teams/$teamId/edit')({
-  component: EditTeam,
+export const Route = createLazyFileRoute('/teams/$teamId/players')({
+  component: Players,
 })
 
-function EditTeam() {
+function Players() {
   const supabase = useAtomValue(supabaseAtom)
   const teamId = useParams({
-    from: '/teams/$teamId/edit',
+    from: '/teams/$teamId/players',
     select: (params) => params.teamId,
   })
   const [team, setTeam] = useAtom(teamAtom)
@@ -33,9 +33,9 @@ function EditTeam() {
 
   return (
     <>
-      <Title mb="xl">Edit Team</Title>
+      <Title mb="xl">Players</Title>
 
-      <TeamForm record={team} />
+      <div>TODO</div>
     </>
   )
 }

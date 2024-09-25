@@ -1,4 +1,3 @@
-import { Tables } from '@/database-generated.types'
 import { Button, Title } from '@mantine/core'
 
 export const Route = createLazyFileRoute('/teams/$teamId')({
@@ -8,7 +7,7 @@ export const Route = createLazyFileRoute('/teams/$teamId')({
 function Team() {
   const supabase = useAtomValue(supabaseAtom)
   const teamId = useParams({ from: '/teams/$teamId', select: (params) => params.teamId})
-  const [team, setTeam] = useState<Tables<'teams'> | undefined>()
+  const [team, setTeam] = useAtom(teamAtom)
   useEffect(() => {
     const loadTeam = async () => {
       const { data, error } = await supabase.from('teams').select().eq('id', teamId)
@@ -20,7 +19,7 @@ function Team() {
     }
 
     loadTeam()
-  }, [supabase, teamId])
+  }, [setTeam, supabase, teamId])
 
   if (!team) {
     return null
