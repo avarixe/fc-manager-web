@@ -1,6 +1,5 @@
 import { Tables } from "@/database-generated.types"
 import { Button, Title } from "@mantine/core"
-import { createColumnHelper } from "@tanstack/react-table"
 
 export const Route = createLazyFileRoute('/teams/')({
   component: Teams,
@@ -19,14 +18,14 @@ const columns = [
     header: 'Start Date',
     cell: info => {
       const value = info.getValue()
-      return value ? dayjs(value).format('MMM DD, YYYY') : null
+      return formatDate(value)
     },
   }),
   columnHelper.accessor('currentlyOn', {
     header: 'Current Date',
     cell: info => {
       const value = info.getValue()
-      return value ? dayjs(value).format('MMM DD, YYYY') : null
+      return formatDate(value)
     },
   }),
   columnHelper.accessor('managerName', {

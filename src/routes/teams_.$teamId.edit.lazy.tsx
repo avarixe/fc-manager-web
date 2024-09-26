@@ -5,27 +5,8 @@ export const Route = createLazyFileRoute('/teams/$teamId/edit')({
 })
 
 function EditTeam() {
-  const supabase = useAtomValue(supabaseAtom)
-  const teamId = useParams({
-    from: '/teams/$teamId/edit',
-    select: (params) => params.teamId,
-  })
-  const [team, setTeam] = useAtom(teamAtom)
-  useEffect(() => {
-    const loadTeam = async () => {
-      const { data, error } = await supabase
-        .from('teams')
-        .select()
-        .eq('id', teamId)
-      if (error) {
-        console.error(error)
-      } else {
-        setTeam(data[0])
-      }
-    }
-
-    loadTeam()
-  }, [setTeam, supabase, teamId])
+  const { teamId } = Route.useParams()
+  const { team } = useTeam(teamId)
 
   if (!team) {
     return null

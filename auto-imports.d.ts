@@ -15,10 +15,13 @@ declare global {
   const TeamForm: typeof import('./src/components/team/TeamForm')['TeamForm']
   const assertType: typeof import('./src/utils/assert')['assertType']
   const atom: typeof import('jotai')['atom']
+  const createColumnHelper: typeof import('@tanstack/react-table')['createColumnHelper']
   const createLazyFileRoute: typeof import('@tanstack/react-router')['createLazyFileRoute']
   const createRef: typeof import('react')['createRef']
   const createRootRoute: typeof import('@tanstack/react-router')['createRootRoute']
   const dayjs: typeof import('dayjs')['default']
+  const formatDate: typeof import('./src/utils/format')['formatDate']
+  const formatMoney: typeof import('./src/utils/format')['formatMoney']
   const forwardRef: typeof import('react')['forwardRef']
   const lazy: typeof import('react')['lazy']
   const memo: typeof import('react')['memo']
@@ -47,6 +50,7 @@ declare global {
   const useState: typeof import('react')['useState']
   const useStateRef: typeof import('react-usestateref')['default']
   const useSyncExternalStore: typeof import('react')['useSyncExternalStore']
+  const useTeam: typeof import('./src/hooks/useTeam')['useTeam']
   const useTransition: typeof import('react')['useTransition']
 }
 // for type re-export

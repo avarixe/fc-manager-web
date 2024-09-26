@@ -196,6 +196,15 @@ function ImportTeam() {
     }
     playerProgress.increment(playerInsertData.length)
 
+    // Create Player id mapping
+    const playerIds = await supabase.from('players')
+      .select('id, importId')
+      .eq('teamId', teamId)
+      .not('importId', 'is', null)
+    for (const player of playerIds.data ?? []) {
+      idMap.current.player[player.importId!] = player.id
+    }
+
     // Create Squads
     const squadInsertData: TablesInsert<'squads'>[] = squads.map(squad => ({
       teamId,
@@ -324,15 +333,6 @@ function ImportTeam() {
         capStats.current[cap.playerId][match.id] = capStats.current[cap.playerId][match.id] || {}
         capStats.current[cap.playerId][match.id].cleanSheet = cleanSheet
       }
-    }
-
-    // Create Player id mapping
-    const playerIds = await supabase.from('players')
-      .select('id, importId')
-      .eq('teamId', teamId)
-      .not('importId', 'is', null)
-    for (const player of playerIds.data ?? []) {
-      idMap.current.player[player.importId!] = player.id
     }
 
     // Create Match id mapping

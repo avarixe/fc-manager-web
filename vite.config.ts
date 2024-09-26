@@ -29,6 +29,9 @@ export default defineConfig({
             'useNavigate',
             'useParams',
           ],
+          '@tanstack/react-table': [
+            'createColumnHelper',
+          ],
           'dayjs': [
             ['default', 'dayjs'],
           ],
