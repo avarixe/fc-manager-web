@@ -5,10 +5,10 @@ import { keyBy } from 'lodash-es'
 type Player = Pick<Tables<'players'>, 'id' | 'name' | 'nationality' | 'status' | 'birthYear' | 'pos' | 'secPos' | 'kitNo' | 'ovr' | 'value' | 'wage' | 'contractEndsOn'>
 
 export const Route = createLazyFileRoute('/teams/$teamId/squads')({
-  component: Squads,
+  component: SquadsPage,
 })
 
-function Squads() {
+function SquadsPage() {
   const { teamId } = Route.useParams()
   const { team } = useTeam(teamId)
 

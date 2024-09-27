@@ -4,10 +4,10 @@ import { Button, Title } from '@mantine/core'
 type Match = Pick<Tables<'matches'>, 'id' | 'homeTeam' | 'awayTeam' | 'homeScore' | 'awayScore' | 'homePenaltyScore' | 'awayPenaltyScore' | 'playedOn' | 'competition' | 'season' | 'stage'>
 
 export const Route = createLazyFileRoute('/teams/$teamId/matches')({
-  component: Matches,
+  component: MatchesPage,
 })
 
-function Matches() {
+function MatchesPage() {
   const { teamId } = Route.useParams()
   const { team } = useTeam(teamId)
 

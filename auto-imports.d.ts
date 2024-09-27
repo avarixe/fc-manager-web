@@ -7,6 +7,7 @@
 export {}
 declare global {
   const AppNavbar: typeof import('./src/components/app/AppNavbar')['AppNavbar']
+  const CompetitionForm: typeof import('./src/components/competition/CompetitionForm')['CompetitionForm']
   const DataTabl: typeof import('./src/components/base/DataTable')['DataTabl']
   const DataTable: typeof import('./src/components/base/DataTable')['DataTable']
   const DatePickerInput: typeof import('./src/components/base/DatePickerInput')['DatePickerInput']
@@ -21,7 +22,6 @@ declare global {
   const createRootRoute: typeof import('@tanstack/react-router')['createRootRoute']
   const dayjs: typeof import('dayjs')['default']
   const formatDate: typeof import('./src/utils/format')['formatDate']
-  const formatMoney: typeof import('./src/utils/format')['formatMoney']
   const forwardRef: typeof import('react')['forwardRef']
   const lazy: typeof import('react')['lazy']
   const memo: typeof import('react')['memo']
@@ -51,6 +51,7 @@ declare global {
   const useStateRef: typeof import('react-usestateref')['default']
   const useSyncExternalStore: typeof import('react')['useSyncExternalStore']
   const useTeam: typeof import('./src/hooks/useTeam')['useTeam']
+  const useTeamHelpers: typeof import('./src/hooks/useTeamHelpers')['useTeamHelpers']
   const useTransition: typeof import('react')['useTransition']
 }
 // for type re-export

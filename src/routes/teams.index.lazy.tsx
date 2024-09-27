@@ -2,7 +2,7 @@ import { Tables } from "@/database-generated.types"
 import { Button, Title } from "@mantine/core"
 
 export const Route = createLazyFileRoute('/teams/')({
-  component: Teams,
+  component: TeamsPage,
 })
 
 const columnHelper = createColumnHelper<Tables<'teams'>>()
@@ -36,7 +36,7 @@ const columns = [
   }),
 ]
 
-function Teams() {
+function TeamsPage() {
   const supabase = useAtomValue(supabaseAtom)
   const [teams, setTeams] = useState<Tables<'teams'>[]>([])
   useEffect(() => {

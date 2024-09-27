@@ -2,7 +2,7 @@ import { Tables, TablesInsert } from '@/database-generated.types'
 import { Button, Divider, FileInput, Progress, Title } from '@mantine/core'
 
 export const Route = createLazyFileRoute('/teams/import')({
-  component: ImportTeam,
+  component: ImportTeamPage,
 })
 
 async function parseJsonFile(file: File) {
@@ -14,7 +14,7 @@ async function parseJsonFile(file: File) {
   })
 }
 
-function ImportTeam() {
+function ImportTeamPage() {
   const session = useAtomValue(sessionAtom)
   const supabase = useAtomValue(supabaseAtom)
 

@@ -1,13 +1,13 @@
 import { Tables } from '@/database-generated.types'
-import { Title } from '@mantine/core'
+import { NumberFormatter, Title } from '@mantine/core'
 
 type Player = Pick<Tables<'players'>, 'id' | 'name' | 'nationality' | 'status' | 'birthYear' | 'pos' | 'secPos' | 'kitNo' | 'ovr' | 'value' | 'wage' | 'contractEndsOn'>
 
 export const Route = createLazyFileRoute('/teams/$teamId/players')({
-  component: Players,
+  component: PlayersPage,
 })
 
-function Players() {
+function PlayersPage() {
   const { teamId } = Route.useParams()
   const { team } = useTeam(teamId)
 
@@ -58,14 +58,14 @@ function Players() {
       header: 'Value',
       cell: info => {
         const value = info.getValue()
-        return formatMoney(value, team?.currency)
+        return <NumberFormatter value={value} prefix={team?.currency} thousandSeparator />
       }
     }),
     columnHelper.accessor('wage', {
       header: 'Wage',
       cell: info => {
         const value = info.getValue()
-        return formatMoney(value, team?.currency)
+        return value ? <NumberFormatter value={value} prefix={team?.currency} thousandSeparator /> : null
       }
     }),
     columnHelper.accessor('contractEndsOn', {

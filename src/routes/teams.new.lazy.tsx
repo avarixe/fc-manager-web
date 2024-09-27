@@ -1,10 +1,10 @@
 import { Title } from "@mantine/core"
 
 export const Route = createLazyFileRoute('/teams/new')({
-  component: NewTeam,
+  component: NewTeamPage,
 })
 
-function NewTeam() {
+function NewTeamPage() {
   return (
     <>
       <Title mb="xl">New Team</Title>

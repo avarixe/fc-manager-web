@@ -1,10 +1,10 @@
 import { Button, Title } from '@mantine/core'
 
-export const Route = createLazyFileRoute('/teams/$teamId')({
-  component: Team,
+export const Route = createLazyFileRoute('/teams/$teamId/')({
+  component: TeamPage,
 })
 
-function Team() {
+function TeamPage() {
   const { teamId } = Route.useParams()
   const { team } = useTeam(teamId)
 
