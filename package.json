@@ -11,10 +11,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@mantine/core": "^7.12.2",
-    "@mantine/dates": "^7.12.2",
-    "@mantine/form": "^7.12.2",
-    "@mantine/hooks": "^7.12.2",
+    "@mantine/core": "^7.13.0",
+    "@mantine/dates": "^7.13.0",
+    "@mantine/form": "^7.13.0",
+    "@mantine/hooks": "^7.13.0",
+    "@mantine/modals": "^7.13.0",
     "@supabase/auth-ui-react": "^0.4.7",
     "@supabase/auth-ui-shared": "^0.1.8",
     "@supabase/supabase-js": "^2.45.4",
