@@ -56,7 +56,7 @@ function TeamsPage() {
     <>
       <Title mb="xl">Teams</Title>
 
-      <Button component={Link} to="/teams/new">Create Team</Button>
+      <Button component={Link} to="/teams/new">New Team</Button>
       &nbsp;
       <Button component={Link} to="/teams/import" variant="outline">Import Team</Button>
 

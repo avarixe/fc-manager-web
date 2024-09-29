@@ -335,7 +335,7 @@ export type Database = {
       squads: {
         Row: {
           created_at: string
-          formation: Json
+          formation: Record<string, number>
           id: number
           name: string
           teamId: number | null
@@ -343,7 +343,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          formation: Json
+          formation: Record<string, number>
           id?: number
           name: string
           teamId?: number | null
@@ -351,7 +351,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          formation?: Json
+          formation?: Record<string, number>
           id?: number
           name?: string
           teamId?: number | null
