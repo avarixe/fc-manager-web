@@ -1,6 +1,7 @@
 import { Tables } from '@/database-generated.types'
-import { ActionIcon, Box, Button, Card, CardProps, Group, Select, TextInput, Title } from '@mantine/core'
+import { ActionIcon, Box, Button, Card, CardProps, Group, LoadingOverlay, Select, TextInput, Title } from '@mantine/core'
 import { isNotEmpty, useForm } from '@mantine/form'
+import { modals } from '@mantine/modals'
 import { keyBy } from 'lodash-es'
 
 type Player = Pick<Tables<'players'>, 'id' | 'name' | 'nationality' | 'status' | 'birthYear' | 'pos' | 'secPos' | 'kitNo' | 'ovr' | 'value' | 'wage' | 'contractEndsOn'>
@@ -32,6 +33,7 @@ function SquadsPage() {
       const { data, error } = await supabase.from('players')
         .select('id, name, nationality, status, birthYear, pos, secPos, kitNo, ovr, value, wage, contractEndsOn')
         .eq('teamId', teamId)
+        .order('id')
       if (error) {
         console.error(error)
       } else {
@@ -51,17 +53,45 @@ function SquadsPage() {
     <>
       <Title mb="xl">Squads</Title>
 
-      <Group>
-        <Button onClick={() => alert('TODO!')}>
-          New Squad
-        </Button>
-      </Group>
+      <NewSquadSection players={players} teamId={teamId} />
 
       {squads.map(squad => (
         <SquadCard
           key={squad.id}
           squad={squad}
           players={players}
+          teamId={teamId}
+          my="md"
+        />
+      ))}
+    </>
+  )
+}
+
+const NewSquadSection: React.FC<{ players: Player[]; teamId: string }> = ({ players, teamId }) => {
+  const [squads, setSquads] = useState<number[]>([])
+  const onClickNew = async () => {
+    setSquads((prev) => [...prev, prev.length + 1])
+  }
+
+  const onCancel = (index: number) => {
+    setSquads((prev) => prev.filter((i) => i !== index))
+  }
+
+  return (
+    <>
+      <Group>
+        <Button onClick={onClickNew}>
+          New Squad
+        </Button>
+      </Group>
+
+      {squads.map((tempId) => (
+        <SquadCard
+          key={tempId}
+          players={players}
+          teamId={teamId}
+          onCancel={() => onCancel(tempId)}
           my="md"
         />
       ))}
@@ -70,13 +100,16 @@ function SquadsPage() {
 }
 
 const SquadCard: React.FC<CardProps &{
-  squad: Tables<'squads'>,
+  squad?: Tables<'squads'>,
   players: Player[],
-}> = ({ squad, players, ...rest }) => {
+  teamId: string,
+  onCancel?: () => void,
+}> = ({ squad, players, teamId,  onCancel, ...rest }) => {
   const form = useForm({
     initialValues: {
-      name: squad.name,
-      formation: { ...squad.formation },
+      id: squad?.id,
+      name: squad?.name || '',
+      formation: { ...squad?.formation },
     },
     validate: {
       name: isNotEmpty(),
@@ -89,73 +122,111 @@ const SquadCard: React.FC<CardProps &{
     validateInputOnChange: true,
   })
 
-  const [isEditing, setIsEditing] = useState(false)
+  const [isEditing, setIsEditing] = useState(!squad)
   const onClickCancel = () => {
-    form.reset()
-    setIsEditing(false)
-  }
-
-  const supabase = useAtomValue(supabaseAtom)
-  const onClickSave = async () => {
-    const { error } = await supabase.from('squads')
-      .update(form.values)
-      .eq('id', squad.id)
-    if (error) {
-      console.error(error)
-    } else {
-      form.resetDirty()
+    if (form.values.id) {
+      form.reset()
       setIsEditing(false)
+    } else {
+      onCancel?.()
     }
   }
 
+  const supabase = useAtomValue(supabaseAtom)
+  const session = useAtomValue(sessionAtom)
+  const [loading, setLoading] = useState(false)
+  const onClickSave = async () => {
+    if (!form.isValid()) {
+      return
+    }
+
+    setLoading(true)
+    const { data, error } = await supabase.from('squads').upsert({
+      ...form.values,
+      userId: session?.user?.id,
+      teamId: Number(teamId),
+    }).select('id')
+    if (error) {
+      console.error(error)
+    } else {
+      form.setFieldValue('id', data?.[0]?.id)
+      form.resetDirty()
+      setIsEditing(false)
+    }
+    setLoading(false)
+  }
+
+  const [deleted, setDeleted] = useState(false)
   const onClickDelete = async () => {
-    alert('TODO!')
+    modals.openConfirmModal({
+      title: `Delete Squad: ${form.values.name}`,
+      centered: true,
+      children: (
+        <MText size="sm">
+          Are you sure you want to delete this squad? This action cannot be undone.
+        </MText>
+      ),
+      labels: {
+        confirm: 'Delete',
+        cancel: 'Cancel'
+      },
+      confirmProps: { color: 'red' },
+      onConfirm: async () => {
+        if (!form.values.id) return
+
+        try {
+          setLoading(true)
+          await supabase.from('squads').delete().eq('id', form.values.id)
+          setDeleted(true)
+        } catch (error) {
+          console.error(error)
+          setLoading(false)
+        }
+      }
+    })
   }
 
   const playerOptions = useMemo(() => {
-    return players.filter(player => !!player.status).map(player => ({
+    const inFormation = Object.values(form.values.formation)
+    return players.filter(player => !!player.status && !inFormation.includes(player.id)).map(player => ({
       value: String(player.id),
       label: player.name,
     }))
-  }, [players])
+  }, [form.values.formation, players])
 
   const [assigningPlayerId, setAssigningPlayerId] = useState<string | null>(null)
-
-
   const playersById = useMemo(() => keyBy(players, 'id'), [players])
-
   const onClickPosition = useCallback((position: string) => {
     if (!isEditing) return
 
     const formation = { ...form.values.formation }
+    const playersIn = Object.values(formation)
     const playerId = formation[position] ? String(formation[position]) : null
     if (assigningPlayerId) {
-      switch (playerId) {
-        case assigningPlayerId:
-          setAssigningPlayerId(null)
-          break
-        case null:
-          for (const pos in formation) {
-            if (String(formation[pos]) === assigningPlayerId) {
-              delete formation[pos]
-              break
-            }
-          }
-          formation[position] = Number(assigningPlayerId)
-          form.setFieldValue('formation', formation)
-          setAssigningPlayerId(null)
-          break
-        default:
-          for (const pos in formation) {
-            if (String(formation[pos]) === assigningPlayerId) {
+      if (playerId === assigningPlayerId) {
+        setAssigningPlayerId(null)
+      } else {
+        // Skip if formation is full
+        if (
+          playersIn.length === 11 &&
+          playersIn.every(id => String(id) !== assigningPlayerId) &&
+          playerId === null
+        ) {
+          return
+        }
+
+        for (const pos in formation) {
+          if (String(formation[pos]) === assigningPlayerId) {
+            if (playerId) {
               formation[pos] = Number(playerId)
-              break
+            } else {
+              delete formation[pos]
             }
           }
-          formation[position] = Number(assigningPlayerId)
-          form.setFieldValue('formation', formation)
-          setAssigningPlayerId(null)
-          break
+        }
+        formation[position] = Number(assigningPlayerId)
+        form.setFieldValue('formation', formation)
+        setAssigningPlayerId(null)
       }
     } else if (playerId) {
       setAssigningPlayerId(playerId)
@@ -163,7 +234,8 @@ const SquadCard: React.FC<CardProps &{
   }, [assigningPlayerId, form, isEditing])
 
   return (
-    <Card pos="relative" {...rest}>
+    <Card pos="relative" className={deleted ? 'hidden' : ''} {...rest}>
+      <LoadingOverlay visible={loading} overlayProps={{ radius: 'sm', blur: 2 }} />
       <Group mb="md">
         <TextInput
           {...form.getInputProps('name')}
@@ -216,10 +288,12 @@ const SquadCard: React.FC<CardProps &{
         cells={form.values.formation}
         renderCell={(position, playerId) => (
           <Button
+            component={'div'}
             variant={String(playerId) === assigningPlayerId ? 'light' : 'transparent'}
             onClick={() => onClickPosition(position)}
             color={String(playerId) === assigningPlayerId ? undefined : 'gray'}
             size="lg"
+            disabled={!isEditing}
           >
             <Box>
               <MText fw="bold">{position}</MText>
@@ -229,6 +303,7 @@ const SquadCard: React.FC<CardProps &{
         )}
         renderEmptyCell={(position) => (
           <Button
+            component={'div'}
             variant="transparent"
             onClick={() => onClickPosition(position)}
             color="gray"
