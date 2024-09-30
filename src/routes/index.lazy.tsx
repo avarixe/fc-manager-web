@@ -1,4 +1,4 @@
-import { Title } from "@mantine/core"
+import { Stack, Title } from "@mantine/core"
 
 export const Route = createLazyFileRoute('/')({
   component: HomePage,
@@ -6,8 +6,8 @@ export const Route = createLazyFileRoute('/')({
 
 function HomePage() {
   return (
-    <>
+    <Stack>
       <Title mb="xl">Welcome to FC Manager!</Title>
-    </>
+    </Stack>
   )
 }

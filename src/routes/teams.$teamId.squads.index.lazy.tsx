@@ -8,6 +8,7 @@ import {
   Group,
   LoadingOverlay,
   Select,
+  Stack,
   TextInput,
   Title,
 } from '@mantine/core'
@@ -79,7 +80,7 @@ function SquadsPage() {
   }
 
   return (
-    <>
+    <Stack>
       <Title mb="xl">Squads</Title>
 
       <NewSquadSection players={players} teamId={teamId} />
@@ -90,10 +91,9 @@ function SquadsPage() {
           squad={squad}
           players={players}
           teamId={teamId}
-          my="md"
         />
       ))}
-    </>
+    </Stack>
   )
 }
 

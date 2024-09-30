@@ -1,5 +1,5 @@
 import { Tables } from '@/database-generated.types'
-import { Button, Title } from '@mantine/core'
+import { Button, Stack, Title } from '@mantine/core'
 
 type Match = Pick<
   Tables<'matches'>,
@@ -52,6 +52,7 @@ function MatchesPage() {
       const { count } = await supabase
         .from('matches')
         .select('id', { count: 'exact', head: true })
+        .eq('teamId', teamId)
       const { data, error } = await pageQuery
       if (error) {
         console.error(error)
@@ -72,23 +73,22 @@ function MatchesPage() {
     () => [
       columnHelper.display({
         id: 'teams',
-        header: () => <div className="text-center">Match</div>,
+        header: 'Match',
         cell: ({ row }) => {
           const match = row.original
           return (
-            <div className="text-center">
-              <div>
-                {match.homeTeam} v {match.awayTeam}
-              </div>
+            <>
+              <div>{match.homeTeam} v {match.awayTeam}</div>
               <div>
                 {match.homeScore}
                 {match.homePenaltyScore ? ` (${match.homePenaltyScore})` : ''}-
                 {match.awayScore}
                 {match.awayPenaltyScore ? ` (${match.awayPenaltyScore})` : ''}
               </div>
-            </div>
+            </>
           )
         },
+        meta: { align: 'center' },
       }),
       columnHelper.accessor('competition', {
         header: 'Competition',
@@ -134,7 +134,7 @@ function MatchesPage() {
   }
 
   return (
-    <>
+    <Stack>
       <Title mb="xl">Matches</Title>
 
       <DataTable
@@ -143,6 +143,6 @@ function MatchesPage() {
         tableState={tableState}
         setTableState={setTableState}
       />
-    </>
+    </Stack>
   )
 }

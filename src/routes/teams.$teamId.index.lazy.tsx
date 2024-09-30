@@ -1,4 +1,4 @@
-import { Button, Group, LoadingOverlay, Title } from '@mantine/core'
+import { Button, Group, LoadingOverlay, Stack, Title } from '@mantine/core'
 import { modals } from '@mantine/modals'
 
 export const Route = createLazyFileRoute('/teams/$teamId/')({
@@ -46,7 +46,7 @@ function TeamPage() {
   }
 
   return (
-    <>
+    <Stack>
       <Title mb="xl">{team.name}</Title>
       <Group>
         <Button component={Link} to={`/teams/${team.id}/edit`}>
@@ -57,6 +57,6 @@ function TeamPage() {
         </Button>
       </Group>
       <LoadingOverlay visible={deleting} overlayProps={{ blur: 2 }} />
-    </>
+    </Stack>
   )
 }

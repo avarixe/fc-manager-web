@@ -1,5 +1,5 @@
 import { Tables, TablesInsert } from '@/database-generated.types'
-import { Button, Divider, FileInput, Progress, Title } from '@mantine/core'
+import { Button, Divider, FileInput, Progress, Stack, Title } from '@mantine/core'
 
 export const Route = createLazyFileRoute('/teams/import')({
   component: ImportTeamPage,
@@ -349,7 +349,7 @@ function ImportTeamPage() {
   }, [file, teamProgress, playerProgress, competitionProgress, squadProgress, matchProgress, appearanceProgress, session?.user.id, supabase, importReadyCaps])
 
   return (
-    <>
+    <Stack>
       <Title mb="xl">Import Team</Title>
 
       <FileInput
@@ -374,7 +374,7 @@ function ImportTeamPage() {
       <ImportProgress label="Squads" color="indigo" {...squadProgress} />
       <ImportProgress label="Matches" color="lime" {...matchProgress} />
       <ImportProgress label="Performances" color="grape" {...appearanceProgress} />
-    </>
+    </Stack>
   )
 }
 

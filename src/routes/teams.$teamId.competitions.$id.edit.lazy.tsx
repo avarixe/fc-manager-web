@@ -1,5 +1,5 @@
 import { Tables } from '@/database-generated.types'
-import { Title } from '@mantine/core'
+import { Stack, Title } from '@mantine/core'
 
 export const Route = createLazyFileRoute(
   '/teams/$teamId/competitions/$id/edit',
@@ -36,10 +36,10 @@ function EditCompetitionPage() {
   }
 
   return (
-    <>
+    <Stack>
       <Title mb="xl">Edit Competition</Title>
 
       <CompetitionForm record={competition} team={team} />
-    </>
+    </Stack>
   )
 }

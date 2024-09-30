@@ -1,5 +1,5 @@
 import { Tables } from '@/database-generated.types'
-import { Box, NavLink, Timeline, Title } from '@mantine/core'
+import { Box, NavLink, Stack, Timeline, Title } from '@mantine/core'
 import { groupBy } from 'lodash-es'
 
 type Competition = Pick<
@@ -44,7 +44,7 @@ function CompetitionsPage() {
   }
 
   return (
-    <>
+    <Stack>
       <Title mb="xl">Competitions</Title>
 
       <Timeline bulletSize={24} lineWidth={2}>
@@ -76,6 +76,6 @@ function CompetitionsPage() {
           </Timeline.Item>
         ))}
       </Timeline>
-    </>
+    </Stack>
   )
 }

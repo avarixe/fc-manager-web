@@ -51,6 +51,7 @@ export default defineConfig({
       dirs: [
         'src/atoms',
         'src/components/*',
+        'src/constants',
         'src/hooks',
         'src/utils',
       ]

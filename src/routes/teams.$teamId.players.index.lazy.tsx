@@ -1,5 +1,5 @@
 import { Tables } from '@/database-generated.types'
-import { NumberFormatter, Title } from '@mantine/core'
+import { Button, Group, NumberFormatter, Stack, Title, Tooltip } from '@mantine/core'
 
 type Player = Pick<
   Tables<'players'>,
@@ -17,6 +17,24 @@ type Player = Pick<
   | 'contractEndsOn'
 >
 
+enum StatusFilter {
+  All = 'All',
+  Youth = 'Youth',
+  Active = 'Active',
+  Injured = 'Injured',
+  Loaned = 'Loaned',
+  Pending = 'Pending',
+}
+
+const statusFilters = [
+  { value: StatusFilter.All, icon: 'i-tabler:world', color: 'blue' },
+  { value: StatusFilter.Youth, icon: 'i-tabler:school', color: 'cyan' },
+  { value: StatusFilter.Active, icon: 'i-tabler:user-check', color: 'green' },
+  { value: StatusFilter.Injured, icon: 'i-tabler:ambulance', color: 'pink' },
+  { value: StatusFilter.Loaned, icon: 'i-tabler:transfer', color: 'orange' },
+  { value: StatusFilter.Pending, icon: 'i-tabler:user-check', color: 'yellow' },
+]
+
 export const Route = createLazyFileRoute('/teams/$teamId/players/')({
   component: PlayersPage,
 })
@@ -32,6 +50,7 @@ function PlayersPage() {
     pageSize: 10,
     rowCount: 0,
   })
+  const [statusFilter, setStatusFilter] = useState(StatusFilter.Active)
   useEffect(() => {
     const fetchPage = async () => {
       const pageQuery = supabase.from('players')
@@ -43,13 +62,29 @@ function PlayersPage() {
           tableState.pageSize * (tableState.pageIndex + 1)
         )
         .eq('teamId', teamId)
-        .order('id')
+      const countQuery = supabase.from('players').select('id', { count: 'exact', head: true }).eq('teamId', teamId)
 
-      // TODO: filtering
+      switch (statusFilter) {
+        case StatusFilter.Youth:
+          pageQuery.eq('youth', true)
+          countQuery.eq('youth', true)
+          break
+        case StatusFilter.Active:
+          pageQuery.neq('status', null)
+          countQuery.neq('status', null)
+          break
+        case StatusFilter.Injured:
+        case StatusFilter.Loaned:
+        case StatusFilter.Pending:
+          pageQuery.eq('status', statusFilter)
+          countQuery.eq('status', statusFilter)
+          break
+      }
 
       // TODO: sorting
+      pageQuery.order('posOrder')
 
-      const { count } = await supabase.from('players').select('id', { count: 'exact', head: true })
+      const { count } = await countQuery
       const { data, error } = await pageQuery
       if (error) {
         console.error(error)
@@ -63,7 +98,12 @@ function PlayersPage() {
     }
 
     fetchPage()
-  }, [supabase, tableState.pageIndex, tableState.pageSize, teamId])
+  }, [statusFilter, supabase, tableState.pageIndex, tableState.pageSize, teamId])
+
+  const onChangeStatusFilter = useCallback((status: StatusFilter) => {
+    setStatusFilter(status)
+    setTableState((prev) => ({ ...prev, pageIndex: 0 }))
+  }, [])
 
   const columnHelper = createColumnHelper<Player>()
   const columns = useMemo(
@@ -72,25 +112,45 @@ function PlayersPage() {
         header: 'Name',
       }),
       columnHelper.accessor('nationality', {
-        header: 'Nationality',
+        header: () => <div className="i-tabler:flag-filled w-auto" />,
+        cell: (info) => {
+          const value = info.getValue()
+          return value ? <PlayerFlag nationality={value} /> : null
+        },
+        meta: { align: 'center' },
       }),
       columnHelper.accessor('status', {
         header: 'Status',
+        cell: (info) => {
+          const value = info.getValue()
+          return <PlayerStatus status={value} />
+        },
+        meta: { align: 'center' },
       }),
       columnHelper.accessor('birthYear', {
-        header: 'Birth Year',
+        header: 'Age',
+        cell: (info) => {
+          const value = info.getValue()
+          return value && team ? dayjs(team.currentlyOn).year() - value : null
+        },
+        meta: { align: 'center' },
       }),
       columnHelper.accessor('pos', {
         header: 'Pos',
+        meta: { align: 'center' },
       }),
       columnHelper.accessor('secPos', {
         header: '2nd Pos',
+        cell: (info) => info.getValue()?.join(', '),
+        meta: { align: 'center' },
       }),
       columnHelper.accessor('kitNo', {
         header: 'Kit No',
+        meta: { align: 'center' },
       }),
       columnHelper.accessor('ovr', {
         header: 'OVR',
+        meta: { align: 'center' },
       }),
       columnHelper.accessor('value', {
         header: 'Value',
@@ -104,6 +164,7 @@ function PlayersPage() {
             />
           )
         },
+        meta: { align: 'end' },
       }),
       columnHelper.accessor('wage', {
         header: 'Wage',
@@ -117,16 +178,15 @@ function PlayersPage() {
             />
           ) : null
         },
+        meta: { align: 'center' },
       }),
       columnHelper.accessor('contractEndsOn', {
         header: 'Contract Ends',
-        cell: (info) => {
-          const value = info.getValue()
-          return formatDate(value)
-        },
+        cell: (info) => formatDate(info.getValue()),
+        meta: { align: 'end' },
       }),
     ],
-    [columnHelper, team?.currency],
+    [columnHelper, team],
   )
 
   if (!team) {
@@ -134,8 +194,21 @@ function PlayersPage() {
   }
 
   return (
-    <>
+    <Stack>
       <Title mb="xl">Players</Title>
+
+      <Group>
+        <Button>
+          New Player
+        </Button>
+      </Group>
+
+      <Group>
+        <PlayerStatusFilter
+          statusFilter={statusFilter}
+          onChangeStatusFilter={onChangeStatusFilter}
+        />
+      </Group>
 
       <DataTable
         data={players}
@@ -143,6 +216,28 @@ function PlayersPage() {
         tableState={tableState}
         setTableState={setTableState}
       />
-    </>
+    </Stack>
+  )
+}
+
+const PlayerStatusFilter: React.FC<{
+  statusFilter: StatusFilter
+  onChangeStatusFilter: (status: StatusFilter) => void
+}> = ({ statusFilter, onChangeStatusFilter }) => {
+  return (
+    <Button.Group>
+      {statusFilters.map((filter) => (
+        <Tooltip label={filter.value} key={filter.value}>
+          <Button
+            component={'div'}
+            color={statusFilter === filter.value ? filter.color : undefined}
+            variant={statusFilter === filter.value ? 'filled' : 'default'}
+            onClick={() => onChangeStatusFilter(filter.value)}
+          >
+            <div className={filter.icon} />
+          </Button>
+        </Tooltip>
+      ))}
+    </Button.Group>
   )
 }

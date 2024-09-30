@@ -1,5 +1,5 @@
 import { Tables } from '@/database-generated.types'
-import { Accordion, ActionIcon, Box, Button, Group, LoadingOverlay, NumberInput, Switch, Table, TextInput, Title } from '@mantine/core'
+import { Accordion, ActionIcon, Box, Button, Group, LoadingOverlay, NumberInput, Stack, Switch, Table, TextInput, Title } from '@mantine/core'
 import { isNotEmpty, useField, useForm } from '@mantine/form';
 import { modals } from '@mantine/modals';
 import { cloneDeep } from 'lodash-es';
@@ -144,16 +144,17 @@ function CompetitionPage() {
   }
 
   return (
-    <>
-      <Title order={5}>{seasonLabel(competition.season)}</Title>
-      <Title mb="xl">{competition.name}</Title>
+    <Stack>
+      <Box mb="xl">
+        <Title order={5}>{seasonLabel(competition.season)}</Title>
+        <Title>{competition.name}</Title>
+      </Box>
       <Switch
         label="Readonly Mode"
         checked={readonly}
         onChange={(event) => setReadonly(event.currentTarget.checked)}
-        my="md"
       />
-      <Group mb="lg">
+      <Group>
         <Button component={Link} to={`/teams/${team.id}/competitions/${id}/edit`}>
           Edit
         </Button>
@@ -183,7 +184,7 @@ function CompetitionPage() {
           </Accordion.Item>
         ))}
       </Accordion>
-    </>
+    </Stack>
   )
 }
 

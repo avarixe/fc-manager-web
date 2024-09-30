@@ -1,5 +1,5 @@
 import { Tables } from "@/database-generated.types"
-import { Button, Group, Title } from "@mantine/core"
+import { Button, Group, Stack, Title } from "@mantine/core"
 
 export const Route = createLazyFileRoute('/teams/')({
   component: TeamsPage,
@@ -71,10 +71,10 @@ function TeamsPage() {
 
 
   return (
-    <>
+    <Stack>
       <Title mb="xl">Teams</Title>
 
-      <Group mb="lg">
+      <Group>
         <Button component={Link} to="/teams/new">New Team</Button>
         <Button component={Link} to="/teams/import" variant="outline">Import Team</Button>
       </Group>
@@ -85,6 +85,6 @@ function TeamsPage() {
         tableState={tableState}
         setTableState={setTableState}
       />
-    </>
+    </Stack>
   )
 }

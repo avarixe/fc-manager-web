@@ -10,6 +10,15 @@ import 'virtual:uno.css'
 import { MantineProvider } from "@mantine/core";
 import { ModalsProvider } from "@mantine/modals";
 
+import '@tanstack/react-table'
+import { RowData } from "@tanstack/react-table";
+
+declare module '@tanstack/react-table' {
+  interface ColumnMeta<TData extends RowData, TValue> {
+    align?: 'start' | 'center' | 'end'
+  }
+}
+
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <JotaiProvider>
