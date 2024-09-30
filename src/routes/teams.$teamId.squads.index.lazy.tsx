@@ -1,12 +1,37 @@
 import { Tables } from '@/database-generated.types'
-import { ActionIcon, Box, Button, Card, CardProps, Group, LoadingOverlay, Select, TextInput, Title } from '@mantine/core'
+import {
+  ActionIcon,
+  Box,
+  Button,
+  Card,
+  CardProps,
+  Group,
+  LoadingOverlay,
+  Select,
+  TextInput,
+  Title,
+} from '@mantine/core'
 import { isNotEmpty, useForm } from '@mantine/form'
 import { modals } from '@mantine/modals'
 import { keyBy } from 'lodash-es'
 
-type Player = Pick<Tables<'players'>, 'id' | 'name' | 'nationality' | 'status' | 'birthYear' | 'pos' | 'secPos' | 'kitNo' | 'ovr' | 'value' | 'wage' | 'contractEndsOn'>
+type Player = Pick<
+  Tables<'players'>,
+  | 'id'
+  | 'name'
+  | 'nationality'
+  | 'status'
+  | 'birthYear'
+  | 'pos'
+  | 'secPos'
+  | 'kitNo'
+  | 'ovr'
+  | 'value'
+  | 'wage'
+  | 'contractEndsOn'
+>
 
-export const Route = createLazyFileRoute('/teams/$teamId/squads')({
+export const Route = createLazyFileRoute('/teams/$teamId/squads/')({
   component: SquadsPage,
 })
 
@@ -19,7 +44,8 @@ function SquadsPage() {
   const supabase = useAtomValue(supabaseAtom)
   useEffect(() => {
     const fetchCompetitions = async () => {
-      const { data, error } = await supabase.from('squads')
+      const { data, error } = await supabase
+        .from('squads')
         .select()
         .eq('teamId', teamId)
         .order('id')
@@ -30,8 +56,11 @@ function SquadsPage() {
       }
     }
     const fetchPlayers = async () => {
-      const { data, error } = await supabase.from('players')
-        .select('id, name, nationality, status, birthYear, pos, secPos, kitNo, ovr, value, wage, contractEndsOn')
+      const { data, error } = await supabase
+        .from('players')
+        .select(
+          'id, name, nationality, status, birthYear, pos, secPos, kitNo, ovr, value, wage, contractEndsOn',
+        )
         .eq('teamId', teamId)
         .order('id')
       if (error) {
@@ -55,7 +84,7 @@ function SquadsPage() {
 
       <NewSquadSection players={players} teamId={teamId} />
 
-      {squads.map(squad => (
+      {squads.map((squad) => (
         <SquadCard
           key={squad.id}
           squad={squad}
@@ -68,7 +97,10 @@ function SquadsPage() {
   )
 }
 
-const NewSquadSection: React.FC<{ players: Player[]; teamId: string }> = ({ players, teamId }) => {
+const NewSquadSection: React.FC<{ players: Player[]; teamId: string }> = ({
+  players,
+  teamId,
+}) => {
   const [squads, setSquads] = useState<number[]>([])
   const onClickNew = async () => {
     setSquads((prev) => [...prev, prev.length + 1])
@@ -81,9 +113,7 @@ const NewSquadSection: React.FC<{ players: Player[]; teamId: string }> = ({ play
   return (
     <>
       <Group>
-        <Button onClick={onClickNew}>
-          New Squad
-        </Button>
+        <Button onClick={onClickNew}>New Squad</Button>
       </Group>
 
       {squads.map((tempId) => (
@@ -99,12 +129,14 @@ const NewSquadSection: React.FC<{ players: Player[]; teamId: string }> = ({ play
   )
 }
 
-const SquadCard: React.FC<CardProps &{
-  squad?: Tables<'squads'>,
-  players: Player[],
-  teamId: string,
-  onCancel?: () => void,
-}> = ({ squad, players, teamId,  onCancel, ...rest }) => {
+const SquadCard: React.FC<
+  CardProps & {
+    squad?: Tables<'squads'>
+    players: Player[]
+    teamId: string
+    onCancel?: () => void
+  }
+> = ({ squad, players, teamId, onCancel, ...rest }) => {
   const form = useForm({
     initialValues: {
       id: squad?.id,
@@ -114,10 +146,10 @@ const SquadCard: React.FC<CardProps &{
     validate: {
       name: isNotEmpty(),
       formation: (value) => {
-        return Object.values(value).filter(id => id).length !== 11
+        return Object.values(value).filter((id) => id).length !== 11
           ? 'Formation must have 11 players'
           : null
-      }
+      },
     },
     validateInputOnChange: true,
   })
@@ -141,11 +173,14 @@ const SquadCard: React.FC<CardProps &{
     }
 
     setLoading(true)
-    const { data, error } = await supabase.from('squads').upsert({
-      ...form.values,
-      userId: session?.user?.id,
-      teamId: Number(teamId),
-    }).select('id')
+    const { data, error } = await supabase
+      .from('squads')
+      .upsert({
+        ...form.values,
+        userId: session?.user?.id,
+        teamId: Number(teamId),
+      })
+      .select('id')
     if (error) {
       console.error(error)
     } else {
@@ -163,12 +198,13 @@ const SquadCard: React.FC<CardProps &{
       centered: true,
       children: (
         <MText size="sm">
-          Are you sure you want to delete this squad? This action cannot be undone.
+          Are you sure you want to delete this squad? This action cannot be
+          undone.
         </MText>
       ),
       labels: {
         confirm: 'Delete',
-        cancel: 'Cancel'
+        cancel: 'Cancel',
       },
       confirmProps: { color: 'red' },
       onConfirm: async () => {
@@ -182,60 +218,70 @@ const SquadCard: React.FC<CardProps &{
           console.error(error)
           setLoading(false)
         }
-      }
+      },
     })
   }
 
   const playerOptions = useMemo(() => {
     const inFormation = Object.values(form.values.formation)
-    return players.filter(player => !!player.status && !inFormation.includes(player.id)).map(player => ({
-      value: String(player.id),
-      label: player.name,
-    }))
+    return players
+      .filter((player) => !!player.status && !inFormation.includes(player.id))
+      .map((player) => ({
+        value: String(player.id),
+        label: player.name,
+      }))
   }, [form.values.formation, players])
 
-  const [assigningPlayerId, setAssigningPlayerId] = useState<string | null>(null)
+  const [assigningPlayerId, setAssigningPlayerId] = useState<string | null>(
+    null,
+  )
   const playersById = useMemo(() => keyBy(players, 'id'), [players])
-  const onClickPosition = useCallback((position: string) => {
-    if (!isEditing) return
+  const onClickPosition = useCallback(
+    (position: string) => {
+      if (!isEditing) return
 
-    const formation = { ...form.values.formation }
-    const playersIn = Object.values(formation)
-    const playerId = formation[position] ? String(formation[position]) : null
-    if (assigningPlayerId) {
-      if (playerId === assigningPlayerId) {
-        setAssigningPlayerId(null)
-      } else {
-        // Skip if formation is full
-        if (
-          playersIn.length === 11 &&
-          playersIn.every(id => String(id) !== assigningPlayerId) &&
-          playerId === null
-        ) {
-          return
-        }
+      const formation = { ...form.values.formation }
+      const playersIn = Object.values(formation)
+      const playerId = formation[position] ? String(formation[position]) : null
+      if (assigningPlayerId) {
+        if (playerId === assigningPlayerId) {
+          setAssigningPlayerId(null)
+        } else {
+          // Skip if formation is full
+          if (
+            playersIn.length === 11 &&
+            playersIn.every((id) => String(id) !== assigningPlayerId) &&
+            playerId === null
+          ) {
+            return
+          }
 
-        for (const pos in formation) {
-          if (String(formation[pos]) === assigningPlayerId) {
-            if (playerId) {
-              formation[pos] = Number(playerId)
-            } else {
-              delete formation[pos]
+          for (const pos in formation) {
+            if (String(formation[pos]) === assigningPlayerId) {
+              if (playerId) {
+                formation[pos] = Number(playerId)
+              } else {
+                delete formation[pos]
+              }
             }
           }
+          formation[position] = Number(assigningPlayerId)
+          form.setFieldValue('formation', formation)
+          setAssigningPlayerId(null)
         }
-        formation[position] = Number(assigningPlayerId)
-        form.setFieldValue('formation', formation)
-        setAssigningPlayerId(null)
+      } else if (playerId) {
+        setAssigningPlayerId(playerId)
       }
-    } else if (playerId) {
-      setAssigningPlayerId(playerId)
-    }
-  }, [assigningPlayerId, form, isEditing])
+    },
+    [assigningPlayerId, form, isEditing],
+  )
 
   return (
     <Card pos="relative" className={deleted ? 'hidden' : ''} {...rest}>
-      <LoadingOverlay visible={loading} overlayProps={{ radius: 'sm', blur: 2 }} />
+      <LoadingOverlay
+        visible={loading}
+        overlayProps={{ radius: 'sm', blur: 2 }}
+      />
       <Group mb="md">
         <TextInput
           {...form.getInputProps('name')}
@@ -277,7 +323,9 @@ const SquadCard: React.FC<CardProps &{
             data={playerOptions}
             renderOption={({ option }) => (
               <Group>
-                <MText size="xs" fw="bold">{playersById[option.value]?.pos}</MText>
+                <MText size="xs" fw="bold">
+                  {playersById[option.value]?.pos}
+                </MText>
                 <MText size="xs">{option.label}</MText>
               </Group>
             )}
@@ -289,7 +337,9 @@ const SquadCard: React.FC<CardProps &{
         renderCell={(position, playerId) => (
           <Button
             component={'div'}
-            variant={String(playerId) === assigningPlayerId ? 'light' : 'transparent'}
+            variant={
+              String(playerId) === assigningPlayerId ? 'light' : 'transparent'
+            }
             onClick={() => onClickPosition(position)}
             color={String(playerId) === assigningPlayerId ? undefined : 'gray'}
             size="lg"

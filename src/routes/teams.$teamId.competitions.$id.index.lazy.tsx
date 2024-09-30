@@ -53,11 +53,12 @@ function CompetitionPage() {
         .select()
         .eq('teamId', teamId)
         .eq('id', id)
+        .single()
       if (error) {
         console.error(error)
       } else {
-        assertType<Competition[]>(data)
-        setCompetition(data[0])
+        assertType<Competition>(data)
+        setCompetition(data)
       }
     }
 
@@ -152,7 +153,7 @@ function CompetitionPage() {
         onChange={(event) => setReadonly(event.currentTarget.checked)}
         my="md"
       />
-      <Group>
+      <Group mb="lg">
         <Button component={Link} to={`/teams/${team.id}/competitions/${id}/edit`}>
           Edit
         </Button>
@@ -163,7 +164,7 @@ function CompetitionPage() {
           Delete
         </Button>
       </Group>
-      <Accordion defaultValue={[StageType.Group, StageType.Knockout]} multiple mt="lg">
+      <Accordion defaultValue={[StageType.Group, StageType.Knockout]} multiple>
         {categories.map((category, i) => (
           <Accordion.Item key={i} value={category.value} hidden={category.stages.length === 0}>
             <Accordion.Control>{category.name}</Accordion.Control>

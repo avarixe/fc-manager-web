@@ -20,10 +20,11 @@ function EditCompetitionPage() {
         .select()
         .eq('teamId', teamId)
         .eq('id', id)
+        .single()
       if (error) {
         console.error(error)
       } else {
-        setCompetition(data[0])
+        setCompetition(data)
       }
     }
 

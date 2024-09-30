@@ -8,10 +8,11 @@ export const useTeam = (teamId: string) => {
         .from('teams')
         .select()
         .eq('id', teamId)
+        .single()
       if (error) {
         console.error(error)
       } else {
-        setTeam(data[0])
+        setTeam(data)
       }
     }
 

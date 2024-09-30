@@ -1,5 +1,5 @@
 import { Tables } from "@/database-generated.types"
-import { Button, Title } from "@mantine/core"
+import { Button, Group, Title } from "@mantine/core"
 
 export const Route = createLazyFileRoute('/teams/')({
   component: TeamsPage,
@@ -39,30 +39,51 @@ const columns = [
 function TeamsPage() {
   const supabase = useAtomValue(supabaseAtom)
   const [teams, setTeams] = useState<Tables<'teams'>[]>([])
+  const [tableState, setTableState] = useState({
+    pageIndex: 0,
+    pageSize: 10,
+    rowCount: 0,
+  })
   useEffect(() => {
-    const loadTeams = async () => {
-      const { data, error } = await supabase.from('teams').select()
+    const fetchPage = async () => {
+      const pageQuery = supabase.from('teams').select().range(
+        tableState.pageSize * tableState.pageIndex,
+        tableState.pageSize * (tableState.pageIndex + 1)
+      )
+
+      // TODO: add sorting
+
+      const { count } = await supabase.from('teams').select('id', { count: 'exact', head: true })
+      const { data, error } = await pageQuery
       if (error) {
         console.error(error)
       } else {
         setTeams(data)
+        setTableState((prev) => ({
+          ...prev,
+          rowCount: count ?? 0
+        }))
       }
     }
 
-    loadTeams()
-  }, [supabase])
+    fetchPage()
+  }, [supabase, tableState.pageIndex, tableState.pageSize])
+
 
   return (
     <>
       <Title mb="xl">Teams</Title>
 
-      <Button component={Link} to="/teams/new">New Team</Button>
-      &nbsp;
-      <Button component={Link} to="/teams/import" variant="outline">Import Team</Button>
+      <Group mb="lg">
+        <Button component={Link} to="/teams/new">New Team</Button>
+        <Button component={Link} to="/teams/import" variant="outline">Import Team</Button>
+      </Group>
 
       <DataTable
         data={teams}
         columns={columns}
+        tableState={tableState}
+        setTableState={setTableState}
       />
     </>
   )
