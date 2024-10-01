@@ -123,6 +123,10 @@ function PlayersPage() {
     () => [
       columnHelper.accessor('name', {
         header: 'Name',
+        cell: info => {
+          const value = info.getValue()
+          return <Button component={Link} to={`/teams/${teamId}/players/${info.row.original.id}`} variant="subtle" size="xs">{value}</Button>
+        },
         meta: { sortable: true },
       }),
       columnHelper.accessor('nationality', {
@@ -200,7 +204,7 @@ function PlayersPage() {
         meta: { align: 'end', sortable: true },
       }),
     ],
-    [columnHelper, team],
+    [columnHelper, team, teamId],
   )
 
   if (!team) {
