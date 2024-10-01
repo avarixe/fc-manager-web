@@ -330,8 +330,8 @@ const StageTable: React.FC<{
       <Table>
         <Table.Thead>
           <Table.Tr>
-            <Table.Th className="w-2"></Table.Th>
-            <Table.Th className="w-min-50">Team</Table.Th>
+            <Table.Th className="w-10"></Table.Th>
+            <Table.Th className="w-min-45">Team</Table.Th>
             <Table.Th className="text-right w-20">W</Table.Th>
             <Table.Th className="text-right w-20">D</Table.Th>
             <Table.Th className="text-right w-20">L</Table.Th>
@@ -431,7 +431,7 @@ const StageTableRow: React.FC<{
 
   return (
     <Table.Tr>
-      <Table.Td>{index}</Table.Td>
+      <Table.Td ta="center">{index}</Table.Td>
       <Table.Td>
         {/* TODO: use Team combobox */}
         <TextInput
@@ -447,10 +447,10 @@ const StageTableRow: React.FC<{
       <Table.Td>{statField('gf')}</Table.Td>
       <Table.Td>{statField('ga')}</Table.Td>
       <Table.Td>
-        <MText size="xs" className="text-right">{form.values.gf - form.values.ga}</MText>
+        <MText size="xs" ta="right">{form.values.gf - form.values.ga}</MText>
       </Table.Td>
       <Table.Td>
-        <MText size="xs" className="text-right">{form.values.pts}</MText>
+        <MText size="xs" ta="right">{form.values.pts}</MText>
       </Table.Td>
     </Table.Tr>
   )
@@ -480,9 +480,9 @@ const StageFixtures: React.FC<{
       <Table>
         <Table.Thead>
           <Table.Tr>
-            <Table.Th className="text-right w-2/5">Home Team</Table.Th>
-            <Table.Th className="text-center w-1/5">Score</Table.Th>
-            <Table.Th className="text-left w-2/5">Away Team</Table.Th>
+            <Table.Th ta="right" className="w-2/5">Home Team</Table.Th>
+            <Table.Th ta="center" className="w-1/5">Score</Table.Th>
+            <Table.Th ta="left" className="w-2/5">Away Team</Table.Th>
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>

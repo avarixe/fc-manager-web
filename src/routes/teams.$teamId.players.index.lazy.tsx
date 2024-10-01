@@ -49,6 +49,10 @@ function PlayersPage() {
     pageIndex: 0,
     pageSize: 10,
     rowCount: 0,
+    sorting: {
+      id: 'pos',
+      desc: false,
+    }
   })
   const [statusFilter, setStatusFilter] = useState(StatusFilter.Active)
   useEffect(() => {
@@ -82,7 +86,16 @@ function PlayersPage() {
       }
 
       // TODO: sorting
-      pageQuery.order('posOrder')
+      switch (tableState.sorting?.id) {
+        case 'pos':
+          pageQuery.order('posOrder', { ascending: !tableState.sorting.desc })
+          break
+        case 'birthYear':
+          pageQuery.order('birthYear', { ascending: tableState.sorting.desc })
+          break
+        default:
+          pageQuery.order(tableState.sorting.id, { ascending: !tableState.sorting.desc })
+      }
 
       const { count } = await countQuery
       const { data, error } = await pageQuery
@@ -98,7 +111,7 @@ function PlayersPage() {
     }
 
     fetchPage()
-  }, [statusFilter, supabase, tableState.pageIndex, tableState.pageSize, teamId])
+  }, [statusFilter, supabase, tableState.pageIndex, tableState.pageSize, tableState.sorting.desc, tableState.sorting.id, teamId])
 
   const onChangeStatusFilter = useCallback((status: StatusFilter) => {
     setStatusFilter(status)
@@ -110,14 +123,15 @@ function PlayersPage() {
     () => [
       columnHelper.accessor('name', {
         header: 'Name',
+        meta: { sortable: true },
       }),
       columnHelper.accessor('nationality', {
-        header: () => <div className="i-tabler:flag-filled w-auto" />,
+        header: () => <div className="i-tabler:flag-filled" />,
         cell: (info) => {
           const value = info.getValue()
           return value ? <PlayerFlag nationality={value} /> : null
         },
-        meta: { align: 'center' },
+        meta: { align: 'center', sortable: true },
       }),
       columnHelper.accessor('status', {
         header: 'Status',
@@ -133,11 +147,11 @@ function PlayersPage() {
           const value = info.getValue()
           return value && team ? dayjs(team.currentlyOn).year() - value : null
         },
-        meta: { align: 'center' },
+        meta: { align: 'center', sortable: true },
       }),
       columnHelper.accessor('pos', {
         header: 'Pos',
-        meta: { align: 'center' },
+        meta: { align: 'center', sortable: true },
       }),
       columnHelper.accessor('secPos', {
         header: '2nd Pos',
@@ -146,11 +160,11 @@ function PlayersPage() {
       }),
       columnHelper.accessor('kitNo', {
         header: 'Kit No',
-        meta: { align: 'center' },
+        meta: { align: 'center', sortable: true },
       }),
       columnHelper.accessor('ovr', {
         header: 'OVR',
-        meta: { align: 'center' },
+        meta: { align: 'center', sortable: true },
       }),
       columnHelper.accessor('value', {
         header: 'Value',
@@ -164,7 +178,7 @@ function PlayersPage() {
             />
           )
         },
-        meta: { align: 'end' },
+        meta: { align: 'end', sortable: true },
       }),
       columnHelper.accessor('wage', {
         header: 'Wage',
@@ -178,12 +192,12 @@ function PlayersPage() {
             />
           ) : null
         },
-        meta: { align: 'center' },
+        meta: { align: 'end', sortable: true },
       }),
       columnHelper.accessor('contractEndsOn', {
         header: 'Contract Ends',
         cell: (info) => formatDate(info.getValue()),
-        meta: { align: 'end' },
+        meta: { align: 'end', sortable: true },
       }),
     ],
     [columnHelper, team],

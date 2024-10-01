@@ -30,6 +30,10 @@ function MatchesPage() {
     pageIndex: 0,
     pageSize: 10,
     rowCount: 0,
+    sorting: {
+      id: 'playedOn',
+      desc: true,
+    }
   })
   useEffect(() => {
     const fetchPage = async () => {
@@ -43,11 +47,14 @@ function MatchesPage() {
           tableState.pageSize * (tableState.pageIndex + 1),
         )
         .eq('teamId', teamId)
-        .order('playedOn', { ascending: false })
 
       // TODO: filtering
 
-      // TODO: sorting
+      if (tableState.sorting) {
+        pageQuery.order(tableState.sorting.id, {
+          ascending: !tableState.sorting.desc,
+        })
+      }
 
       const { count } = await supabase
         .from('matches')
@@ -66,7 +73,7 @@ function MatchesPage() {
     }
 
     fetchPage()
-  }, [supabase, tableState.pageIndex, tableState.pageSize, teamId])
+  }, [supabase, tableState.pageIndex, tableState.pageSize, tableState.sorting, teamId])
 
   const columnHelper = createColumnHelper<Match>()
   const columns = useMemo(
@@ -108,6 +115,7 @@ function MatchesPage() {
           const value = info.getValue()
           return formatDate(value)
         },
+        meta: { sortable: true },
       }),
       columnHelper.accessor('id', {
         header: 'Link',
@@ -124,6 +132,7 @@ function MatchesPage() {
             </Button>
           )
         },
+        meta: { align: 'center' },
       }),
     ],
     [columnHelper, teamId],
