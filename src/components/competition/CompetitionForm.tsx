@@ -12,8 +12,8 @@ export function CompetitionForm({ record, team }: {
   const form = useForm({
     mode: 'uncontrolled',
     initialValues: {
-      userId: session?.user?.id,
-      teamId: team.id,
+      user_id: session?.user?.id,
+      team_id: team.id,
       name: record?.name ?? '',
       season: record?.season ?? currentSeason,
       champion: record?.champion,

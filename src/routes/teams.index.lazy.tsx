@@ -14,21 +14,21 @@ const columns = [
       return <Button component={Link} to={`/teams/${info.row.original.id}`} variant="subtle" size="xs">{value}</Button>
     }
   }),
-  columnHelper.accessor('startedOn', {
+  columnHelper.accessor('started_on', {
     header: 'Start Date',
     cell: info => {
       const value = info.getValue()
       return formatDate(value)
     },
   }),
-  columnHelper.accessor('currentlyOn', {
+  columnHelper.accessor('currently_on', {
     header: 'Current Date',
     cell: info => {
       const value = info.getValue()
       return formatDate(value)
     },
   }),
-  columnHelper.accessor('managerName', {
+  columnHelper.accessor('manager_name', {
     header: 'Manager Name',
   }),
   columnHelper.accessor('game', {

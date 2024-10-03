@@ -11,7 +11,7 @@ export const AppNavbar = () => {
       {team && (
         <NavLink
           label={team.name}
-          leftSection={<Avatar src={team.badgePath} />}
+          leftSection={<Avatar src={team.badge_path} />}
           mt="md"
           childrenOffset={28}
           defaultOpened

@@ -7,14 +7,14 @@ type Player = Pick<
   | 'name'
   | 'nationality'
   | 'status'
-  | 'birthYear'
+  | 'birth_year'
   | 'pos'
-  | 'secPos'
-  | 'kitNo'
+  | 'sec_pos'
+  | 'kit_no'
   | 'ovr'
   | 'value'
   | 'wage'
-  | 'contractEndsOn'
+  | 'contract_ends_on'
 >
 
 enum StatusFilter {
@@ -59,14 +59,16 @@ function PlayersPage() {
     const fetchPage = async () => {
       const pageQuery = supabase.from('players')
         .select(
-          'id, name, nationality, status, birthYear, pos, secPos, kitNo, ovr, value, wage, contractEndsOn',
+          'id, name, nationality, status, birth_year, pos, sec_pos, kit_no, ovr, value, wage, contract_ends_on',
         )
         .range(
           tableState.pageSize * tableState.pageIndex,
           tableState.pageSize * (tableState.pageIndex + 1)
         )
-        .eq('teamId', teamId)
-      const countQuery = supabase.from('players').select('id', { count: 'exact', head: true }).eq('teamId', teamId)
+        .eq('team_id', teamId)
+      const countQuery = supabase.from('players')
+        .select('id', { count: 'exact', head: true })
+        .eq('team_id', teamId)
 
       switch (statusFilter) {
         case StatusFilter.Youth:
@@ -88,10 +90,10 @@ function PlayersPage() {
       // TODO: sorting
       switch (tableState.sorting?.id) {
         case 'pos':
-          pageQuery.order('posOrder', { ascending: !tableState.sorting.desc })
+          pageQuery.order('pos_order', { ascending: !tableState.sorting.desc })
           break
         case 'birthYear':
-          pageQuery.order('birthYear', { ascending: tableState.sorting.desc })
+          pageQuery.order('birth_year', { ascending: tableState.sorting.desc })
           break
         default:
           pageQuery.order(tableState.sorting.id, { ascending: !tableState.sorting.desc })
@@ -145,11 +147,11 @@ function PlayersPage() {
         },
         meta: { align: 'center' },
       }),
-      columnHelper.accessor('birthYear', {
+      columnHelper.accessor('birth_year', {
         header: 'Age',
         cell: (info) => {
           const value = info.getValue()
-          return value && team ? dayjs(team.currentlyOn).year() - value : null
+          return value && team ? dayjs(team.currently_on).year() - value : null
         },
         meta: { align: 'center', sortable: true },
       }),
@@ -157,12 +159,12 @@ function PlayersPage() {
         header: 'Pos',
         meta: { align: 'center', sortable: true },
       }),
-      columnHelper.accessor('secPos', {
+      columnHelper.accessor('sec_pos', {
         header: '2nd Pos',
         cell: (info) => info.getValue()?.join(', '),
         meta: { align: 'center' },
       }),
-      columnHelper.accessor('kitNo', {
+      columnHelper.accessor('kit_no', {
         header: 'Kit No',
         meta: { align: 'center', sortable: true },
       }),
@@ -198,7 +200,7 @@ function PlayersPage() {
         },
         meta: { align: 'end', sortable: true },
       }),
-      columnHelper.accessor('contractEndsOn', {
+      columnHelper.accessor('contract_ends_on', {
         header: 'Contract Ends',
         cell: (info) => formatDate(info.getValue()),
         meta: { align: 'end', sortable: true },

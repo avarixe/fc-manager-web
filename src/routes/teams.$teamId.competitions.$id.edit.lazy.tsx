@@ -18,7 +18,7 @@ function EditCompetitionPage() {
       const { data, error } = await supabase
         .from('competitions')
         .select()
-        .eq('teamId', teamId)
+        .eq('team_id', teamId)
         .eq('id', id)
         .single()
       if (error) {

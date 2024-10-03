@@ -6,11 +6,11 @@ export const useTeamHelpers = (team: Tables<'teams'> | null) => {
       return 0
     }
 
-    return dayjs(date).diff(team.startedOn, 'year')
+    return dayjs(date).diff(team.started_on, 'year')
   }, [team])
 
   const currentSeason = useMemo(() => (
-    team ? seasonOn(team.currentlyOn) : 0
+    team ? seasonOn(team.currently_on) : 0
   ), [seasonOn, team])
 
   const seasonLabel = useCallback((season: number) => {
@@ -18,7 +18,7 @@ export const useTeamHelpers = (team: Tables<'teams'> | null) => {
       return ''
     }
 
-    const start = dayjs(team.startedOn).add(season, 'year')
+    const start = dayjs(team.started_on).add(season, 'year')
     const end = start.add(1, 'year')
     return `${start.format('YYYY')} - ${end.format('YYYY')}`
   }, [team])

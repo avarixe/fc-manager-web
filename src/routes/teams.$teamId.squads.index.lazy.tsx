@@ -22,14 +22,14 @@ type Player = Pick<
   | 'name'
   | 'nationality'
   | 'status'
-  | 'birthYear'
+  | 'birth_year'
   | 'pos'
-  | 'secPos'
-  | 'kitNo'
+  | 'sec_pos'
+  | 'kit_no'
   | 'ovr'
   | 'value'
   | 'wage'
-  | 'contractEndsOn'
+  | 'contract_ends_on'
 >
 
 export const Route = createLazyFileRoute('/teams/$teamId/squads/')({
@@ -48,7 +48,7 @@ function SquadsPage() {
       const { data, error } = await supabase
         .from('squads')
         .select()
-        .eq('teamId', teamId)
+        .eq('team_id', teamId)
         .order('id')
       if (error) {
         console.error(error)
@@ -60,9 +60,9 @@ function SquadsPage() {
       const { data, error } = await supabase
         .from('players')
         .select(
-          'id, name, nationality, status, birthYear, pos, secPos, kitNo, ovr, value, wage, contractEndsOn',
+          'id, name, nationality, status, birth_year, pos, sec_pos, kit_no, ovr, value, wage, contract_ends_on',
         )
-        .eq('teamId', teamId)
+        .eq('team_id', teamId)
         .order('id')
       if (error) {
         console.error(error)

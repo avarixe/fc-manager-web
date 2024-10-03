@@ -49,22 +49,22 @@ function ImportTeamPage() {
     }
 
     const data: TablesInsert<'appearances'>[] = readyCaps.map(cap => ({
-      importId: Number(cap.id),
-      userId: session?.user.id,
-      playerId: idMap.current.player[cap.playerId],
-      matchId: idMap.current.match[cap.matchId],
-      nextId: cap.nextId ? idMap.current.cap[cap.nextId] : null,
+      import_id: Number(cap.id),
+      user_id: session?.user.id,
+      player_id: idMap.current.player[cap.playerId],
+      match_id: idMap.current.match[cap.matchId],
+      next_id: cap.nextId ? idMap.current.cap[cap.nextId] : null,
       pos: cap.pos,
-      startMinute: cap.start,
-      stopMinute: cap.stop,
+      start_minute: cap.start,
+      stop_minute: cap.stop,
       rating: cap.rating,
       injured: cap.injured,
       ovr: cap.ovr,
-      numGoals: capStats.current[cap.playerId]?.[cap.matchId]?.numGoals ?? 0,
-      numAssists: capStats.current[cap.playerId]?.[cap.matchId]?.numAssists ?? 0,
-      numYellowCards: capStats.current[cap.playerId]?.[cap.matchId]?.numYellowCards ?? 0,
-      numRedCards: capStats.current[cap.playerId]?.[cap.matchId]?.numRedCards ?? 0,
-      cleanSheet: capStats.current[cap.playerId]?.[cap.matchId]?.cleanSheet ?? false,
+      num_goals: capStats.current[cap.playerId]?.[cap.matchId]?.num_goals ?? 0,
+      num_assists: capStats.current[cap.playerId]?.[cap.matchId]?.num_assists ?? 0,
+      num_yellow_cards: capStats.current[cap.playerId]?.[cap.matchId]?.num_yellow_cards ?? 0,
+      num_red_cards: capStats.current[cap.playerId]?.[cap.matchId]?.num_red_cards ?? 0,
+      clean_sheet: capStats.current[cap.playerId]?.[cap.matchId]?.clean_sheet ?? false,
     }))
     const { error } = await supabase.from('appearances').insert(data)
     if (error) {
@@ -80,10 +80,10 @@ function ImportTeamPage() {
 
     // Update Cap id mapping
     const capIds = await supabase.from('appearances')
-      .select('id, importId')
-      .in('importId', notReadyCaps.map(cap => cap.nextId))
+      .select('id, import_id')
+      .in('import_id', notReadyCaps.map(cap => cap.nextId))
     for (const cap of capIds.data ?? []) {
-      idMap.current.cap[cap.importId!] = cap.id
+      idMap.current.cap[cap.import_id!] = cap.id
     }
 
     await importReadyCaps(notReadyCaps)
@@ -115,14 +115,14 @@ function ImportTeamPage() {
     // Create Team
     const userId = session?.user.id
     const { data: teamInsertData } = await supabase.from('teams').insert({
-      userId,
+      user_id: userId,
       name: teamData.name,
-      startedOn: teamData.startedOn,
-      currentlyOn: teamData.currentlyOn,
+      started_on: teamData.startedOn,
+      currently_on: teamData.currentlyOn,
       currency: teamData.currency,
       game: teamData.game,
-      managerName: teamData.managerName,
-      badgePath: teamData.badgePath,
+      manager_name: teamData.managerName,
+      badge_path: teamData.badgePath,
     }).select()
     if (!teamInsertData?.length) {
       alert('Could not create team!')
@@ -133,60 +133,62 @@ function ImportTeamPage() {
 
     // Create Players
     const playerInsertData: TablesInsert<'players'>[] = players.map(player => ({
-      teamId,
-      userId,
-      importId: Number(player.id),
+      team_id: teamId,
+      user_id: userId,
+      import_id: Number(player.id),
       name: player.name,
       nationality: player.nationality,
       pos: player.pos,
-      secPos: player.secPos,
+      sec_pos: player.secPos,
       ovr: player.ovr,
       value: player.value,
-      birthYear: player.birthYear,
+      birth_year: player.birthYear,
       status: player.status,
       youth: player.youth,
-      kitNo: player.kitNo,
+      kit_no: player.kitNo,
       wage: player.status ? player.contracts[player.contracts.length - 1]?.wage : null,
-      contractEndsOn: player.status ? player.contracts[player.contracts.length - 1]?.endedOn : null,
-      histories: player.histories.map(history => ({
-        date: history.recordedOn,
-        ovr: history.ovr,
-        value: history.value,
-      })),
+      contract_ends_on: player.status ? player.contracts[player.contracts.length - 1]?.endedOn : null,
+      histories: player.histories.reduce((histories: Record<string, { ovr: number; value: number }>, history) => ({
+        ...histories,
+        [history.recordedOn]: {
+          ovr: history.ovr,
+          value: history.value,
+        }
+      }), {}),
       contracts: player.contracts.map(contract => ({
-        signedOn: contract.signedOn,
-        startedOn: contract.startedOn,
-        endedOn: contract.endedOn,
+        signed_on: contract.signedOn,
+        started_on: contract.startedOn,
+        ended_on: contract.endedOn,
         wage: contract.wage,
-        signingBonus: contract.signingBonus,
-        releaseClause: contract.releaseClause,
-        performanceBonus: contract.performanceBonus,
-        bonusReq: contract.bonusReq,
-        bonusReqType: contract.bonusReqType,
+        signing_bonus: contract.signingBonus,
+        release_clause: contract.releaseClause,
+        performance_bonus: contract.performanceBonus,
+        bonus_req: contract.bonusReq,
+        bonus_req_type: contract.bonusReqType,
         conclusion: contract.conclusion,
       })),
       injuries: player.injuries.map(injury => ({
-        startedOn: injury.startedOn,
-        endedOn: injury.endedOn,
+        started_on: injury.startedOn,
+        ended_on: injury.endedOn,
         description: injury.description,
       })),
       loans: player.loans.map(loan => ({
-        signedOn: loan.signedOn,
-        startedOn: loan.startedOn,
-        endedOn: loan.endedOn,
+        signed_on: loan.signedOn,
+        started_on: loan.startedOn,
+        ended_on: loan.endedOn,
         origin: loan.origin,
         destination: loan.destination,
-        wagePercentage: loan.wagePercentage,
-        transferFee: loan.transferFee,
-        addonClause: loan.addonClause,
+        wage_percentage: loan.wagePercentage,
+        transfer_fee: loan.transferFee,
+        addon_clause: loan.addonClause,
       })),
       transfers: player.transfers.map(transfer => ({
-        signedOn: transfer.signedOn,
-        movedOn: transfer.movedOn,
+        signed_on: transfer.signedOn,
+        moved_on: transfer.movedOn,
         origin: transfer.origin,
         destination: transfer.destination,
         fee: transfer.fee,
-        addonClause: transfer.addonClause,
+        addon_clause: transfer.addonClause,
       }))
     }))
     const { error: playerInsertError } = await supabase.from('players').insert(playerInsertData)
@@ -198,17 +200,17 @@ function ImportTeamPage() {
 
     // Create Player id mapping
     const playerIds = await supabase.from('players')
-      .select('id, importId')
-      .eq('teamId', teamId)
-      .not('importId', 'is', null)
+      .select('id, import_id')
+      .eq('team_id', teamId)
+      .not('import_id', 'is', null)
     for (const player of playerIds.data ?? []) {
-      idMap.current.player[player.importId!] = player.id
+      idMap.current.player[player.import_id!] = player.id
     }
 
     // Create Squads
     const squadInsertData: TablesInsert<'squads'>[] = squads.map(squad => ({
-      teamId,
-      userId,
+      team_id: teamId,
+      user_id: userId,
       name: squad.name,
       formation: squad.squadPlayers.reduce((formation: Record<string, number>, item) => {
         formation[item.pos] = idMap.current.player[item.playerId]
@@ -224,8 +226,8 @@ function ImportTeamPage() {
 
     // Create Competitions
     const competitionInsertData: TablesInsert<'competitions'>[] = competitions.map(competition => ({
-      teamId,
-      userId,
+      team_id: teamId,
+      user_id: userId,
       name: competition.name,
       season: competition.season,
       champion: competition.champion,
@@ -242,11 +244,11 @@ function ImportTeamPage() {
           pts: row.points,
         })),
         fixtures: stage.fixtures.map(fixture => ({
-          homeTeam: fixture.homeTeam,
-          awayTeam: fixture.awayTeam,
+          home_team: fixture.homeTeam,
+          away_team: fixture.awayTeam,
           legs: fixture.legs.map(leg => ({
-            homeScore: leg.homeScore,
-            awayScore: leg.awayScore,
+            home_score: leg.homeScore,
+            away_score: leg.awayScore,
           })),
         })),
       })),
@@ -260,38 +262,38 @@ function ImportTeamPage() {
 
     // Create Matches
     const matchInsertData: TablesInsert<'matches'>[] = matches.map(match => ({
-      teamId,
-      userId,
-      importId: Number(match.id),
-      homeTeam: match.home,
-      awayTeam: match.away,
+      team_id: teamId,
+      user_id: userId,
+      import_id: Number(match.id),
+      home_team: match.home,
+      away_team: match.away,
       season: match.season,
       competition: match.competition,
       stage: match.stage,
-      playedOn: match.playedOn,
-      homeScore: match.homeScore,
-      awayScore: match.awayScore,
-      homeXg: match.homeXg,
-      awayXg: match.awayXg,
-      homePossession: match.homePossession,
-      awayPossession: match.awayPossession,
-      homePenaltyScore: match.penaltyShootout?.homeScore,
-      awayPenaltyScore: match.penaltyShootout?.awayScore,
-      extraTime: match.extraTime,
+      played_on: match.playedOn,
+      home_score: match.homeScore,
+      away_score: match.awayScore,
+      home_xg: match.homeXg,
+      away_xg: match.awayXg,
+      home_possession: match.homePossession,
+      away_possession: match.awayPossession,
+      home_penalty_score: match.penaltyShootout?.homeScore,
+      away_penalty_score: match.penaltyShootout?.awayScore,
+      extra_time: match.extraTime,
       friendly: false,
       goals: match.goals.map(goal => ({
         minute: goal.minute,
-        playerName: goal.playerName,
-        assistedBy: goal.assistedBy,
+        player_name: goal.playerName,
+        assisted_by: goal.assistedBy,
         home: goal.home,
-        setPiece: goal.setPiece,
-        ownGoal: goal.ownGoal,
+        set_piece: goal.setPiece,
+        own_goal: goal.ownGoal,
       })),
       bookings: match.bookings.map(booking => ({
         minute: booking.minute,
-        playerName: booking.playerName,
+        player_name: booking.playerName,
         home: booking.home,
-        redCard: booking.redCard,
+        red_card: booking.redCard,
       })),
     }))
     const { error: matchInsertError } = await supabase.from('matches').insert(matchInsertData)
@@ -307,12 +309,12 @@ function ImportTeamPage() {
         if (goal.playerId && !goal.ownGoal) {
           capStats.current[goal.playerId] = capStats.current[goal.playerId] || {}
           capStats.current[goal.playerId][match.id] = capStats.current[goal.playerId][match.id] || {}
-          capStats.current[goal.playerId][match.id].numGoals = (capStats.current[goal.playerId][match.id].numGoals || 0) + 1
+          capStats.current[goal.playerId][match.id].num_goals = (capStats.current[goal.playerId][match.id].num_goals || 0) + 1
         }
         if (goal.assistId) {
           capStats.current[goal.assistId] = capStats.current[goal.assistId] || {}
           capStats.current[goal.assistId][match.id] = capStats.current[goal.assistId][match.id] || {}
-          capStats.current[goal.assistId][match.id].numAssists = (capStats.current[goal.assistId][match.id].numAssists || 0) + 1
+          capStats.current[goal.assistId][match.id].num_assists = (capStats.current[goal.assistId][match.id].num_assists || 0) + 1
         }
       }
       for (const booking of match.bookings) {
@@ -320,9 +322,9 @@ function ImportTeamPage() {
           capStats.current[booking.playerId] = capStats.current[booking.playerId] || {}
           capStats.current[booking.playerId][match.id] = capStats.current[booking.playerId][match.id] || {}
           if (booking.redCard) {
-            capStats.current[booking.playerId][match.id].numRedCards = (capStats.current[booking.playerId][match.id].numRedCards || 0) + 1
+            capStats.current[booking.playerId][match.id].num_red_cards = (capStats.current[booking.playerId][match.id].num_red_cards || 0) + 1
           } else {
-            capStats.current[booking.playerId][match.id].numYellowCards = (capStats.current[booking.playerId][match.id].numYellowCards || 0) + 1
+            capStats.current[booking.playerId][match.id].num_yellow_cards = (capStats.current[booking.playerId][match.id].num_yellow_cards || 0) + 1
           }
         }
       }
@@ -331,17 +333,17 @@ function ImportTeamPage() {
       for (const cap of match.caps) {
         capStats.current[cap.playerId] = capStats.current[cap.playerId] || {}
         capStats.current[cap.playerId][match.id] = capStats.current[cap.playerId][match.id] || {}
-        capStats.current[cap.playerId][match.id].cleanSheet = cleanSheet
+        capStats.current[cap.playerId][match.id].clean_sheet = cleanSheet
       }
     }
 
     // Create Match id mapping
     const matchIds = await supabase.from('matches')
-      .select('id, importId')
-      .eq('teamId', teamId)
-      .not('importId', 'is', null)
+      .select('id, import_id')
+      .eq('team_id', teamId)
+      .not('import_id', 'is', null)
     for (const match of matchIds.data ?? []) {
-      idMap.current.match[match.importId!] = match.id
+      idMap.current.match[match.import_id!] = match.id
     }
 
     // Create Appearances

@@ -9,15 +9,12 @@ export function TeamForm({ record }: { record?: Tables<'teams'> }) {
     initialValues: {
       userId: session?.user?.id,
       name: record?.name ?? '',
-      startedOn: record?.startedOn ?? dayjs().format('YYYY-MM-DD'),
-      currentlyOn: record?.currentlyOn ?? dayjs().format('YYYY-MM-DD'),
-      managerName: record?.managerName ?? '',
+      started_on: record?.started_on ?? dayjs().format('YYYY-MM-DD'),
+      currently_on: record?.currently_on ?? dayjs().format('YYYY-MM-DD'),
+      manager_name: record?.manager_name ?? '',
       game: record?.game ??'',
       currency: record?.currency ?? '$',
     },
-    onValuesChange: (values) => {
-      console.log(values)
-    }
   })
   form.watch('startedOn', ({ value }) => {
     form.setFieldValue('currentlyOn', value)
@@ -26,8 +23,6 @@ export function TeamForm({ record }: { record?: Tables<'teams'> }) {
   const supabase = useAtomValue(supabaseAtom)
   const navigate = useNavigate()
   const handleSubmit = useCallback(async (values: typeof form.values) => {
-    console.log(values)
-
     const { data, error } = await supabase.from('teams').upsert({ id: record?.id, ...values }).select()
     if (data) {
       navigate({ to: `/teams/${data[0].id}` })
@@ -48,7 +43,7 @@ export function TeamForm({ record }: { record?: Tables<'teams'> }) {
       <TextInput
         label="Manager Name"
         mb="xs"
-        {...form.getInputProps('managerName')}
+        {...form.getInputProps('manager_name')}
       />
       <TextInput
         label="Game"
@@ -60,14 +55,14 @@ export function TeamForm({ record }: { record?: Tables<'teams'> }) {
         required
         firstDayOfWeek={0}
         mb="xs"
-        {...form.getInputProps('startedOn')}
+        {...form.getInputProps('started_on')}
       />
       <DatePickerInput
         label="Current Date"
         required
         firstDayOfWeek={0}
         mb="xs"
-        {...form.getInputProps('currentlyOn')}
+        {...form.getInputProps('currently_on')}
       />
       <TextInput
         label="Currency"

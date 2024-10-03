@@ -11,90 +11,90 @@ export type Database = {
     Tables: {
       appearances: {
         Row: {
-          cleanSheet: boolean
+          clean_sheet: boolean
           created_at: string
           id: number
-          importId: number | null
+          import_id: number | null
           injured: boolean
-          matchId: number | null
-          nextId: number | null
-          numAssists: number
-          numGoals: number
-          numRedCards: number
-          numYellowCards: number
+          match_id: number | null
+          next_id: number | null
+          num_assists: number
+          num_goals: number
+          num_red_cards: number
+          num_yellow_cards: number
           ovr: number
-          playerId: number | null
+          player_id: number | null
           pos: string
           rating: number | null
-          startMinute: number
-          stopMinute: number
-          userId: string
+          start_minute: number
+          stop_minute: number
+          user_id: string
         }
         Insert: {
-          cleanSheet?: boolean
+          clean_sheet?: boolean
           created_at?: string
           id?: number
-          importId?: number | null
+          import_id?: number | null
           injured?: boolean
-          matchId?: number | null
-          nextId?: number | null
-          numAssists?: number
-          numGoals?: number
-          numRedCards?: number
-          numYellowCards?: number
+          match_id?: number | null
+          next_id?: number | null
+          num_assists?: number
+          num_goals?: number
+          num_red_cards?: number
+          num_yellow_cards?: number
           ovr: number
-          playerId?: number | null
+          player_id?: number | null
           pos: string
           rating?: number | null
-          startMinute?: number
-          stopMinute?: number
-          userId?: string
+          start_minute?: number
+          stop_minute?: number
+          user_id?: string
         }
         Update: {
-          cleanSheet?: boolean
+          clean_sheet?: boolean
           created_at?: string
           id?: number
-          importId?: number | null
+          import_id?: number | null
           injured?: boolean
-          matchId?: number | null
-          nextId?: number | null
-          numAssists?: number
-          numGoals?: number
-          numRedCards?: number
-          numYellowCards?: number
+          match_id?: number | null
+          next_id?: number | null
+          num_assists?: number
+          num_goals?: number
+          num_red_cards?: number
+          num_yellow_cards?: number
           ovr?: number
-          playerId?: number | null
+          player_id?: number | null
           pos?: string
           rating?: number | null
-          startMinute?: number
-          stopMinute?: number
-          userId?: string
+          start_minute?: number
+          stop_minute?: number
+          user_id?: string
         }
         Relationships: [
           {
             foreignKeyName: "performances_matchId_fkey"
-            columns: ["matchId"]
+            columns: ["match_id"]
             isOneToOne: false
             referencedRelation: "matches"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "performances_nextId_fkey"
-            columns: ["nextId"]
+            columns: ["next_id"]
             isOneToOne: false
             referencedRelation: "appearances"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "performances_playerId_fkey"
-            columns: ["playerId"]
+            columns: ["player_id"]
             isOneToOne: false
             referencedRelation: "players"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "performances_userId_fkey"
-            columns: ["userId"]
+            columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
@@ -109,8 +109,8 @@ export type Database = {
           name: string
           season: number
           stages: Json | null
-          teamId: number
-          userId: string
+          team_id: number
+          user_id: string
         }
         Insert: {
           champion?: string | null
@@ -119,8 +119,8 @@ export type Database = {
           name: string
           season: number
           stages?: Json | null
-          teamId: number
-          userId?: string
+          team_id: number
+          user_id?: string
         }
         Update: {
           champion?: string | null
@@ -129,20 +129,20 @@ export type Database = {
           name?: string
           season?: number
           stages?: Json | null
-          teamId?: number
-          userId?: string
+          team_id?: number
+          user_id?: string
         }
         Relationships: [
           {
             foreignKeyName: "competitions_teamId_fkey"
-            columns: ["teamId"]
+            columns: ["team_id"]
             isOneToOne: false
             referencedRelation: "teams"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "competitions_userId_fkey"
-            columns: ["userId"]
+            columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
@@ -151,91 +151,91 @@ export type Database = {
       }
       matches: {
         Row: {
-          awayPenaltyScore: number | null
-          awayPossession: number | null
-          awayScore: number
-          awayTeam: string
-          awayXg: number | null
+          away_penalty_score: number | null
+          away_possession: number | null
+          away_score: number
+          away_team: string
+          away_xg: number | null
           bookings: Json | null
           competition: string | null
           created_at: string
-          extraTime: boolean
+          extra_time: boolean
           friendly: boolean
           goals: Json | null
-          homePenaltyScore: number | null
-          homePossession: number | null
-          homeScore: number
-          homeTeam: string
-          homeXg: number | null
+          home_penalty_score: number | null
+          home_possession: number | null
+          home_score: number
+          home_team: string
+          home_xg: number | null
           id: number
-          importId: number | null
-          playedOn: string
+          import_id: number | null
+          played_on: string
           season: number | null
           stage: string | null
-          teamId: number
-          userId: string
+          team_id: number
+          user_id: string
         }
         Insert: {
-          awayPenaltyScore?: number | null
-          awayPossession?: number | null
-          awayScore?: number
-          awayTeam: string
-          awayXg?: number | null
+          away_penalty_score?: number | null
+          away_possession?: number | null
+          away_score?: number
+          away_team: string
+          away_xg?: number | null
           bookings?: Json | null
           competition?: string | null
           created_at?: string
-          extraTime?: boolean
+          extra_time?: boolean
           friendly?: boolean
           goals?: Json | null
-          homePenaltyScore?: number | null
-          homePossession?: number | null
-          homeScore?: number
-          homeTeam: string
-          homeXg?: number | null
+          home_penalty_score?: number | null
+          home_possession?: number | null
+          home_score?: number
+          home_team: string
+          home_xg?: number | null
           id?: number
-          importId?: number | null
-          playedOn: string
+          import_id?: number | null
+          played_on: string
           season?: number | null
           stage?: string | null
-          teamId: number
-          userId?: string
+          team_id: number
+          user_id?: string
         }
         Update: {
-          awayPenaltyScore?: number | null
-          awayPossession?: number | null
-          awayScore?: number
-          awayTeam?: string
-          awayXg?: number | null
+          away_penalty_score?: number | null
+          away_possession?: number | null
+          away_score?: number
+          away_team?: string
+          away_xg?: number | null
           bookings?: Json | null
           competition?: string | null
           created_at?: string
-          extraTime?: boolean
+          extra_time?: boolean
           friendly?: boolean
           goals?: Json | null
-          homePenaltyScore?: number | null
-          homePossession?: number | null
-          homeScore?: number
-          homeTeam?: string
-          homeXg?: number | null
+          home_penalty_score?: number | null
+          home_possession?: number | null
+          home_score?: number
+          home_team?: string
+          home_xg?: number | null
           id?: number
-          importId?: number | null
-          playedOn?: string
+          import_id?: number | null
+          played_on?: string
           season?: number | null
           stage?: string | null
-          teamId?: number
-          userId?: string
+          team_id?: number
+          user_id?: string
         }
         Relationships: [
           {
             foreignKeyName: "matches_teamId_fkey"
-            columns: ["teamId"]
+            columns: ["team_id"]
             isOneToOne: false
             referencedRelation: "teams"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "matches_userId_fkey"
-            columns: ["userId"]
+            columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
@@ -244,73 +244,76 @@ export type Database = {
       }
       players: {
         Row: {
-          birthYear: number | null
-          contractEndsOn: string | null
+          birth_year: number | null
+          contract_ends_on: string | null
           contracts: Json | null
           created_at: string
           histories: Json | null
           id: number
-          importId: number | null
+          import_id: number | null
           injuries: Json | null
-          kitNo: number | null
+          kit_no: number | null
           loans: Json | null
           name: string
           nationality: string | null
           ovr: number
           pos: string
-          secPos: string[] | null
+          pos_order: number | null
+          sec_pos: string[] | null
           status: string | null
-          teamId: number
+          team_id: number
           transfers: Json | null
-          userId: string
+          user_id: string
           value: number
           wage: number | null
           youth: boolean
         }
         Insert: {
-          birthYear?: number | null
-          contractEndsOn?: string | null
+          birth_year?: number | null
+          contract_ends_on?: string | null
           contracts?: Json | null
           created_at?: string
           histories?: Json | null
           id?: number
-          importId?: number | null
+          import_id?: number | null
           injuries?: Json | null
-          kitNo?: number | null
+          kit_no?: number | null
           loans?: Json | null
           name: string
           nationality?: string | null
           ovr: number
           pos: string
-          secPos?: string[] | null
+          pos_order?: number | null
+          sec_pos?: string[] | null
           status?: string | null
-          teamId: number
+          team_id: number
           transfers?: Json | null
-          userId?: string
+          user_id?: string
           value: number
           wage?: number | null
           youth?: boolean
         }
         Update: {
-          birthYear?: number | null
-          contractEndsOn?: string | null
+          birth_year?: number | null
+          contract_ends_on?: string | null
           contracts?: Json | null
           created_at?: string
           histories?: Json | null
           id?: number
-          importId?: number | null
+          import_id?: number | null
           injuries?: Json | null
-          kitNo?: number | null
+          kit_no?: number | null
           loans?: Json | null
           name?: string
           nationality?: string | null
           ovr?: number
           pos?: string
-          secPos?: string[] | null
+          pos_order?: number | null
+          sec_pos?: string[] | null
           status?: string | null
-          teamId?: number
+          team_id?: number
           transfers?: Json | null
-          userId?: string
+          user_id?: string
           value?: number
           wage?: number | null
           youth?: boolean
@@ -318,14 +321,14 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "players_teamId_fkey"
-            columns: ["teamId"]
+            columns: ["team_id"]
             isOneToOne: false
             referencedRelation: "teams"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "players_userId_fkey"
-            columns: ["userId"]
+            columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
@@ -338,36 +341,36 @@ export type Database = {
           formation: Record<string, number>
           id: number
           name: string
-          teamId: number | null
-          userId: string
+          team_id: number | null
+          user_id: string
         }
         Insert: {
           created_at?: string
           formation: Record<string, number>
           id?: number
           name: string
-          teamId?: number | null
-          userId?: string
+          team_id?: number | null
+          user_id?: string
         }
         Update: {
           created_at?: string
           formation?: Record<string, number>
           id?: number
           name?: string
-          teamId?: number | null
-          userId?: string
+          team_id?: number | null
+          user_id?: string
         }
         Relationships: [
           {
             foreignKeyName: "squads_teamId_fkey"
-            columns: ["teamId"]
+            columns: ["team_id"]
             isOneToOne: false
             referencedRelation: "teams"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "squads_userId_fkey"
-            columns: ["userId"]
+            columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
@@ -376,55 +379,55 @@ export type Database = {
       }
       teams: {
         Row: {
-          badgePath: string | null
+          badge_path: string | null
           created_at: string
           currency: string
-          currentlyOn: string
+          currently_on: string
           game: string | null
           id: number
-          managerName: string | null
+          manager_name: string | null
           name: string
-          previousId: number | null
-          startedOn: string
-          userId: string
+          previous_id: number | null
+          started_on: string
+          user_id: string
         }
         Insert: {
-          badgePath?: string | null
+          badge_path?: string | null
           created_at?: string
           currency?: string
-          currentlyOn: string
+          currently_on: string
           game?: string | null
           id?: number
-          managerName?: string | null
+          manager_name?: string | null
           name: string
-          previousId?: number | null
-          startedOn: string
-          userId?: string
+          previous_id?: number | null
+          started_on: string
+          user_id?: string
         }
         Update: {
-          badgePath?: string | null
+          badge_path?: string | null
           created_at?: string
           currency?: string
-          currentlyOn?: string
+          currently_on?: string
           game?: string | null
           id?: number
-          managerName?: string | null
+          manager_name?: string | null
           name?: string
-          previousId?: number | null
-          startedOn?: string
-          userId?: string
+          previous_id?: number | null
+          started_on?: string
+          user_id?: string
         }
         Relationships: [
           {
             foreignKeyName: "teams_previousId_fkey"
-            columns: ["previousId"]
+            columns: ["previous_id"]
             isOneToOne: false
             referencedRelation: "teams"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "teams_userId_fkey"
-            columns: ["userId"]
+            columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]

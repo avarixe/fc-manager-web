@@ -17,11 +17,11 @@ interface Competition extends Tables<'competitions'> {
       pts: number;
     }[];
     fixtures: {
-      homeTeam: string;
-      awayTeam: string;
+      home_team: string;
+      away_team: string;
       legs: {
-        homeScore: string;
-        awayScore: string;
+        home_score: string;
+        away_score: string;
       }[];
     }[];
   }[]
@@ -51,7 +51,7 @@ function CompetitionPage() {
       const { data, error } = await supabase
         .from('competitions')
         .select()
-        .eq('teamId', teamId)
+        .eq('team_id', teamId)
         .eq('id', id)
         .single()
       if (error) {
@@ -468,7 +468,7 @@ const StageFixtures: React.FC<{
   }
 
   const onClickAddFixture = () => {
-    onChange([...fixtures, { homeTeam: '', awayTeam: '', legs: [{ homeScore: '', awayScore: '' }] }])
+    onChange([...fixtures, { home_team: '', away_team: '', legs: [{ home_score: '', away_score: '' }] }])
   }
 
   const onClickRemoveFixture = () => {
@@ -517,11 +517,11 @@ const StageFixtureRow: React.FC<{
 }> = ({ fixture, isEditing, onChange }) => {
   const form = useForm({
     initialValues: {
-      homeTeam: fixture.homeTeam ?? '',
-      awayTeam: fixture.awayTeam ?? '',
+      home_team: fixture.home_team ?? '',
+      away_team: fixture.away_team ?? '',
       legs: fixture.legs.map(leg => ({
-        homeScore: leg.homeScore ?? '',
-        awayScore: leg.awayScore ?? ''
+        home_score: leg.home_score ?? '',
+        away_score: leg.away_score ?? ''
       }))
     },
     onValuesChange: (values) => {
@@ -540,11 +540,11 @@ const StageFixtureRow: React.FC<{
 
   useEffect(() => {
     form.setValues({
-      homeTeam: fixture.homeTeam ?? '',
-      awayTeam: fixture.awayTeam ?? '',
+      home_team: fixture.home_team ?? '',
+      away_team: fixture.away_team ?? '',
       legs: fixture.legs.map(leg => ({
-        homeScore: leg.homeScore ?? '',
-        awayScore: leg.awayScore ?? ''
+        home_score: leg.home_score ?? '',
+        away_score: leg.away_score ?? ''
       }))
     })
     form.resetDirty()
@@ -554,7 +554,7 @@ const StageFixtureRow: React.FC<{
   const onClickAddLeg = () => {
     form.setFieldValue('legs', [
       ...form.values.legs,
-      { homeScore: '', awayScore: '' }
+      { home_score: '', away_score: '' }
     ])
   }
 
@@ -568,7 +568,7 @@ const StageFixtureRow: React.FC<{
     <Table.Tr>
       <Table.Td align="right">
         <TextInput
-          {...form.getInputProps('homeTeam')}
+          {...form.getInputProps('home_team')}
           size="xs"
           variant={isEditing ? 'default' : 'unstyled'}
           readOnly={!isEditing}
@@ -577,10 +577,10 @@ const StageFixtureRow: React.FC<{
       </Table.Td>
       <Table.Td align="center">
         {form.values.legs.map((_leg, k) => (
-          <Group key={k} justify="center" mt={k === 0 ? undefined : 'xs'}>
+          <Group key={k} justify="center" mt={k === 0 || !isEditing ? undefined : 'xs'}>
             <TextInput
-              {...form.getInputProps(`legs.${k}.homeScore`)}
-              key={form.key(`legs.${k}.homeScore`)}
+              {...form.getInputProps(`legs.${k}.home_score`)}
+              key={form.key(`legs.${k}.home_score`)}
               size="xs"
               variant={isEditing ? 'default' : 'unstyled'}
               readOnly={!isEditing}
@@ -588,8 +588,8 @@ const StageFixtureRow: React.FC<{
             />
             <MText size="xs">-</MText>
             <TextInput
-              {...form.getInputProps(`legs.${k}.awayScore`)}
-              key={form.key(`legs.${k}.awayScore`)}
+              {...form.getInputProps(`legs.${k}.away_score`)}
+              key={form.key(`legs.${k}.away_score`)}
               size="xs"
               variant={isEditing ? 'default' : 'unstyled'}
               readOnly={!isEditing}
@@ -615,7 +615,7 @@ const StageFixtureRow: React.FC<{
       </Table.Td>
       <Table.Td align="left">
         <TextInput
-          {...form.getInputProps('awayTeam')}
+          {...form.getInputProps('away_team')}
           size="xs"
           variant={isEditing ? 'default' : 'unstyled'}
           readOnly={!isEditing}

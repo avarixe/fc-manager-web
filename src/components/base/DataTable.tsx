@@ -62,8 +62,6 @@ export const DataTable = <TData extends RowData>({
     }
   }, [setTableState, tableState.sorting?.id])
 
-  console.log(tableState)
-
   return (
     <Table.ScrollContainer minWidth={800}>
       <Table {...props}>

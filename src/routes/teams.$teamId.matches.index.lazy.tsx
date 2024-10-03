@@ -1,16 +1,16 @@
 import { Tables } from '@/database-generated.types'
-import { Button, Stack, Title } from '@mantine/core'
+import { Box, Button, Stack, Title } from '@mantine/core'
 
 type Match = Pick<
   Tables<'matches'>,
   | 'id'
-  | 'homeTeam'
-  | 'awayTeam'
-  | 'homeScore'
-  | 'awayScore'
-  | 'homePenaltyScore'
-  | 'awayPenaltyScore'
-  | 'playedOn'
+  | 'home_team'
+  | 'away_team'
+  | 'home_score'
+  | 'away_score'
+  | 'home_penalty_score'
+  | 'away_penalty_score'
+  | 'played_on'
   | 'competition'
   | 'season'
   | 'stage'
@@ -31,7 +31,7 @@ function MatchesPage() {
     pageSize: 10,
     rowCount: 0,
     sorting: {
-      id: 'playedOn',
+      id: 'played_on',
       desc: true,
     }
   })
@@ -40,13 +40,13 @@ function MatchesPage() {
       const pageQuery = supabase
         .from('matches')
         .select(
-          'id, homeTeam, awayTeam, homeScore, awayScore, playedOn, competition, season, stage, homePenaltyScore, awayPenaltyScore',
+          'id, home_team, away_team, home_score, away_score, played_on, competition, season, stage, home_penalty_score, away_penalty_score',
         )
         .range(
           tableState.pageSize * tableState.pageIndex,
           tableState.pageSize * (tableState.pageIndex + 1),
         )
-        .eq('teamId', teamId)
+        .eq('team_id', teamId)
 
       // TODO: filtering
 
@@ -59,7 +59,7 @@ function MatchesPage() {
       const { count } = await supabase
         .from('matches')
         .select('id', { count: 'exact', head: true })
-        .eq('teamId', teamId)
+        .eq('team_id', teamId)
       const { data, error } = await pageQuery
       if (error) {
         console.error(error)
@@ -83,15 +83,35 @@ function MatchesPage() {
         header: 'Match',
         cell: ({ row }) => {
           const match = row.original
+          let scoreColor: string | undefined
+          if (match.home_score === match.away_score) {
+            scoreColor = 'yellow'
+          } else if (team?.name === match.home_team) {
+            if (match.home_score > match.away_score) {
+              scoreColor = 'green'
+            } else if (match.home_score < match.away_score) {
+              scoreColor = 'red'
+            } else {
+              scoreColor = 'yellow'
+            }
+          } else if (team?.name === match.away_team) {
+            if (match.home_score < match.away_score) {
+              scoreColor = 'green'
+            } else if (match.home_score > match.away_score) {
+              scoreColor = 'red'
+            } else {
+              scoreColor = 'yellow'
+            }
+          }
           return (
             <>
-              <div>{match.homeTeam} v {match.awayTeam}</div>
-              <div>
-                {match.homeScore}
-                {match.homePenaltyScore ? ` (${match.homePenaltyScore})` : ''}-
-                {match.awayScore}
-                {match.awayPenaltyScore ? ` (${match.awayPenaltyScore})` : ''}
-              </div>
+              <div>{match.home_team} v {match.away_team}</div>
+              <Box c={scoreColor}>
+                {match.home_score}
+                {match.home_penalty_score ? ` (${match.home_penalty_score})` : ''}-
+                {match.away_score}
+                {match.away_penalty_score ? ` (${match.away_penalty_score})` : ''}
+              </Box>
             </>
           )
         },
@@ -109,7 +129,7 @@ function MatchesPage() {
           )
         },
       }),
-      columnHelper.accessor('playedOn', {
+      columnHelper.accessor('played_on', {
         header: 'Date Played',
         cell: (info) => {
           const value = info.getValue()
@@ -135,7 +155,7 @@ function MatchesPage() {
         meta: { align: 'center' },
       }),
     ],
-    [columnHelper, teamId],
+    [columnHelper, team?.name, teamId],
   )
 
   if (!team) {
