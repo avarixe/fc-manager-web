@@ -6,6 +6,7 @@ import router from "./router";
 
 import '@mantine/core/styles.css'
 import '@mantine/dates/styles.css'
+import '@mantine/charts/styles.css'
 import 'virtual:uno.css'
 import { MantineProvider } from "@mantine/core";
 import { ModalsProvider } from "@mantine/modals";

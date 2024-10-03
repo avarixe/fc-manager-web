@@ -248,7 +248,7 @@ export type Database = {
           contract_ends_on: string | null
           contracts: Json | null
           created_at: string
-          histories: Json | null
+          history: Json | null
           id: number
           import_id: number | null
           injuries: Json | null
@@ -273,7 +273,7 @@ export type Database = {
           contract_ends_on?: string | null
           contracts?: Json | null
           created_at?: string
-          histories?: Json | null
+          history?: Json | null
           id?: number
           import_id?: number | null
           injuries?: Json | null
@@ -298,7 +298,7 @@ export type Database = {
           contract_ends_on?: string | null
           contracts?: Json | null
           created_at?: string
-          histories?: Json | null
+          history?: Json | null
           id?: number
           import_id?: number | null
           injuries?: Json | null
@@ -439,7 +439,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_player_stats: {
+        Args: {
+          player_ids: Json
+        }
+        Returns: Json
+      }
     }
     Enums: {
       [_ in never]: never

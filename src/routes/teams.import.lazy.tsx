@@ -148,11 +148,11 @@ function ImportTeamPage() {
       kit_no: player.kitNo,
       wage: player.status ? player.contracts[player.contracts.length - 1]?.wage : null,
       contract_ends_on: player.status ? player.contracts[player.contracts.length - 1]?.endedOn : null,
-      histories: player.histories.reduce((histories: Record<string, { ovr: number; value: number }>, history) => ({
-        ...histories,
-        [history.recordedOn]: {
-          ovr: history.ovr,
-          value: history.value,
+      history: player.histories.reduce((items: Record<string, { ovr: number; value: number }>, item) => ({
+        ...items,
+        [item.recordedOn]: {
+          ovr: item.ovr,
+          value: item.value,
         }
       }), {}),
       contracts: player.contracts.map(contract => ({
@@ -304,12 +304,14 @@ function ImportTeamPage() {
     matchProgress.increment(matchInsertData.length)
 
     // Collate Appearance statistics
+    let numGoals = 0
     for (const match of matches) {
       for (const goal of match.goals) {
         if (goal.playerId && !goal.ownGoal) {
           capStats.current[goal.playerId] = capStats.current[goal.playerId] || {}
           capStats.current[goal.playerId][match.id] = capStats.current[goal.playerId][match.id] || {}
           capStats.current[goal.playerId][match.id].num_goals = (capStats.current[goal.playerId][match.id].num_goals || 0) + 1
+          numGoals++;
         }
         if (goal.assistId) {
           capStats.current[goal.assistId] = capStats.current[goal.assistId] || {}
@@ -336,6 +338,7 @@ function ImportTeamPage() {
         capStats.current[cap.playerId][match.id].clean_sheet = cleanSheet
       }
     }
+    console.log('processed goals: ', numGoals);
 
     // Create Match id mapping
     const matchIds = await supabase.from('matches')
