@@ -78,6 +78,7 @@ const Login = ({ supabase } : { supabase: SupabaseClient }) => {
         providers={['google']}
         onlyThirdPartyProviders
         appearance={{ theme: ThemeSupa }}
+        redirectTo={window.location.href}
       />
     </>
   )
