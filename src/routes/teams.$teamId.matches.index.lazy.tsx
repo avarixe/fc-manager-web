@@ -44,17 +44,16 @@ function MatchesPage() {
         )
         .range(
           tableState.pageSize * tableState.pageIndex,
-          tableState.pageSize * (tableState.pageIndex + 1),
+          tableState.pageSize * (tableState.pageIndex + 1) - 1,
         )
         .eq('team_id', teamId)
 
       // TODO: filtering
 
-      if (tableState.sorting) {
-        pageQuery.order(tableState.sorting.id, {
-          ascending: !tableState.sorting.desc,
-        })
-      }
+      pageQuery.order(tableState.sorting.id, {
+        ascending: !tableState.sorting.desc,
+      })
+      pageQuery.order('id', { ascending: !tableState.sorting.desc })
 
       const { count } = await supabase
         .from('matches')

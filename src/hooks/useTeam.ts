@@ -1,9 +1,11 @@
-export const useTeam = (teamId: string) => {
+export const useTeam = (teamId?: string) => {
   const supabase = useAtomValue(supabaseAtom)
   const [team, setTeam] = useAtom(teamAtom)
 
   useEffect(() => {
     const loadTeam = async () => {
+      if (!teamId) return
+
       const { data, error } = await supabase
         .from('teams')
         .select()

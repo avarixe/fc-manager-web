@@ -63,7 +63,7 @@ function PlayersPage() {
         )
         .range(
           tableState.pageSize * tableState.pageIndex,
-          tableState.pageSize * (tableState.pageIndex + 1)
+          tableState.pageSize * (tableState.pageIndex + 1) - 1
         )
         .eq('team_id', teamId)
       const countQuery = supabase.from('players')
@@ -87,7 +87,6 @@ function PlayersPage() {
           break
       }
 
-      // TODO: sorting
       switch (tableState.sorting?.id) {
         case 'pos':
           pageQuery.order('pos_order', { ascending: !tableState.sorting.desc })
@@ -98,6 +97,7 @@ function PlayersPage() {
         default:
           pageQuery.order(tableState.sorting.id, { ascending: !tableState.sorting.desc })
       }
+      pageQuery.order('id', { ascending: !tableState.sorting.desc })
 
       const { count } = await countQuery
       const { data, error } = await pageQuery

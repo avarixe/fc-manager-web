@@ -1,19 +1,11 @@
 import { Tables } from '@/database-generated.types'
 import { Box, Button, ColorSwatch, Divider, Group, NumberFormatter, Paper, Stack, Title } from '@mantine/core'
 import { AreaChart, ChartTooltipProps, getFilteredChartTooltipPayload } from '@mantine/charts'
+import { Player } from '@/types'
 
 export const Route = createLazyFileRoute('/teams/$teamId/players/$id/')({
   component: PlayerPage,
 })
-
-interface Player extends Tables<'players'>{
-  history: Record<string, { ovr: number; value: number }>
-  contracts: {
-    signed_on: string
-    started_on: string
-    ended_on: string
-  }[]
-}
 
 interface PlayerStats {
   num_matches: number
@@ -120,7 +112,7 @@ function PlayerPage() {
 
       <Group grow>
         <Box ta="center">
-          <Title>{player.kit_no}</Title>
+          <Title>{player.kit_no ?? '-'}</Title>
           <Title order={6}>Kit No</Title>
         </Box>
         <Box ta="center">
@@ -180,6 +172,8 @@ function PlayerPage() {
           </Group>
         </Title>
         <Divider my="xs" />
+
+        <PlayerTimeline player={player} team={team} />
       </Box>
 
       <Box my="lg">
@@ -207,11 +201,11 @@ const PlayerHistoryChart: React.FC<{
       ...data,
     }))
 
-    const lastDate = team.currently_on >= player.contracts[0].ended_on
+    const lastDate = player.status
       ? team.currently_on
-      : player.contracts[0].ended_on
+      : player.contracts[player.contracts.length - 1].ended_on
 
-    if (lastDate !== history[0].date) {
+    if (dayjs(lastDate).valueOf() !== history[history.length - 1].date) {
       history.push({
         date: dayjs(lastDate).valueOf(),
         ovr: history[history.length - 1].ovr,
@@ -219,8 +213,8 @@ const PlayerHistoryChart: React.FC<{
       })
     }
 
-    return history
-  }, [player.contracts, player.history, team.currently_on])
+    return history.slice(0, 28)
+  }, [player.contracts, player.history, player.status, team.currently_on])
 
   return (
     <AreaChart
@@ -256,16 +250,12 @@ const PlayerHistoryChart: React.FC<{
 const PlayerHistoryChartTooltip: React.FC<ChartTooltipProps & { currency: string }> = ({ label, payload, currency }) => {
   if (!payload) return null;
 
-  console.log(getFilteredChartTooltipPayload(payload))
-
-
-
   return (
     <Paper px="md" py="sm" withBorder shadow="md" radius="md">
       <MText fw={500} mb={5}>
         {dayjs(label).format('MMM DD, YYYY')}
         {getFilteredChartTooltipPayload(payload).map((item) => (
-          <Group>
+          <Group key={item.name}>
             <ColorSwatch color={item.color} size={10} />
             <MText size="sm">{item.name === 'ovr' ? 'OVR' : 'Value'}</MText>
             <MText size="sm" ml="auto">

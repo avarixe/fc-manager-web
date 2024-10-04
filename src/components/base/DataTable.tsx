@@ -64,7 +64,7 @@ export const DataTable = <TData extends RowData>({
 
   return (
     <Table.ScrollContainer minWidth={800}>
-      <Table {...props}>
+      <Table highlightOnHover {...props}>
         <Table.Thead>
           {table.getHeaderGroups().map(headerGroup => (
             <Table.Tr key={headerGroup.id}>

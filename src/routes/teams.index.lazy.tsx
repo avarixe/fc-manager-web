@@ -48,7 +48,7 @@ function TeamsPage() {
     const fetchPage = async () => {
       const pageQuery = supabase.from('teams').select().range(
         tableState.pageSize * tableState.pageIndex,
-        tableState.pageSize * (tableState.pageIndex + 1)
+        tableState.pageSize * (tableState.pageIndex + 1) - 1
       )
 
       // TODO: add sorting

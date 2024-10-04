@@ -16,6 +16,7 @@ declare global {
   const MText: typeof import('@mantine/core')['Text']
   const PlayerFlag: typeof import('./src/components/player/PlayerFlag')['PlayerFlag']
   const PlayerStatus: typeof import('./src/components/player/PlayerStatus')['PlayerStatus']
+  const PlayerTimeline: typeof import('./src/components/player/PlayerTimeline')['PlayerTimeline']
   const TeamForm: typeof import('./src/components/team/TeamForm')['TeamForm']
   const assertType: typeof import('./src/utils/assert')['assertType']
   const atom: typeof import('jotai')['atom']
