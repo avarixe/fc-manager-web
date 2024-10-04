@@ -1,0 +1,6 @@
+dist
+auto-imports.d.ts
+src/database-generated.types.ts
+src/routeTree.gen.ts
+pnpm-lock.yaml
+README.md

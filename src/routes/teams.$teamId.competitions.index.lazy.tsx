@@ -1,46 +1,46 @@
-import { Tables } from '@/database-generated.types'
-import { Box, NavLink, Stack, Timeline, Title } from '@mantine/core'
-import { groupBy } from 'lodash-es'
+import { Tables } from "@/database-generated.types";
+import { Box, NavLink, Stack, Timeline, Title } from "@mantine/core";
+import { groupBy } from "lodash-es";
 
 type Competition = Pick<
-  Tables<'competitions'>,
-  'id' | 'name' | 'season' | 'champion'
->
+  Tables<"competitions">,
+  "id" | "name" | "season" | "champion"
+>;
 
-export const Route = createLazyFileRoute('/teams/$teamId/competitions/')({
+export const Route = createLazyFileRoute("/teams/$teamId/competitions/")({
   component: CompetitionsPage,
-})
+});
 
 function CompetitionsPage() {
-  const { teamId } = Route.useParams()
-  const { team, currentSeason, seasonLabel } = useTeam(teamId)
+  const { teamId } = Route.useParams();
+  const { team, currentSeason, seasonLabel } = useTeam(teamId);
 
-  const [competitions, setCompetitions] = useState<Competition[]>([])
-  const supabase = useAtomValue(supabaseAtom)
+  const [competitions, setCompetitions] = useState<Competition[]>([]);
+  const supabase = useAtomValue(supabaseAtom);
   useEffect(() => {
     const fetchCompetitions = async () => {
       const { data, error } = await supabase
-        .from('competitions')
-        .select('id, name, season, champion')
-        .eq('team_id', teamId)
-        .order('id', { ascending: true })
+        .from("competitions")
+        .select("id, name, season, champion")
+        .eq("team_id", teamId)
+        .order("id", { ascending: true });
       if (error) {
-        console.error(error)
+        console.error(error);
       } else {
-        setCompetitions(data)
+        setCompetitions(data);
       }
-    }
+    };
 
-    fetchCompetitions()
-  }, [supabase, teamId])
+    fetchCompetitions();
+  }, [supabase, teamId]);
 
   const competitionsBySeason = useMemo(
-    () => groupBy(competitions, 'season'),
+    () => groupBy(competitions, "season"),
     [competitions],
-  )
+  );
 
   if (!team) {
-    return null
+    return null;
   }
 
   return (
@@ -77,5 +77,5 @@ function CompetitionsPage() {
         ))}
       </Timeline>
     </Stack>
-  )
+  );
 }

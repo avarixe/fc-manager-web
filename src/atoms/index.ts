@@ -1,6 +1,6 @@
 import { createClient, Session, SupabaseClient } from "@supabase/supabase-js";
 import { atom } from "jotai";
-import { Database, Tables } from '@/database-generated.types'
+import { Database, Tables } from "@/database-generated.types";
 
 export const supabaseAtom = atom<SupabaseClient<Database>>(
   createClient<Database>(
@@ -8,15 +8,15 @@ export const supabaseAtom = atom<SupabaseClient<Database>>(
     import.meta.env.VITE_APP_SUPABASE_KEY,
     {
       db: {
-        schema: 'public',
+        schema: "public",
       },
       auth: {
         autoRefreshToken: true,
-      }
-    }
-  )
-)
+      },
+    },
+  ),
+);
 
-export const sessionAtom = atom<Session | null>(null)
+export const sessionAtom = atom<Session | null>(null);
 
-export const teamAtom = atom<Tables<'teams'> | null>(null)
+export const teamAtom = atom<Tables<"teams"> | null>(null);

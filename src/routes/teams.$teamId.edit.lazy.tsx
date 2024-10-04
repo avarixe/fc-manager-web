@@ -1,15 +1,15 @@
-import { Stack, Title } from '@mantine/core'
+import { Stack, Title } from "@mantine/core";
 
-export const Route = createLazyFileRoute('/teams/$teamId/edit')({
+export const Route = createLazyFileRoute("/teams/$teamId/edit")({
   component: EditTeamPage,
-})
+});
 
 function EditTeamPage() {
-  const { teamId } = Route.useParams()
-  const { team } = useTeam(teamId)
+  const { teamId } = Route.useParams();
+  const { team } = useTeam(teamId);
 
   if (!team) {
-    return null
+    return null;
   }
 
   return (
@@ -18,5 +18,5 @@ function EditTeamPage() {
 
       <TeamForm record={team} />
     </Stack>
-  )
+  );
 }

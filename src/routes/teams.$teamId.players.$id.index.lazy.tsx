@@ -1,68 +1,84 @@
-import { Tables } from '@/database-generated.types'
-import { Box, Button, ColorSwatch, Divider, Group, NumberFormatter, Paper, Stack, Title } from '@mantine/core'
-import { AreaChart, ChartTooltipProps, getFilteredChartTooltipPayload } from '@mantine/charts'
-import { Player } from '@/types'
+import { Tables } from "@/database-generated.types";
+import {
+  Box,
+  Button,
+  ColorSwatch,
+  Divider,
+  Group,
+  NumberFormatter,
+  Paper,
+  Stack,
+  Title,
+} from "@mantine/core";
+import {
+  AreaChart,
+  ChartTooltipProps,
+  getFilteredChartTooltipPayload,
+} from "@mantine/charts";
+import { Player } from "@/types";
 
-export const Route = createLazyFileRoute('/teams/$teamId/players/$id/')({
+export const Route = createLazyFileRoute("/teams/$teamId/players/$id/")({
   component: PlayerPage,
-})
+});
 
 interface PlayerStats {
-  num_matches: number
-  num_clean_sheets: number
-  num_goals: number
-  num_assists: number
-  avg_rating: number
+  num_matches: number;
+  num_clean_sheets: number;
+  num_goals: number;
+  num_assists: number;
+  avg_rating: number;
 }
 
 function PlayerPage() {
-  const { teamId, id } = Route.useParams()
-  const { team } = useTeam(teamId)
+  const { teamId, id } = Route.useParams();
+  const { team } = useTeam(teamId);
 
-  const [player, setPlayer] = useState<Player | null>(null)
+  const [player, setPlayer] = useState<Player | null>(null);
   const [stats, setStats] = useState({
     numMatches: 0,
     numCleanSheets: 0,
     numGoals: 0,
     numAssists: 0,
     avgRating: 0,
-  })
-  const supabase = useAtomValue(supabaseAtom)
+  });
+  const supabase = useAtomValue(supabaseAtom);
   useEffect(() => {
     const fetchPlayer = async () => {
-      const { data, error } = await supabase.from('players')
+      const { data, error } = await supabase
+        .from("players")
         .select()
-        .eq('team_id', teamId)
-        .eq('id', id)
-        .single()
+        .eq("team_id", teamId)
+        .eq("id", id)
+        .single();
       if (error) {
-        console.error(error)
+        console.error(error);
       } else {
-        assertType<Player>(data)
-        setPlayer(data)
+        assertType<Player>(data);
+        setPlayer(data);
       }
-    }
+    };
     const fetchStats = async () => {
-      const { data } = await supabase.rpc('get_player_stats', { player_ids: [id] })
+      const { data } = await supabase.rpc("get_player_stats", {
+        player_ids: [id],
+      });
       if (data) {
-        assertType<PlayerStats[]>(data)
+        assertType<PlayerStats[]>(data);
         setStats({
           numMatches: data[0].num_matches,
           numCleanSheets: data[0].num_clean_sheets,
           numGoals: data[0].num_goals,
           numAssists: data[0].num_assists,
           avgRating: data[0].avg_rating,
-        })
+        });
       }
-    }
+    };
 
-
-    fetchPlayer()
-    fetchStats()
-  }, [id, supabase, teamId])
+    fetchPlayer();
+    fetchStats();
+  }, [id, supabase, teamId]);
 
   if (!team || !player) {
-    return null
+    return null;
   }
 
   return (
@@ -70,9 +86,7 @@ function PlayerPage() {
       <Title mb="xl">{player.name}</Title>
 
       <Group>
-        <Button>
-          Edit
-        </Button>
+        <Button>Edit</Button>
 
         <Button color="red" variant="outline" className="ml-auto">
           Delete
@@ -81,7 +95,9 @@ function PlayerPage() {
 
       <Group grow>
         <Box ta="center">
-          <Title>{dayjs(team.currently_on).year() - (player.birth_year ?? 0)}</Title>
+          <Title>
+            {dayjs(team.currently_on).year() - (player.birth_year ?? 0)}
+          </Title>
           <Title order={6}>Age</Title>
         </Box>
         {player.nationality && (
@@ -104,7 +120,7 @@ function PlayerPage() {
         </Box>
         {player.sec_pos?.length && (
           <Box ta="center">
-            <Title>{player.sec_pos.join(', ')}</Title>
+            <Title>{player.sec_pos.join(", ")}</Title>
             <Title order={6}>Secondary Position(s)</Title>
           </Box>
         )}
@@ -112,7 +128,7 @@ function PlayerPage() {
 
       <Group grow>
         <Box ta="center">
-          <Title>{player.kit_no ?? '-'}</Title>
+          <Title>{player.kit_no ?? "-"}</Title>
           <Title order={6}>Kit No</Title>
         </Box>
         <Box ta="center">
@@ -188,33 +204,33 @@ function PlayerPage() {
         <PlayerHistoryChart player={player} team={team} />
       </Box>
     </Stack>
-  )
+  );
 }
 
 const PlayerHistoryChart: React.FC<{
-  player: Player
-  team: Tables<'teams'>
+  player: Player;
+  team: Tables<"teams">;
 }> = ({ player, team }) => {
   const data = useMemo(() => {
     const history = Object.entries(player.history).map(([date, data]) => ({
       date: dayjs(date).valueOf(),
       ...data,
-    }))
+    }));
 
     const lastDate = player.status
       ? team.currently_on
-      : player.contracts[player.contracts.length - 1].ended_on
+      : player.contracts[player.contracts.length - 1].ended_on;
 
     if (dayjs(lastDate).valueOf() !== history[history.length - 1].date) {
       history.push({
         date: dayjs(lastDate).valueOf(),
         ovr: history[history.length - 1].ovr,
         value: history[history.length - 1].value,
-      })
+      });
     }
 
-    return history.slice(0, 28)
-  }, [player.contracts, player.history, player.status, team.currently_on])
+    return history.slice(0, 28);
+  }, [player.contracts, player.history, player.status, team.currently_on]);
 
   return (
     <AreaChart
@@ -223,16 +239,16 @@ const PlayerHistoryChart: React.FC<{
       dataKey="date"
       withRightYAxis
       yAxisLabel="OVR"
-      rightYAxisLabel='Value'
-      valueFormatter={(value) => new Intl.NumberFormat('en-US').format(value)}
+      rightYAxisLabel="Value"
+      valueFormatter={(value) => new Intl.NumberFormat("en-US").format(value)}
       series={[
-        { name: 'ovr', color: 'pink.6' },
-        { name: 'value', color: 'cyan.6', yAxisId: 'right' },
+        { name: "ovr", color: "pink.6" },
+        { name: "value", color: "cyan.6", yAxisId: "right" },
       ]}
       xAxisProps={{
-        scale: 'time',
+        scale: "time",
         domain: [data[0].date, new Date(team.currently_on)],
-        tickFormatter: (date) => dayjs(date).format('MMM YYYY'),
+        tickFormatter: (date) => dayjs(date).format("MMM YYYY"),
       }}
       yAxisProps={{
         domain: [40, 100],
@@ -241,25 +257,35 @@ const PlayerHistoryChart: React.FC<{
         tickFormatter: (value) => shortHandValue(value, team.currency),
       }}
       tooltipProps={{
-        content: ({ label, payload }) => <PlayerHistoryChartTooltip label={label} payload={payload} currency={team.currency} />
+        content: ({ label, payload }) => (
+          <PlayerHistoryChartTooltip
+            label={label}
+            payload={payload}
+            currency={team.currency}
+          />
+        ),
       }}
     />
-  )
-}
+  );
+};
 
-const PlayerHistoryChartTooltip: React.FC<ChartTooltipProps & { currency: string }> = ({ label, payload, currency }) => {
+const PlayerHistoryChartTooltip: React.FC<
+  ChartTooltipProps & { currency: string }
+> = ({ label, payload, currency }) => {
   if (!payload) return null;
 
   return (
     <Paper px="md" py="sm" withBorder shadow="md" radius="md">
       <MText fw={500} mb={5}>
-        {dayjs(label).format('MMM DD, YYYY')}
+        {dayjs(label).format("MMM DD, YYYY")}
         {getFilteredChartTooltipPayload(payload).map((item) => (
           <Group key={item.name}>
             <ColorSwatch color={item.color} size={10} />
-            <MText size="sm">{item.name === 'ovr' ? 'OVR' : 'Value'}</MText>
+            <MText size="sm">{item.name === "ovr" ? "OVR" : "Value"}</MText>
             <MText size="sm" ml="auto">
-              {item.name === 'ovr' ? item.value : (
+              {item.name === "ovr" ? (
+                item.value
+              ) : (
                 <NumberFormatter
                   value={item.value}
                   prefix={currency}
@@ -271,15 +297,15 @@ const PlayerHistoryChartTooltip: React.FC<ChartTooltipProps & { currency: string
         ))}
       </MText>
     </Paper>
-  )
-}
+  );
+};
 
 function shortHandValue(value: number, currency: string) {
   if (value < 1_000) {
-    return `${currency}${value}`
+    return `${currency}${value}`;
   } else if (value < 1_000_000) {
-    return `${currency}${(value / 1_000).toFixed(0)}K`
+    return `${currency}${(value / 1_000).toFixed(0)}K`;
   } else {
-    return `${currency}${(value / 1_000_000).toFixed(0)}M`
+    return `${currency}${(value / 1_000_000).toFixed(0)}M`;
   }
 }

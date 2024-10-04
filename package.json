@@ -8,7 +8,9 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "prepare": "husky && husky install",
+    "precommit": "lint-staged"
   },
   "dependencies": {
     "@mantine/charts": "^7.13.1",
@@ -43,16 +45,26 @@
     "@unocss/preset-icons": "^0.62.3",
     "@vitejs/plugin-react": "^4.3.1",
     "eslint": "^9.9.0",
+    "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-react-hooks": "^5.1.0-rc.0",
     "eslint-plugin-react-refresh": "^0.4.9",
     "globals": "^15.9.0",
+    "husky": "^9.1.6",
+    "lint-staged": "^15.2.10",
     "postcss": "^8.4.47",
     "postcss-preset-mantine": "^1.17.0",
     "postcss-simple-vars": "^7.0.1",
+    "prettier": "^3.3.3",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.0.1",
     "unocss": "^0.62.3",
     "unplugin-auto-import": "^0.18.3",
     "vite": "^5.4.1"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --cache --fix",
+      "prettier --write"
+    ]
   }
 }

@@ -4,28 +4,28 @@ import { RouterProvider } from "@tanstack/react-router";
 import { Provider as JotaiProvider } from "jotai";
 import router from "./router";
 
-import '@mantine/core/styles.css'
-import '@mantine/dates/styles.css'
-import '@mantine/charts/styles.css'
-import 'virtual:uno.css'
+import "@mantine/core/styles.css";
+import "@mantine/dates/styles.css";
+import "@mantine/charts/styles.css";
+import "virtual:uno.css";
 import { MantineProvider } from "@mantine/core";
 import { ModalsProvider } from "@mantine/modals";
 
-import '@tanstack/react-table'
+import "@tanstack/react-table";
 import { RowData } from "@tanstack/react-table";
 
-import duration from 'dayjs/plugin/duration'
-import relativeTime from 'dayjs/plugin/relativeTime'
+import duration from "dayjs/plugin/duration";
+import relativeTime from "dayjs/plugin/relativeTime";
 
-declare module '@tanstack/react-table' {
+declare module "@tanstack/react-table" {
   interface ColumnMeta<TData extends RowData, TValue> {
-    align?: 'start' | 'center' | 'end'
-    sortable?: boolean
+    align?: "start" | "center" | "end";
+    sortable?: boolean;
   }
 }
 
 dayjs.extend(duration);
-dayjs.extend(relativeTime)
+dayjs.extend(relativeTime);
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
@@ -36,5 +36,5 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
         </ModalsProvider>
       </MantineProvider>
     </JotaiProvider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

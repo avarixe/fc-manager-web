@@ -1,10 +1,27 @@
-import { Button, Center, Flex, Group, Pagination, Table, TableProps } from "@mantine/core"
-import { ColumnSort, flexRender, getCoreRowModel, Header, RowData, TableOptions, useReactTable } from "@tanstack/react-table"
+import {
+  Button,
+  Center,
+  Flex,
+  Group,
+  Pagination,
+  Table,
+  TableProps,
+} from "@mantine/core";
+import {
+  ColumnSort,
+  flexRender,
+  getCoreRowModel,
+  Header,
+  RowData,
+  TableOptions,
+  useReactTable,
+} from "@tanstack/react-table";
 
 export interface DataTableProps<TData extends RowData>
-  extends Pick<TableOptions<TData>, 'data' | 'columns'>, Omit<TableProps, 'data'> {
-    tableState: TableState;
-    setTableState: StateSetter<TableState>;
+  extends Pick<TableOptions<TData>, "data" | "columns">,
+    Omit<TableProps, "data"> {
+  tableState: TableState;
+  setTableState: StateSetter<TableState>;
 }
 
 interface TableState {
@@ -25,50 +42,54 @@ export const DataTable = <TData extends RowData>({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-  })
+  });
 
   const totalPages = useMemo(
     () => Math.ceil(tableState.rowCount / tableState.pageSize),
-    [tableState.rowCount, tableState.pageSize]
-  )
+    [tableState.rowCount, tableState.pageSize],
+  );
 
-  const onChangePagination = useCallback((value: number) => {
-      setTableState((prev: TableState) => ({ ...prev, pageIndex: value - 1 }))
+  const onChangePagination = useCallback(
+    (value: number) => {
+      setTableState((prev: TableState) => ({ ...prev, pageIndex: value - 1 }));
     },
-    [setTableState]
-  )
+    [setTableState],
+  );
 
-  const onClickTh = useCallback((id?: string) => {
-    if (!id) return
+  const onClickTh = useCallback(
+    (id?: string) => {
+      if (!id) return;
 
-    if (id === tableState.sorting?.id) {
-      setTableState((prev: TableState) => ({
-        ...prev,
-        pageIndex: 0,
-        sorting: {
-          id,
-          desc: !prev.sorting?.desc,
-        },
-      }))
-    } else {
-      setTableState((prev: TableState) => ({
-        ...prev,
-        pageIndex: 0,
-        sorting: {
-          id,
-          desc: false,
-        },
-      }))
-    }
-  }, [setTableState, tableState.sorting?.id])
+      if (id === tableState.sorting?.id) {
+        setTableState((prev: TableState) => ({
+          ...prev,
+          pageIndex: 0,
+          sorting: {
+            id,
+            desc: !prev.sorting?.desc,
+          },
+        }));
+      } else {
+        setTableState((prev: TableState) => ({
+          ...prev,
+          pageIndex: 0,
+          sorting: {
+            id,
+            desc: false,
+          },
+        }));
+      }
+    },
+    [setTableState, tableState.sorting?.id],
+  );
 
   return (
     <Table.ScrollContainer minWidth={800}>
       <Table highlightOnHover {...props}>
         <Table.Thead>
-          {table.getHeaderGroups().map(headerGroup => (
+          {table.getHeaderGroups().map((headerGroup) => (
             <Table.Tr key={headerGroup.id}>
-              {headerGroup.headers.map(header => (
+              {headerGroup.headers.map((header) => (
                 <Th
                   key={header.id}
                   header={header}
@@ -80,13 +101,10 @@ export const DataTable = <TData extends RowData>({
           ))}
         </Table.Thead>
         <Table.Tbody>
-          {table.getRowModel().rows.map(row => (
+          {table.getRowModel().rows.map((row) => (
             <Table.Tr key={row.id}>
-              {row.getVisibleCells().map(cell => (
-                <Table.Td
-                  key={cell.id}
-                  ta={cell.column.columnDef.meta?.align}
-                >
+              {row.getVisibleCells().map((cell) => (
+                <Table.Td key={cell.id} ta={cell.column.columnDef.meta?.align}>
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </Table.Td>
               ))}
@@ -110,46 +128,53 @@ export const DataTable = <TData extends RowData>({
         />
       </Group>
     </Table.ScrollContainer>
-  )
-}
+  );
+};
 
-const Th = <TData extends RowData, TRow>({ header, tableState, onClick }: {
+const Th = <TData extends RowData, TRow>({
+  header,
+  tableState,
+  onClick,
+}: {
   header: Header<TData, TRow>;
   tableState: TableState;
   onClick?: () => void;
 }) => {
-  const { columnDef } = header.column
-  const { align, sortable } = columnDef.meta ?? {}
+  const { columnDef } = header.column;
+  const { align, sortable } = columnDef.meta ?? {};
 
   const sortIcon = useMemo(() => {
-    if (!sortable) return ''
+    if (!sortable) return "";
 
     if (tableState.sorting?.id !== header.id) {
-      return 'i-tabler:selector'
+      return "i-tabler:selector";
     } else if (tableState.sorting?.desc) {
-      return 'i-tabler:chevron-down'
+      return "i-tabler:chevron-down";
     } else {
-      return 'i-tabler:chevron-up'
+      return "i-tabler:chevron-up";
     }
-  }, [header.id, sortable, tableState.sorting?.desc, tableState.sorting?.id])
+  }, [header.id, sortable, tableState.sorting?.desc, tableState.sorting?.id]);
 
   const renderHeader = header.isPlaceholder
     ? null
-    : flexRender(columnDef.header, header.getContext())
+    : flexRender(columnDef.header, header.getContext());
 
   return (
     <Table.Th>
       {sortable ? (
         <Button
           onClick={onClick}
-          component={'div'}
+          component={"div"}
           variant="transparent"
           color="gray"
           px="0"
           w="100%"
-          justify={align ?? 'start'}
+          justify={align ?? "start"}
         >
-          <Flex columnGap="4px" direction={align === 'end' ? 'row-reverse' : undefined}>
+          <Flex
+            columnGap="4px"
+            direction={align === "end" ? "row-reverse" : undefined}
+          >
             <MText fw={500} fz="sm">
               {renderHeader}
             </MText>
@@ -161,10 +186,10 @@ const Th = <TData extends RowData, TRow>({ header, tableState, onClick }: {
           </Flex>
         </Button>
       ) : (
-        <MText fw={500} fz="sm" ta={align ?? 'start'}>
+        <MText fw={500} fz="sm" ta={align ?? "start"}>
           {renderHeader}
         </MText>
       )}
     </Table.Th>
-  )
-}
+  );
+};

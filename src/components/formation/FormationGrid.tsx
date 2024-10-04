@@ -1,20 +1,25 @@
 import { Box, Group, Stack } from "@mantine/core";
 
 const positions = [
-  [null, 'LS', 'ST', 'RS', null],
-  ['LW', 'LF', 'CF', 'RF', 'RW'],
-  [null, 'LAM', 'CAM', 'RAM', null],
-  ['LM', 'LCM', 'CM', 'RCM', 'RM'],
-  ['LWB', 'LDM', 'CDM', 'RDM', 'RWB'],
-  ['LB', 'LCB', 'CB', 'RCB', 'RB'],
-  [null, null, 'GK', null, null]
-]
+  [null, "LS", "ST", "RS", null],
+  ["LW", "LF", "CF", "RF", "RW"],
+  [null, "LAM", "CAM", "RAM", null],
+  ["LM", "LCM", "CM", "RCM", "RM"],
+  ["LWB", "LDM", "CDM", "RDM", "RWB"],
+  ["LB", "LCB", "CB", "RCB", "RB"],
+  [null, null, "GK", null, null],
+];
 
-export const FormationGrid = <T,>({ cells, renderCell, renderEmptyCell, hideEmptyCells }: {
-  cells: Record<string, T>
-  renderCell: (position: string, cell: T) => React.ReactNode
-  renderEmptyCell: (position: string) => React.ReactNode
-  hideEmptyCells?: boolean
+export const FormationGrid = <T,>({
+  cells,
+  renderCell,
+  renderEmptyCell,
+  hideEmptyCells,
+}: {
+  cells: Record<string, T>;
+  renderCell: (position: string, cell: T) => React.ReactNode;
+  renderEmptyCell: (position: string) => React.ReactNode;
+  hideEmptyCells?: boolean;
 }) => {
   return (
     <Stack justify="space-around">
@@ -22,15 +27,14 @@ export const FormationGrid = <T,>({ cells, renderCell, renderEmptyCell, hideEmpt
         <Group key={i} grow>
           {row.map((position, j) => (
             <Box key={j} className="text-center">
-              {position && (
-                cells[position]
+              {position &&
+                (cells[position]
                   ? renderCell(position, cells[position])
-                  : (!hideEmptyCells && renderEmptyCell(position))
-              )}
+                  : !hideEmptyCells && renderEmptyCell(position))}
             </Box>
           ))}
         </Group>
       ))}
-    </Stack >
-  )
-}
+    </Stack>
+  );
+};

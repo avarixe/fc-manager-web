@@ -1,32 +1,32 @@
 export const useTeam = (teamId?: string) => {
-  const supabase = useAtomValue(supabaseAtom)
-  const [team, setTeam] = useAtom(teamAtom)
+  const supabase = useAtomValue(supabaseAtom);
+  const [team, setTeam] = useAtom(teamAtom);
 
   useEffect(() => {
     const loadTeam = async () => {
-      if (!teamId) return
+      if (!teamId) return;
 
       const { data, error } = await supabase
-        .from('teams')
+        .from("teams")
         .select()
-        .eq('id', teamId)
-        .single()
+        .eq("id", teamId)
+        .single();
       if (error) {
-        console.error(error)
+        console.error(error);
       } else {
-        setTeam(data)
+        setTeam(data);
       }
-    }
+    };
 
-    loadTeam()
-  }, [setTeam, supabase, teamId])
+    loadTeam();
+  }, [setTeam, supabase, teamId]);
 
-  const { seasonOn, currentSeason, seasonLabel } = useTeamHelpers(team)
+  const { seasonOn, currentSeason, seasonLabel } = useTeamHelpers(team);
 
   return {
     team,
     seasonLabel,
     seasonOn,
     currentSeason,
-  }
-}
+  };
+};

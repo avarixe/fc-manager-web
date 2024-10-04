@@ -1,12 +1,23 @@
-import { AppShell, Avatar, NavLink } from "@mantine/core"
+import { AppShell, Avatar, NavLink } from "@mantine/core";
 
 export const AppNavbar = () => {
-  const team = useAtomValue(teamAtom)
+  const team = useAtomValue(teamAtom);
 
   return (
     <AppShell.Navbar p="md">
-      <NavLink component={Link} label="Home" to="/" leftSection={<div className="i-tabler:home" />} />
-      <NavLink component={Link} label="Teams" to="/teams" activeOptions={{ exact: true }} leftSection={<div className="i-tabler:shield-half-filled" />} />
+      <NavLink
+        component={Link}
+        label="Home"
+        to="/"
+        leftSection={<div className="i-tabler:home" />}
+      />
+      <NavLink
+        component={Link}
+        label="Teams"
+        to="/teams"
+        activeOptions={{ exact: true }}
+        leftSection={<div className="i-tabler:shield-half-filled" />}
+      />
 
       {team && (
         <NavLink
@@ -50,5 +61,5 @@ export const AppNavbar = () => {
         </NavLink>
       )}
     </AppShell.Navbar>
-  )
-}
+  );
+};
