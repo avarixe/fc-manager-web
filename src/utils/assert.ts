@@ -1,2 +1,2 @@
-export function assertType<T>(value: unknown): asserts value is T {
+export function assertType<T>(_value: unknown): asserts _value is T {
 }
