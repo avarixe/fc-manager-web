@@ -165,7 +165,7 @@ export const MatchTimeline: React.FC<{
       <Timeline.Item
         bullet={
           <ThemeIcon size="md" radius="xl" color="transparent">
-            <Box className="i-tabler:clock h-6 w-6" />
+            <Box className="i-mdi:timer-outline h-6 w-6" />
           </ThemeIcon>
         }
       >
@@ -177,12 +177,12 @@ export const MatchTimeline: React.FC<{
 
 const GoalEvent: React.FC<{ goal: Match["goals"][number] }> = ({ goal }) => (
   <div className="flex items-center flex-gap-1">
-    <Box className="i-tabler:ball-football" c="blue" />
+    <Box className="i-mdi:soccer" c="blue" />
     {goal.player_name}
     {goal.set_piece ? ` (${goal.set_piece})` : null}
     {goal.assisted_by && (
       <>
-        <Box className="i-tabler:ball-football" c="blue.2" />
+        <Box className="i-mdi:shoe-cleat -rotate-45" c="blue.2" />
         {goal.assisted_by}
       </>
     )}
@@ -194,7 +194,7 @@ const BookingEvent: React.FC<{ booking: Match["bookings"][number] }> = ({
 }) => (
   <div className="flex items-center flex-gap-1">
     <Box
-      className="i-tabler:rectangle-vertical-filled"
+      className="i-mdi:card rotate-90"
       c={booking.red_card ? "red" : "yellow"}
     />
     {booking.player_name}
@@ -212,9 +212,7 @@ const SubstitutionEvent: React.FC<{
           <div key={sub.id} className="flex items-center flex-gap-1">
             <Box
               className={
-                previous.injured
-                  ? "i-tabler:ambulance"
-                  : "i-tabler:corner-down-left"
+                previous.injured ? "i-mdi:ambulance" : "i-mdi:arrow-left-bottom"
               }
               c={previous.injured ? "pink" : "red"}
             />
@@ -222,7 +220,7 @@ const SubstitutionEvent: React.FC<{
             <MText component="span" fw="bold">
               {previous.pos}
             </MText>
-            <Box className="i-tabler:corner-down-right" c="green" />
+            <Box className="i-mdi:arrow-right-bottom" c="green" />
             {sub.players.name}
             <MText component="span" fw="bold">
               {sub.pos}

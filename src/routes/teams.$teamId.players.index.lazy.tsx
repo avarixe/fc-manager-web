@@ -34,12 +34,16 @@ enum StatusFilter {
 }
 
 const statusFilters = [
-  { value: StatusFilter.All, icon: "i-tabler:world", color: "blue" },
-  { value: StatusFilter.Youth, icon: "i-tabler:school", color: "cyan" },
-  { value: StatusFilter.Active, icon: "i-tabler:user-check", color: "green" },
-  { value: StatusFilter.Injured, icon: "i-tabler:ambulance", color: "pink" },
-  { value: StatusFilter.Loaned, icon: "i-tabler:transfer", color: "orange" },
-  { value: StatusFilter.Pending, icon: "i-tabler:user-check", color: "yellow" },
+  { value: StatusFilter.All, icon: "i-mdi:earth", color: "blue" },
+  { value: StatusFilter.Youth, icon: "i-mdi:school", color: "cyan" },
+  { value: StatusFilter.Active, icon: "i-mdi:account-check", color: "green" },
+  { value: StatusFilter.Injured, icon: "i-mdi:ambulance", color: "pink" },
+  {
+    value: StatusFilter.Loaned,
+    icon: "i-mdi:transit-transfer",
+    color: "orange",
+  },
+  { value: StatusFilter.Pending, icon: "i-mdi:account-lock", color: "yellow" },
 ];
 
 export const Route = createLazyFileRoute("/teams/$teamId/players/")({
@@ -160,7 +164,7 @@ function PlayersPage() {
         meta: { sortable: true },
       }),
       columnHelper.accessor("nationality", {
-        header: () => <div className="i-tabler:flag-filled" />,
+        header: () => <div className="i-mdi:flag" />,
         cell: (info) => {
           const value = info.getValue();
           return value ? <PlayerFlag nationality={value} /> : null;

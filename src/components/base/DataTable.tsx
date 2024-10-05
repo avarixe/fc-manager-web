@@ -167,11 +167,11 @@ const Th = <TData extends RowData, TRow>({
     if (!sortable) return "";
 
     if (tableState.sorting?.id !== header.id) {
-      return "i-tabler:selector";
+      return "i-mdi:unfold-more-horizontal";
     } else if (tableState.sorting?.desc) {
-      return "i-tabler:chevron-down";
+      return "i-mdi:chevron-down";
     } else {
-      return "i-tabler:chevron-up";
+      return "i-mdi:chevron-up";
     }
   }, [header.id, sortable, tableState.sorting?.desc, tableState.sorting?.id]);
 

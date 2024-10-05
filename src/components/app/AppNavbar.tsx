@@ -9,14 +9,14 @@ export const AppNavbar = () => {
         component={Link}
         label="Home"
         to="/"
-        leftSection={<div className="i-tabler:home" />}
+        leftSection={<div className="i-mdi:home" />}
       />
       <NavLink
         component={Link}
         label="Teams"
         to="/teams"
         activeOptions={{ exact: true }}
-        leftSection={<div className="i-tabler:shield-half-filled" />}
+        leftSection={<div className="i-mdi:shield-half-full" />}
       />
 
       {team && (
@@ -33,31 +33,31 @@ export const AppNavbar = () => {
             to={`/teams/${team.id}`}
             activeOptions={{ exact: true }}
             label="Dashboard"
-            leftSection={<div className="i-tabler:layout-dashboard" />}
+            leftSection={<div className="i-mdi:view-dashboard" />}
           />
           <NavLink
             component={Link}
             to={`/teams/${team.id}/players`}
             label="Players"
-            leftSection={<div className="i-tabler:shirt-sport" />}
+            leftSection={<div className="i-mdi:run" />}
           />
           <NavLink
             component={Link}
             to={`/teams/${team.id}/matches`}
             label="Matches"
-            leftSection={<div className="i-tabler:soccer-field" />}
+            leftSection={<div className="i-mdi:soccer-field" />}
           />
           <NavLink
             component={Link}
             to={`/teams/${team.id}/competitions`}
             label="Competitions"
-            leftSection={<div className="i-tabler:trophy" />}
+            leftSection={<div className="i-mdi:trophy" />}
           />
           <NavLink
             component={Link}
             to={`/teams/${team.id}/squads`}
             label="Squads"
-            leftSection={<div className="i-tabler:topology-ring-3" />}
+            leftSection={<div className="i-mdi:clipboard-text" />}
           />
         </NavLink>
       )}

@@ -116,7 +116,7 @@ function MatchPage() {
       <Box my="lg">
         <Title order={2}>
           <Group>
-            <div className="i-tabler:stopwatch" />
+            <div className="i-mdi:timer" />
             Events
           </Group>
         </Title>

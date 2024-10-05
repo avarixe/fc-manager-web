@@ -118,7 +118,7 @@ export const TeamDatePicker: React.FC<{ team: Tables<"teams"> }> = ({
           onClick={() => setOpened(!opened)}
           label={formatDate(team.currently_on)}
           description="Current Date"
-          leftSection={<div className="i-tabler:calendar" />}
+          leftSection={<div className="i-mdi:calendar-today" />}
         />
       </Popover.Target>
       <Popover.Dropdown>

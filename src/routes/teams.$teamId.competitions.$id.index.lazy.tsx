@@ -325,23 +325,23 @@ const StageItem: React.FC<{
         {readonly ? null : isEditing ? (
           <>
             <ActionIcon onClick={onClickCancel} variant="subtle">
-              <div className="i-tabler:x" />
+              <div className="i-mdi:close" />
             </ActionIcon>
             <ActionIcon
               onClick={onClickSave}
               disabled={!!field.error}
               variant="subtle"
             >
-              <div className="i-tabler:device-floppy" />
+              <div className="i-mdi:content-save" />
             </ActionIcon>
           </>
         ) : (
           <>
             <ActionIcon onClick={() => setIsEditing(true)} variant="subtle">
-              <div className="i-tabler:edit" />
+              <div className="i-mdi:pencil" />
             </ActionIcon>
             <ActionIcon onClick={onClickDelete} variant="subtle">
-              <div className="i-tabler:trash" />
+              <div className="i-mdi:delete" />
             </ActionIcon>
           </>
         )}
@@ -674,7 +674,7 @@ const StageFixtureRow: React.FC<{
         {isEditing && (
           <Group justify="center" mt="xs">
             <ActionIcon onClick={onClickAddLeg} variant="default" size="xs">
-              <div className="i-tabler:plus" />
+              <div className="i-mdi:plus" />
             </ActionIcon>
             <ActionIcon
               onClick={onClickRemoveLeg}
@@ -682,7 +682,7 @@ const StageFixtureRow: React.FC<{
               size="xs"
               disabled={form.values.legs.length < 2}
             >
-              <div className="i-tabler:minus" />
+              <div className="i-mdi:minus" />
             </ActionIcon>
           </Group>
         )}

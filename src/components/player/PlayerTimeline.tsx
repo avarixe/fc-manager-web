@@ -372,17 +372,17 @@ const TransferEvent: React.FC<{
 function playerEventIconName(item: PlayerEvent, team: Tables<"teams">): string {
   switch (item.type) {
     case PlayerEventType.Contract:
-      return "i-tabler:contract";
+      return "i-mdi:file-sign";
     case PlayerEventType.Injury:
-      return "i-tabler:ambulance";
+      return "i-mdi:ambulance";
     case PlayerEventType.Loan:
-      return "i-tabler:transfer";
+      return "i-mdi:transit-transfer";
     case PlayerEventType.Transfer:
       assertType<Player["transfers"][number]>(item);
       if (item.destination === team.name) {
-        return "i-tabler:plane-arrival";
+        return "i-mdi:airplane-landing";
       } else {
-        return "i-tabler:plane-departure";
+        return "i-mdi:airplane-takeoff";
       }
   }
 }

@@ -293,23 +293,23 @@ const SquadCard: React.FC<
         {isEditing ? (
           <>
             <ActionIcon onClick={onClickCancel} variant="subtle">
-              <div className="i-tabler:x" />
+              <div className="i-mdi:close" />
             </ActionIcon>
             <ActionIcon
               onClick={onClickSave}
               disabled={Object.keys(form.errors).length > 0}
               variant="subtle"
             >
-              <div className="i-tabler:device-floppy" />
+              <div className="i-mdi:content-save" />
             </ActionIcon>
           </>
         ) : (
           <>
             <ActionIcon onClick={() => setIsEditing(true)} variant="subtle">
-              <div className="i-tabler:edit" />
+              <div className="i-mdi:pencil" />
             </ActionIcon>
             <ActionIcon onClick={onClickDelete} variant="subtle">
-              <div className="i-tabler:trash" />
+              <div className="i-mdi:delete" />
             </ActionIcon>
           </>
         )}

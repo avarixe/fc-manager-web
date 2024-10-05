@@ -159,7 +159,7 @@ function MatchesPage() {
               variant="filled"
               fullWidth
             >
-              <div className="i-tabler:player-play-filled" />
+              <div className="i-mdi:play" />
             </Button>
           );
         },

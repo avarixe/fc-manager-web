@@ -23,15 +23,15 @@ export const PlayerStatus = ({ status, ...rest }: PlayerFlagProps) => {
   const icon = useMemo(() => {
     switch (status) {
       case "Active":
-        return "i-tabler:user-check";
+        return "i-mdi:account-check";
       case "Loaned":
-        return "i-tabler:transfer";
+        return "i-mdi:transit-transfer";
       case "Injured":
-        return "i-tabler:ambulance";
+        return "i-mdi:ambulance";
       case "Pending":
-        return "i-tabler:clock";
+        return "i-mdi:lock-clock";
       default:
-        return "i-tabler:minus";
+        return "i-mdi:minus";
     }
   }, [status]);
 

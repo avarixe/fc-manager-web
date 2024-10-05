@@ -154,7 +154,7 @@ function PlayerPage() {
       <Box my="lg">
         <Title order={2}>
           <Group>
-            <div className="i-tabler:run" />
+            <div className="i-mdi:run" />
             Performance
           </Group>
         </Title>
@@ -187,7 +187,7 @@ function PlayerPage() {
       <Box my="lg">
         <Title order={2}>
           <Group>
-            <div className="i-tabler:history" />
+            <div className="i-mdi:history" />
             Timeline
           </Group>
         </Title>
@@ -199,7 +199,7 @@ function PlayerPage() {
       <Box my="lg">
         <Title order={2}>
           <Group>
-            <div className="i-tabler:timeline" />
+            <div className="i-mdi:chart-timeline-variant" />
             Development
           </Group>
         </Title>
