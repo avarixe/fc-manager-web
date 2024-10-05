@@ -63,7 +63,7 @@ function TeamsPage() {
           tableState.pageSize * (tableState.pageIndex + 1) - 1,
         );
 
-      // TODO: add sorting
+      pageQuery.order("id", { ascending: false });
 
       const { count } = await supabase
         .from("teams")

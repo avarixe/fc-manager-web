@@ -63,8 +63,6 @@ export const MatchTimeline: React.FC<{
     fetchSubstitutions();
   }, [match.id, supabase]);
 
-  console.log("substitutions: ", substitutions);
-
   const items: MatchEvent[] = useMemo(() => {
     const subsByMinute = Object.entries(
       groupBy(substitutions, "start_minute"),

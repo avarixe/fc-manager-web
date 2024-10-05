@@ -79,7 +79,6 @@ const PlayerForm: React.FC<{
   const navigate = useNavigate();
   const handleSubmit = useCallback(
     async (values: typeof form.values) => {
-      console.log(values);
       const { error } = await supabase
         .from("players")
         .update(values)

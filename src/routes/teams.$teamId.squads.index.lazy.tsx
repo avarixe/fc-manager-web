@@ -179,8 +179,8 @@ const SquadCard: React.FC<
       .from("squads")
       .upsert({
         ...form.values,
-        userId: session?.user?.id,
-        teamId: Number(teamId),
+        user_id: session?.user?.id,
+        team_id: Number(teamId),
       })
       .select("id");
     if (error) {

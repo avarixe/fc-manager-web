@@ -54,9 +54,6 @@ const PlayerForm: React.FC<{ team: Tables<"teams"> }> = ({ team }) => {
       youth: false,
       kit_no: null,
     },
-    onValuesChange: (values) => {
-      console.log(values);
-    },
   });
 
   const supabase = useAtomValue(supabaseAtom);

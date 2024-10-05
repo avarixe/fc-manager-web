@@ -86,7 +86,6 @@ function ImportTeamPage() {
       }));
       const { error } = await supabase.from("appearances").insert(data);
       if (error) {
-        console.log(error);
         console.error(`Could not create caps! Error: ${error.message}`);
         return;
       }
@@ -412,7 +411,6 @@ function ImportTeamPage() {
         capStats.current[cap.playerId][match.id].clean_sheet = cleanSheet;
       }
     }
-    console.log("processed goals: ", numGoals);
 
     // Create Match id mapping
     const matchIds = await supabase

@@ -27,8 +27,6 @@ export function CompetitionForm({
   const navigate = useNavigate();
   const handleSubmit = useCallback(
     async (values: typeof form.values) => {
-      console.log(values);
-
       const { data, error } = await supabase
         .from("competitions")
         .upsert({ id: record?.id, ...values })

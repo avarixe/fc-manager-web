@@ -34,8 +34,6 @@ export function MatchForm({
   const navigate = useNavigate();
   const handleSubmit = useCallback(
     async (values: typeof form.values) => {
-      console.log(values);
-
       const upsertData = record
         ? { ...values, id: record.id }
         : { ...values, goals: [], bookings: [] };
