@@ -3,7 +3,13 @@ import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import { SupabaseClient } from "@supabase/supabase-js";
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
-import { AppShell, Burger, Container, Group } from "@mantine/core";
+import {
+  AppShell,
+  Burger,
+  Container,
+  Group,
+  LoadingOverlay,
+} from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 
 export const Route = createRootRoute({
@@ -13,11 +19,11 @@ export const Route = createRootRoute({
 function App() {
   const [supabase] = useAtom(supabaseAtom);
   const [session, setSession] = useAtom(sessionAtom);
-  const [loading, setLoading] = useState(true);
+  const [ready, setReady] = useState(false);
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
-      setLoading(false);
+      setReady(true);
     });
 
     const {
@@ -32,6 +38,7 @@ function App() {
   }, [setSession, supabase.auth]);
 
   const [opened, { toggle }] = useDisclosure();
+  const appLoading = useAtomValue(appLoadingAtom);
   return (
     <AppShell
       header={{ height: 60 }}
@@ -51,13 +58,17 @@ function App() {
       <AppNavbar />
       <AppShell.Main>
         <Container>
-          {loading ? (
+          {!ready ? (
             <></>
           ) : !session ? (
             <Login supabase={supabase} />
           ) : (
             <Outlet />
           )}
+          <LoadingOverlay
+            visible={appLoading}
+            overlayProps={{ radius: "sm", blur: 2 }}
+          />
         </Container>
       </AppShell.Main>
       <TanStackRouterDevtools />

@@ -1,4 +1,4 @@
-import { Button, Group, LoadingOverlay, Stack, Title } from "@mantine/core";
+import { Button, Group, Stack, Title } from "@mantine/core";
 import { modals } from "@mantine/modals";
 
 export const Route = createLazyFileRoute("/teams/$teamId/")({
@@ -11,7 +11,7 @@ function TeamPage() {
   const setTeam = useSetAtom(teamAtom);
 
   const supabase = useAtomValue(supabaseAtom);
-  const [deleting, setDeleting] = useState(false);
+  const setAppLoading = useSetAtom(appLoadingAtom);
   const navigate = useNavigate();
   const onClickDelete = () => {
     modals.openConfirmModal({
@@ -30,13 +30,13 @@ function TeamPage() {
       confirmProps: { color: "red" },
       onConfirm: async () => {
         try {
-          setDeleting(true);
+          setAppLoading(true);
           await supabase.from("teams").delete().eq("id", teamId);
           setTeam(null);
           navigate({ to: "/teams" });
         } catch (error) {
           console.error(error);
-          setDeleting(false);
+          setAppLoading(false);
         }
       },
     });
@@ -64,7 +64,6 @@ function TeamPage() {
           Delete
         </Button>
       </Group>
-      <LoadingOverlay visible={deleting} overlayProps={{ blur: 2 }} />
     </Stack>
   );
 }

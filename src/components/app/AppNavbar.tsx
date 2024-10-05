@@ -27,6 +27,7 @@ export const AppNavbar = () => {
           childrenOffset={28}
           defaultOpened
         >
+          <TeamDatePicker team={team} />
           <NavLink
             component={Link}
             to={`/teams/${team.id}`}

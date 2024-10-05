@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Center,
   Flex,
@@ -194,9 +195,9 @@ const Th = <TData extends RowData, TRow>({
             columnGap="4px"
             direction={align === "end" ? "row-reverse" : undefined}
           >
-            <MText fw={500} fz="sm">
+            <Box fw={500} fz="sm">
               {renderHeader}
-            </MText>
+            </Box>
             {sortable && (
               <Center>
                 <div className={sortIcon} />
@@ -205,9 +206,9 @@ const Th = <TData extends RowData, TRow>({
           </Flex>
         </Button>
       ) : (
-        <MText fw={500} fz="sm" ta={align ?? "start"}>
+        <Box fw={500} fz="sm" ta={align ?? "start"}>
           {renderHeader}
-        </MText>
+        </Box>
       )}
     </Table.Th>
   );

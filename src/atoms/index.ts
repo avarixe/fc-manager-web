@@ -20,3 +20,5 @@ export const supabaseAtom = atom<SupabaseClient<Database>>(
 export const sessionAtom = atom<Session | null>(null);
 
 export const teamAtom = atom<Tables<"teams"> | null>(null);
+
+export const appLoadingAtom = atom(false);
