@@ -30,9 +30,15 @@ export const useTeamHelpers = (team: Tables<"teams"> | null) => {
     [team],
   );
 
+  const currentYear = useMemo(
+    () => dayjs(team?.currently_on).year(),
+    [team?.currently_on],
+  );
+
   return {
     seasonLabel,
     seasonOn,
     currentSeason,
+    currentYear,
   };
 };

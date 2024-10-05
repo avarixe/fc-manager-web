@@ -1,0 +1,17 @@
+export const positions = [
+  "GK",
+  "LB",
+  "LWB",
+  "CB",
+  "RB",
+  "RWB",
+  "LM",
+  "CDM",
+  "CM",
+  "CAM",
+  "RM",
+  "LW",
+  "CF",
+  "ST",
+  "RW",
+];

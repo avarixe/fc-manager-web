@@ -21,9 +21,6 @@ export function CompetitionForm({
       season: record?.season ?? currentSeason,
       champion: record?.champion,
     },
-    onValuesChange: (values) => {
-      console.log(values);
-    },
   });
 
   const supabase = useAtomValue(supabaseAtom);
@@ -56,10 +53,12 @@ export function CompetitionForm({
       <TextInput
         label="Name"
         required
-        mb="xl"
+        mb="xs"
         {...form.getInputProps("name")}
       />
-      <Button type="submit">Create Competition</Button>
+      <Button mt="xl" type="submit">
+        Save Competition
+      </Button>
     </form>
   );
 }

@@ -21,12 +21,14 @@ export const useTeam = (teamId?: string) => {
     loadTeam();
   }, [setTeam, supabase, teamId]);
 
-  const { seasonOn, currentSeason, seasonLabel } = useTeamHelpers(team);
+  const { seasonOn, currentSeason, seasonLabel, currentYear } =
+    useTeamHelpers(team);
 
   return {
     team,
     seasonLabel,
     seasonOn,
     currentSeason,
+    currentYear,
   };
 };

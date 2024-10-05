@@ -166,15 +166,15 @@ function PlayerPage() {
             <Title order={6}>Clean Sheets</Title>
           </Box>
           <Box ta="center">
-            <Title>{stats.numGoals}</Title>
+            <Title>{stats.numGoals ?? 0}</Title>
             <Title order={6}>Goals</Title>
           </Box>
           <Box ta="center">
-            <Title>{stats.numAssists}</Title>
+            <Title>{stats.numAssists ?? 0}</Title>
             <Title order={6}>Assists</Title>
           </Box>
           <Box ta="center">
-            <Title>{stats.avgRating.toFixed(2)}</Title>
+            <Title>{stats.avgRating?.toFixed(2) ?? 0}</Title>
             <Title order={6}>Rating</Title>
           </Box>
         </Group>
@@ -217,9 +217,10 @@ const PlayerHistoryChart: React.FC<{
       ...data,
     }));
 
-    const lastDate = player.status
-      ? team.currently_on
-      : player.contracts[player.contracts.length - 1].ended_on;
+    const lastContractDate =
+      player.contracts[player.contracts.length - 1]?.ended_on;
+    const lastDate =
+      player.status || !lastContractDate ? team.currently_on : lastContractDate;
 
     if (dayjs(lastDate).valueOf() !== history[history.length - 1].date) {
       history.push({

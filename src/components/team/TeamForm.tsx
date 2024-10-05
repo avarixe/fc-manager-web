@@ -66,8 +66,10 @@ export function TeamForm({ record }: { record?: Tables<"teams"> }) {
         mb="xs"
         {...form.getInputProps("currently_on")}
       />
-      <TextInput label="Currency" mb="xl" {...form.getInputProps("currency")} />
-      <Button type="submit">Create Team</Button>
+      <TextInput label="Currency" mb="xs" {...form.getInputProps("currency")} />
+      <Button mt="xl" type="submit">
+        Save Team
+      </Button>
     </form>
   );
 }

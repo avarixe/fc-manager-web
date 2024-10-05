@@ -4,6 +4,7 @@ import {
   Flex,
   Group,
   Pagination,
+  Select,
   Table,
   TableProps,
 } from "@mantine/core";
@@ -84,42 +85,60 @@ export const DataTable = <TData extends RowData>({
   );
 
   return (
-    <Table.ScrollContainer minWidth={800}>
-      <Table highlightOnHover {...props}>
-        <Table.Thead>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <Table.Tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <Th
-                  key={header.id}
-                  header={header}
-                  tableState={tableState}
-                  onClick={() => onClickTh(header.id)}
-                />
-              ))}
-            </Table.Tr>
-          ))}
-        </Table.Thead>
-        <Table.Tbody>
-          {table.getRowModel().rows.map((row) => (
-            <Table.Tr key={row.id}>
-              {row.getVisibleCells().map((cell) => (
-                <Table.Td key={cell.id} ta={cell.column.columnDef.meta?.align}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+    <>
+      <Table.ScrollContainer minWidth={800}>
+        <Table highlightOnHover {...props}>
+          <Table.Thead>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <Table.Tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <Th
+                    key={header.id}
+                    header={header}
+                    tableState={tableState}
+                    onClick={() => onClickTh(header.id)}
+                  />
+                ))}
+              </Table.Tr>
+            ))}
+          </Table.Thead>
+          <Table.Tbody>
+            {table.getRowModel().rows.map((row) => (
+              <Table.Tr key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <Table.Td
+                    key={cell.id}
+                    ta={cell.column.columnDef.meta?.align}
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </Table.Td>
+                ))}
+              </Table.Tr>
+            ))}
+            {table.getRowModel().rows.length === 0 && (
+              <Table.Tr>
+                <Table.Td colSpan={columns.length} className="text-center">
+                  No data
                 </Table.Td>
-              ))}
-            </Table.Tr>
-          ))}
-          {table.getRowModel().rows.length === 0 && (
-            <Table.Tr>
-              <Table.Td colSpan={columns.length} className="text-center">
-                No data
-              </Table.Td>
-            </Table.Tr>
-          )}
-        </Table.Tbody>
-      </Table>
-      <Group mt="xs">
+              </Table.Tr>
+            )}
+          </Table.Tbody>
+        </Table>
+      </Table.ScrollContainer>
+      <Group>
+        <Select
+          data={["10", "20", "50", "100"]}
+          value={String(tableState.pageSize)}
+          onChange={(value) =>
+            setTableState((prev: TableState) => ({
+              ...prev,
+              pageSize: Number(value),
+              pageIndex: 0,
+            }))
+          }
+          w={100}
+        />
+
         <Pagination
           value={tableState.pageIndex + 1}
           total={totalPages}
@@ -127,7 +146,7 @@ export const DataTable = <TData extends RowData>({
           className="ml-auto"
         />
       </Group>
-    </Table.ScrollContainer>
+    </>
   );
 };
 

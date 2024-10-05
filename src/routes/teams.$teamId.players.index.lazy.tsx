@@ -246,7 +246,9 @@ function PlayersPage() {
       <Title mb="xl">Players</Title>
 
       <Group>
-        <Button>New Player</Button>
+        <Button component={Link} to={`/teams/${teamId}/players/new`}>
+          New Player
+        </Button>
       </Group>
 
       <Group>
