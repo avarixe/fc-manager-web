@@ -1,5 +1,5 @@
 import { Tables } from "@/database-generated.types";
-import { Box, NavLink, Stack, Timeline, Title } from "@mantine/core";
+import { Button, Group, NavLink, Stack, Timeline, Title } from "@mantine/core";
 import { groupBy } from "lodash-es";
 
 type Competition = Pick<
@@ -47,6 +47,12 @@ function CompetitionsPage() {
     <Stack>
       <Title mb="xl">Competitions</Title>
 
+      <Group>
+        <Button component={Link} to={`/teams/${teamId}/competitions/new`}>
+          New Competition
+        </Button>
+      </Group>
+
       <Timeline bulletSize={24} lineWidth={2}>
         {[...Array(currentSeason + 1).keys()].reverse().map((season) => (
           <Timeline.Item
@@ -54,16 +60,6 @@ function CompetitionsPage() {
             title={seasonLabel(season)}
             bullet={String(season + 1)}
           >
-            {season === currentSeason && (
-              <NavLink
-                component={Link}
-                to={`/teams/${teamId}/competitions/new`}
-                label="New Competition"
-                leftSection={
-                  <Box className="i-tabler:circle-plus-filled" c="green" />
-                }
-              />
-            )}
             {competitionsBySeason[season]?.map((competition) => (
               <NavLink
                 key={competition.id}

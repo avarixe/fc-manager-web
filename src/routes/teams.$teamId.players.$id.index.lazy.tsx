@@ -86,7 +86,9 @@ function PlayerPage() {
       <Title mb="xl">{player.name}</Title>
 
       <Group>
-        <Button>Edit</Button>
+        <Button component={Link} to={`/teams/${teamId}/players/${id}/edit`}>
+          Edit
+        </Button>
 
         <Button color="red" variant="outline" className="ml-auto">
           Delete

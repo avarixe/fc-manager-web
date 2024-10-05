@@ -1,4 +1,6 @@
-import { Tables, TablesInsert } from "@/database-generated.types";
+import { createLazyFileRoute } from "@tanstack/react-router";
+
+import { Tables } from "@/database-generated.types";
 import {
   Autocomplete,
   Button,
@@ -13,47 +15,61 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 
-export const Route = createLazyFileRoute("/teams/$teamId/players/new")({
-  component: NewPlayerPage,
+export const Route = createLazyFileRoute("/teams/$teamId/players/$id/edit")({
+  component: EditPlayerPage,
 });
 
-function NewPlayerPage() {
-  const { teamId } = Route.useParams();
+function EditPlayerPage() {
+  const { teamId, id } = Route.useParams();
   const { team } = useTeam(teamId);
 
-  if (!team) {
+  const [player, setPlayer] = useState<Tables<"players"> | null>(null);
+  const supabase = useAtomValue(supabaseAtom);
+  useEffect(() => {
+    const fetchPlayer = async () => {
+      const { data, error } = await supabase
+        .from("players")
+        .select()
+        .eq("team_id", teamId)
+        .eq("id", id)
+        .single();
+      if (error) {
+        console.error(error);
+      } else {
+        setPlayer(data);
+      }
+    };
+
+    fetchPlayer();
+  }, [id, supabase, teamId]);
+
+  if (!team || !player) {
     return null;
   }
 
   return (
     <Stack>
-      <Title mb="xl">New Player</Title>
+      <Title mb="xl">Edit Player</Title>
 
-      <PlayerForm team={team} />
+      <PlayerForm team={team} record={player} />
     </Stack>
   );
 }
 
-const PlayerForm: React.FC<{ team: Tables<"teams"> }> = ({ team }) => {
+const PlayerForm: React.FC<{
+  team: Tables<"teams">;
+  record: Tables<"players">;
+}> = ({ team, record }) => {
   const { currentYear } = useTeamHelpers(team);
 
-  const session = useAtomValue(sessionAtom);
-  const form = useForm<TablesInsert<"players">>({
+  const form = useForm({
     initialValues: {
-      user_id: session?.user?.id,
-      team_id: team.id,
-      name: "",
-      nationality: "",
-      pos: "",
-      sec_pos: [],
-      ovr: 0,
-      value: 0,
-      birth_year: 0,
-      youth: false,
-      kit_no: null,
-    },
-    onValuesChange: (values) => {
-      console.log(values);
+      name: record.name,
+      nationality: record.nationality,
+      pos: record.pos,
+      sec_pos: [...(record.sec_pos ?? [])],
+      birth_year: record.birth_year,
+      youth: record.youth,
     },
   });
 
@@ -61,29 +77,18 @@ const PlayerForm: React.FC<{ team: Tables<"teams"> }> = ({ team }) => {
   const navigate = useNavigate();
   const handleSubmit = useCallback(
     async (values: typeof form.values) => {
-      const { data, error } = await supabase
+      console.log(values);
+      const { error } = await supabase
         .from("players")
-        .upsert({
-          ...values,
-          history: {
-            [team.currently_on]: {
-              ovr: values.ovr,
-              value: values.value,
-            },
-          },
-          contracts: [],
-          injuries: [],
-          loans: [],
-          transfers: [],
-        })
-        .select();
-      if (data) {
-        navigate({ to: `/teams/${team.id}/players/${data[0].id}` });
-      } else {
+        .update(values)
+        .eq("id", record.id);
+      if (error) {
         console.error(error);
+      } else {
+        navigate({ to: `/teams/${team.id}/players/${record.id}` });
       }
     },
-    [form, navigate, supabase, team.currently_on, team.id],
+    [form, navigate, record.id, supabase, team.id],
   );
 
   return (
@@ -133,32 +138,6 @@ const PlayerForm: React.FC<{ team: Tables<"teams"> }> = ({ team }) => {
           required
           mb="xs"
           data={Object.keys(countryCodes)}
-        />
-      </Group>
-      <Group grow>
-        <NumberInput
-          {...form.getInputProps("ovr")}
-          label="OVR Rating"
-          required
-          mb="xs"
-          min={0}
-          max={100}
-        />
-        <NumberInput
-          {...form.getInputProps("value")}
-          label="Value"
-          required
-          leftSection={team.currency}
-          thousandSeparator
-          mb="xs"
-          min={0}
-        />
-        <NumberInput
-          {...form.getInputProps("kit_no")}
-          label="Kit Number"
-          mb="xs"
-          min={0}
-          max={100}
         />
       </Group>
       <Checkbox {...form.getInputProps("youth")} label="Youth Player" mt="md" />

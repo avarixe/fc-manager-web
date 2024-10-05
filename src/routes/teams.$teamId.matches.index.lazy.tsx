@@ -1,5 +1,5 @@
 import { Tables } from "@/database-generated.types";
-import { Box, Button, Stack, Title } from "@mantine/core";
+import { Box, Button, Group, Stack, Title } from "@mantine/core";
 
 type Match = Pick<
   Tables<"matches">,
@@ -176,6 +176,12 @@ function MatchesPage() {
   return (
     <Stack>
       <Title mb="xl">Matches</Title>
+
+      <Group>
+        <Button component={Link} to={`/teams/${teamId}/matches/new`}>
+          New Match
+        </Button>
+      </Group>
 
       <DataTable
         data={matches}
