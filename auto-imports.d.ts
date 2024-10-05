@@ -15,6 +15,7 @@ declare global {
   const Link: typeof import('@tanstack/react-router')['Link']
   const MText: typeof import('@mantine/core')['Text']
   const MatchForm: typeof import('./src/components/match/MatchForm')['MatchForm']
+  const MatchTimeline: typeof import('./src/components/match/MatchTimeline')['MatchTimeline']
   const PlayerFlag: typeof import('./src/components/player/PlayerFlag')['PlayerFlag']
   const PlayerForm: typeof import('./src/components/player/PlayerForm')['PlayerForm']
   const PlayerStatus: typeof import('./src/components/player/PlayerStatus')['PlayerStatus']

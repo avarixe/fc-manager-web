@@ -85,7 +85,9 @@ function TeamsPage() {
 
   return (
     <Stack>
-      <Title mb="xl">Teams</Title>
+      <Title fw="lighter" mb="xl">
+        Teams
+      </Title>
 
       <Group>
         <Button component={Link} to="/teams/new">

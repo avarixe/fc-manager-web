@@ -45,7 +45,9 @@ function CompetitionsPage() {
 
   return (
     <Stack>
-      <Title mb="xl">Competitions</Title>
+      <Title fw="lighter" mb="xl">
+        Competitions
+      </Title>
 
       <Group>
         <Button component={Link} to={`/teams/${teamId}/competitions/new`}>

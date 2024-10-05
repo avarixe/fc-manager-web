@@ -441,7 +441,9 @@ function ImportTeamPage() {
 
   return (
     <Stack>
-      <Title mb="xl">Import Team</Title>
+      <Title fw="lighter" mb="xl">
+        Import Team
+      </Title>
 
       <FileInput
         value={file}

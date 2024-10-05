@@ -39,7 +39,9 @@ function EditCompetitionPage() {
 
   return (
     <Stack>
-      <Title mb="xl">Edit Competition</Title>
+      <Title fw="lighter" mb="xl">
+        Edit Competition
+      </Title>
 
       <CompetitionForm record={competition} team={team} />
     </Stack>

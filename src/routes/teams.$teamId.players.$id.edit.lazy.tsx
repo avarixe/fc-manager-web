@@ -49,7 +49,9 @@ function EditPlayerPage() {
 
   return (
     <Stack>
-      <Title mb="xl">Edit Player</Title>
+      <Title fw="lighter" mb="xl">
+        Edit Player
+      </Title>
 
       <PlayerForm team={team} record={player} />
     </Stack>

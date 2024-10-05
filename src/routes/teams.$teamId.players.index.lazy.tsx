@@ -243,7 +243,9 @@ function PlayersPage() {
 
   return (
     <Stack>
-      <Title mb="xl">Players</Title>
+      <Title fw="lighter" mb="xl">
+        Players
+      </Title>
 
       <Group>
         <Button component={Link} to={`/teams/${teamId}/players/new`}>

@@ -40,3 +40,20 @@ export interface Player extends Tables<"players"> {
     addon_clause: number;
   }[];
 }
+
+export interface Match extends Tables<"matches"> {
+  goals: {
+    minute: number;
+    player_name: string;
+    assisted_by: string | null;
+    home: boolean;
+    set_piece: string | null;
+    own_goal: boolean;
+  }[];
+  bookings: {
+    minute: number;
+    player_name: string;
+    home: boolean;
+    red_card: boolean;
+  }[];
+}

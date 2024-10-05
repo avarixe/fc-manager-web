@@ -81,7 +81,9 @@ function SquadsPage() {
 
   return (
     <Stack>
-      <Title mb="xl">Squads</Title>
+      <Title fw="lighter" mb="xl">
+        Squads
+      </Title>
 
       <NewSquadSection players={players} teamId={teamId} />
 

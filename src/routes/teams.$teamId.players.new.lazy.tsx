@@ -27,7 +27,9 @@ function NewPlayerPage() {
 
   return (
     <Stack>
-      <Title mb="xl">New Player</Title>
+      <Title fw="lighter" mb="xl">
+        New Player
+      </Title>
 
       <PlayerForm team={team} />
     </Stack>

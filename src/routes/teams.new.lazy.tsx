@@ -7,7 +7,9 @@ export const Route = createLazyFileRoute("/teams/new")({
 function NewTeamPage() {
   return (
     <Stack>
-      <Title mb="xl">New Team</Title>
+      <Title fw="lighter" mb="xl">
+        New Team
+      </Title>
 
       <TeamForm />
     </Stack>

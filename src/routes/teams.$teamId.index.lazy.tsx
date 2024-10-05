@@ -48,7 +48,9 @@ function TeamPage() {
 
   return (
     <Stack>
-      <Title mb="xl">{team.name}</Title>
+      <Title fw="lighter" mb="xl">
+        {team.name}
+      </Title>
       <Group>
         <Button component={Link} to={`/teams/${team.id}/edit`}>
           Edit

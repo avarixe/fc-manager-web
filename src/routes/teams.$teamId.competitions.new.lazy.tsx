@@ -14,7 +14,9 @@ function NewCompetitionPage() {
 
   return (
     <Stack>
-      <Title mb="xl">New Competition</Title>
+      <Title fw="lighter" mb="xl">
+        New Competition
+      </Title>
 
       <CompetitionForm team={team} />
     </Stack>

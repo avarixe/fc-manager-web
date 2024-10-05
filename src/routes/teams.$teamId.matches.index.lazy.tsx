@@ -175,7 +175,9 @@ function MatchesPage() {
 
   return (
     <Stack>
-      <Title mb="xl">Matches</Title>
+      <Title fw="lighter" mb="xl">
+        Matches
+      </Title>
 
       <Group>
         <Button component={Link} to={`/teams/${teamId}/matches/new`}>

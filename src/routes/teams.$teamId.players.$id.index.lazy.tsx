@@ -83,7 +83,9 @@ function PlayerPage() {
 
   return (
     <Stack>
-      <Title mb="xl">{player.name}</Title>
+      <Title fw="lighter" mb="xl">
+        {player.name}
+      </Title>
 
       <Group>
         <Button component={Link} to={`/teams/${teamId}/players/${id}/edit`}>

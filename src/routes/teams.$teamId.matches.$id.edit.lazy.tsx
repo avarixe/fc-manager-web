@@ -35,7 +35,9 @@ function EditMatchPage() {
 
   return (
     <Stack>
-      <Title mb="xl">Edit Match</Title>
+      <Title fw="lighter" mb="xl">
+        Edit Match
+      </Title>
 
       <MatchForm record={match} team={team} />
     </Stack>

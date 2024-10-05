@@ -72,6 +72,7 @@ function CompetitionPage() {
       } else {
         assertType<Competition>(data);
         setCompetition(data);
+        setReadonly(data.champion !== null);
       }
     };
 
@@ -177,7 +178,7 @@ function CompetitionPage() {
     <Stack>
       <Box mb="xl">
         <Title order={5}>{seasonLabel(competition.season)}</Title>
-        <Title>{competition.name}</Title>
+        <Title fw="lighter">{competition.name}</Title>
       </Box>
       <Switch
         label="Readonly Mode"

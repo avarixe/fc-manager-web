@@ -46,6 +46,9 @@ const TeamsTeamIdCompetitionsNewLazyImport = createFileRoute(
 const TeamsTeamIdPlayersIdIndexLazyImport = createFileRoute(
   '/teams/$teamId/players/$id/',
 )()
+const TeamsTeamIdMatchesIdIndexLazyImport = createFileRoute(
+  '/teams/$teamId/matches/$id/',
+)()
 const TeamsTeamIdCompetitionsIdIndexLazyImport = createFileRoute(
   '/teams/$teamId/competitions/$id/',
 )()
@@ -158,6 +161,16 @@ const TeamsTeamIdPlayersIdIndexLazyRoute =
     getParentRoute: () => rootRoute,
   } as any).lazy(() =>
     import('./routes/teams.$teamId.players.$id.index.lazy').then(
+      (d) => d.Route,
+    ),
+  )
+
+const TeamsTeamIdMatchesIdIndexLazyRoute =
+  TeamsTeamIdMatchesIdIndexLazyImport.update({
+    path: '/teams/$teamId/matches/$id/',
+    getParentRoute: () => rootRoute,
+  } as any).lazy(() =>
+    import('./routes/teams.$teamId.matches.$id.index.lazy').then(
       (d) => d.Route,
     ),
   )
@@ -321,6 +334,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TeamsTeamIdCompetitionsIdIndexLazyImport
       parentRoute: typeof rootRoute
     }
+    '/teams/$teamId/matches/$id/': {
+      id: '/teams/$teamId/matches/$id/'
+      path: '/teams/$teamId/matches/$id'
+      fullPath: '/teams/$teamId/matches/$id'
+      preLoaderRoute: typeof TeamsTeamIdMatchesIdIndexLazyImport
+      parentRoute: typeof rootRoute
+    }
     '/teams/$teamId/players/$id/': {
       id: '/teams/$teamId/players/$id/'
       path: '/teams/$teamId/players/$id'
@@ -351,6 +371,7 @@ export interface FileRoutesByFullPath {
   '/teams/$teamId/matches/$id/edit': typeof TeamsTeamIdMatchesIdEditLazyRoute
   '/teams/$teamId/players/$id/edit': typeof TeamsTeamIdPlayersIdEditLazyRoute
   '/teams/$teamId/competitions/$id': typeof TeamsTeamIdCompetitionsIdIndexLazyRoute
+  '/teams/$teamId/matches/$id': typeof TeamsTeamIdMatchesIdIndexLazyRoute
   '/teams/$teamId/players/$id': typeof TeamsTeamIdPlayersIdIndexLazyRoute
 }
 
@@ -372,6 +393,7 @@ export interface FileRoutesByTo {
   '/teams/$teamId/matches/$id/edit': typeof TeamsTeamIdMatchesIdEditLazyRoute
   '/teams/$teamId/players/$id/edit': typeof TeamsTeamIdPlayersIdEditLazyRoute
   '/teams/$teamId/competitions/$id': typeof TeamsTeamIdCompetitionsIdIndexLazyRoute
+  '/teams/$teamId/matches/$id': typeof TeamsTeamIdMatchesIdIndexLazyRoute
   '/teams/$teamId/players/$id': typeof TeamsTeamIdPlayersIdIndexLazyRoute
 }
 
@@ -394,6 +416,7 @@ export interface FileRoutesById {
   '/teams/$teamId/matches/$id/edit': typeof TeamsTeamIdMatchesIdEditLazyRoute
   '/teams/$teamId/players/$id/edit': typeof TeamsTeamIdPlayersIdEditLazyRoute
   '/teams/$teamId/competitions/$id/': typeof TeamsTeamIdCompetitionsIdIndexLazyRoute
+  '/teams/$teamId/matches/$id/': typeof TeamsTeamIdMatchesIdIndexLazyRoute
   '/teams/$teamId/players/$id/': typeof TeamsTeamIdPlayersIdIndexLazyRoute
 }
 
@@ -417,6 +440,7 @@ export interface FileRouteTypes {
     | '/teams/$teamId/matches/$id/edit'
     | '/teams/$teamId/players/$id/edit'
     | '/teams/$teamId/competitions/$id'
+    | '/teams/$teamId/matches/$id'
     | '/teams/$teamId/players/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -437,6 +461,7 @@ export interface FileRouteTypes {
     | '/teams/$teamId/matches/$id/edit'
     | '/teams/$teamId/players/$id/edit'
     | '/teams/$teamId/competitions/$id'
+    | '/teams/$teamId/matches/$id'
     | '/teams/$teamId/players/$id'
   id:
     | '__root__'
@@ -457,6 +482,7 @@ export interface FileRouteTypes {
     | '/teams/$teamId/matches/$id/edit'
     | '/teams/$teamId/players/$id/edit'
     | '/teams/$teamId/competitions/$id/'
+    | '/teams/$teamId/matches/$id/'
     | '/teams/$teamId/players/$id/'
   fileRoutesById: FileRoutesById
 }
@@ -479,6 +505,7 @@ export interface RootRouteChildren {
   TeamsTeamIdMatchesIdEditLazyRoute: typeof TeamsTeamIdMatchesIdEditLazyRoute
   TeamsTeamIdPlayersIdEditLazyRoute: typeof TeamsTeamIdPlayersIdEditLazyRoute
   TeamsTeamIdCompetitionsIdIndexLazyRoute: typeof TeamsTeamIdCompetitionsIdIndexLazyRoute
+  TeamsTeamIdMatchesIdIndexLazyRoute: typeof TeamsTeamIdMatchesIdIndexLazyRoute
   TeamsTeamIdPlayersIdIndexLazyRoute: typeof TeamsTeamIdPlayersIdIndexLazyRoute
 }
 
@@ -502,6 +529,7 @@ const rootRouteChildren: RootRouteChildren = {
   TeamsTeamIdPlayersIdEditLazyRoute: TeamsTeamIdPlayersIdEditLazyRoute,
   TeamsTeamIdCompetitionsIdIndexLazyRoute:
     TeamsTeamIdCompetitionsIdIndexLazyRoute,
+  TeamsTeamIdMatchesIdIndexLazyRoute: TeamsTeamIdMatchesIdIndexLazyRoute,
   TeamsTeamIdPlayersIdIndexLazyRoute: TeamsTeamIdPlayersIdIndexLazyRoute,
 }
 
@@ -534,6 +562,7 @@ export const routeTree = rootRoute
         "/teams/$teamId/matches/$id/edit",
         "/teams/$teamId/players/$id/edit",
         "/teams/$teamId/competitions/$id/",
+        "/teams/$teamId/matches/$id/",
         "/teams/$teamId/players/$id/"
       ]
     },
@@ -587,6 +616,9 @@ export const routeTree = rootRoute
     },
     "/teams/$teamId/competitions/$id/": {
       "filePath": "teams.$teamId.competitions.$id.index.lazy.tsx"
+    },
+    "/teams/$teamId/matches/$id/": {
+      "filePath": "teams.$teamId.matches.$id.index.lazy.tsx"
     },
     "/teams/$teamId/players/$id/": {
       "filePath": "teams.$teamId.players.$id.index.lazy.tsx"

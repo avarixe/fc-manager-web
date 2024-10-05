@@ -14,7 +14,9 @@ function EditTeamPage() {
 
   return (
     <Stack>
-      <Title mb="xl">Edit Team</Title>
+      <Title fw="lighter" mb="xl">
+        Edit Team
+      </Title>
 
       <TeamForm record={team} />
     </Stack>

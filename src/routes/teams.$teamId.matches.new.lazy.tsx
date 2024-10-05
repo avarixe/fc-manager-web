@@ -14,7 +14,9 @@ function NewMatchPage() {
 
   return (
     <Stack>
-      <Title mb="xl">New Match</Title>
+      <Title fw="lighter" mb="xl">
+        New Match
+      </Title>
 
       <MatchForm team={team} />
     </Stack>
