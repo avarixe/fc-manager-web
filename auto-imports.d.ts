@@ -8,6 +8,7 @@ export {}
 declare global {
   const AppNavbar: typeof import('./src/components/app/AppNavbar')['AppNavbar']
   const CompetitionForm: typeof import('./src/components/competition/CompetitionForm')['CompetitionForm']
+  const CompetitionList: typeof import('./src/components/competition/CompetitionList')['CompetitionList']
   const DataTabl: typeof import('./src/components/base/DataTable')['DataTabl']
   const DataTable: typeof import('./src/components/base/DataTable')['DataTable']
   const DatePickerInput: typeof import('./src/components/base/DatePickerInput')['DatePickerInput']
