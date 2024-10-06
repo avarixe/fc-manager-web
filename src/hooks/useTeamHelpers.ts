@@ -2,7 +2,7 @@ import { Tables } from "@/database-generated.types";
 
 export const useTeamHelpers = (team: Tables<"teams"> | null) => {
   const seasonOn = useCallback(
-    (date: string) => {
+    (date: string): number => {
       if (!team) {
         return 0;
       }
@@ -12,7 +12,7 @@ export const useTeamHelpers = (team: Tables<"teams"> | null) => {
     [team],
   );
 
-  const currentSeason = useMemo(
+  const currentSeason: number = useMemo(
     () => (team ? seasonOn(team.currently_on) : 0),
     [seasonOn, team],
   );
@@ -30,9 +30,17 @@ export const useTeamHelpers = (team: Tables<"teams"> | null) => {
     [team],
   );
 
-  const currentYear = useMemo(
+  const currentYear: number = useMemo(
     () => dayjs(team?.currently_on).year(),
     [team?.currently_on],
+  );
+
+  const endOfCurrentSeason: string = useMemo(
+    () =>
+      dayjs(team?.started_on)
+        .add(currentSeason + 1, "year")
+        .format("YYYY-MM-DD"),
+    [currentSeason, team?.started_on],
   );
 
   return {
@@ -40,5 +48,6 @@ export const useTeamHelpers = (team: Tables<"teams"> | null) => {
     seasonOn,
     currentSeason,
     currentYear,
+    endOfCurrentSeason,
   };
 };

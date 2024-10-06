@@ -1,12 +1,15 @@
 import { Tables } from "@/database-generated.types";
-import { NavLink } from "@mantine/core";
+import { Button, NavLink } from "@mantine/core";
 
 type CompetitionItem = Pick<Tables<"competitions">, "id" | "name" | "champion">;
 
 export const CompetitionList: React.FC<{
   competitions: CompetitionItem[];
+  season: number;
   team: Tables<"teams">;
-}> = ({ competitions, team }) => {
+}> = ({ competitions, season, team }) => {
+  const { seasonLabel } = useTeamHelpers(team);
+
   const statusIcon = useCallback(
     (competition: CompetitionItem) => {
       if (competition.champion) {
@@ -22,6 +25,14 @@ export const CompetitionList: React.FC<{
 
   return (
     <>
+      <Button
+        component={Link}
+        to={`/teams/${team.id}/seasons/${season}`}
+        variant="subtle"
+        size="compact-xl"
+      >
+        {seasonLabel(season)}
+      </Button>
       {competitions.map((competition) => (
         <NavLink
           key={competition.id}

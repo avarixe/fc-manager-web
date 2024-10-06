@@ -13,7 +13,7 @@ export const Route = createLazyFileRoute("/teams/$teamId/competitions/")({
 
 function CompetitionsPage() {
   const { teamId } = Route.useParams();
-  const { team, currentSeason, seasonLabel } = useTeam(teamId);
+  const { team, currentSeason } = useTeam(teamId);
 
   const [competitions, setCompetitions] = useState<Competition[]>([]);
   const supabase = useAtomValue(supabaseAtom);
@@ -57,13 +57,10 @@ function CompetitionsPage() {
 
       <Timeline bulletSize={24} lineWidth={2}>
         {[...Array(currentSeason + 1).keys()].reverse().map((season) => (
-          <Timeline.Item
-            key={season}
-            title={seasonLabel(season)}
-            bullet={String(season + 1)}
-          >
+          <Timeline.Item key={season} bullet={String(season + 1)}>
             <CompetitionList
               competitions={competitionsBySeason[season] ?? []}
+              season={season}
               team={team}
             />
           </Timeline.Item>

@@ -36,6 +36,7 @@ declare global {
   const forwardRef: typeof import('react')['forwardRef']
   const lazy: typeof import('react')['lazy']
   const loadingAtom: typeof import('./src/atoms/index')['loadingAtom']
+  const matchScore: typeof import('./src/utils/match')['matchScore']
   const memo: typeof import('react')['memo']
   const positions: typeof import('./src/constants/index')['positions']
   const sessionAtom: typeof import('./src/atoms/index')['sessionAtom']

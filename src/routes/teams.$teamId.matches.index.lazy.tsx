@@ -113,16 +113,7 @@ function MatchesPage() {
               <div>
                 {match.home_team} v {match.away_team}
               </div>
-              <Box c={scoreColor}>
-                {match.home_score}
-                {match.home_penalty_score
-                  ? ` (${match.home_penalty_score})`
-                  : ""}
-                -{match.away_score}
-                {match.away_penalty_score
-                  ? ` (${match.away_penalty_score})`
-                  : ""}
-              </Box>
+              <Box c={scoreColor}>{matchScore(match)}</Box>
             </>
           );
         },
