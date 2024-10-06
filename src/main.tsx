@@ -1,4 +1,3 @@
-import React from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider } from "@tanstack/react-router";
 import { Provider as JotaiProvider } from "jotai";
@@ -28,13 +27,11 @@ dayjs.extend(duration);
 dayjs.extend(relativeTime);
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <React.StrictMode>
-    <JotaiProvider>
-      <MantineProvider defaultColorScheme="dark">
-        <ModalsProvider>
-          <RouterProvider router={router} />
-        </ModalsProvider>
-      </MantineProvider>
-    </JotaiProvider>
-  </React.StrictMode>,
+  <JotaiProvider>
+    <MantineProvider defaultColorScheme="dark">
+      <ModalsProvider>
+        <RouterProvider router={router} />
+      </ModalsProvider>
+    </MantineProvider>
+  </JotaiProvider>,
 );

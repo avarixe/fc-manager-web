@@ -168,6 +168,7 @@ function TeamPage() {
           navigate({ to: "/teams" });
         } catch (error) {
           console.error(error);
+        } finally {
           setAppLoading(false);
         }
       },

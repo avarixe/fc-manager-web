@@ -1,4 +1,4 @@
-import { Tables } from "@/database-generated.types";
+import { Competition } from "@/types";
 import {
   Accordion,
   ActionIcon,
@@ -6,7 +6,9 @@ import {
   Button,
   Group,
   LoadingOverlay,
+  Modal,
   NumberInput,
+  SegmentedControl,
   Stack,
   Switch,
   Table,
@@ -14,31 +16,9 @@ import {
   Title,
 } from "@mantine/core";
 import { isNotEmpty, useField, useForm } from "@mantine/form";
+import { useDisclosure } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
 import { cloneDeep } from "lodash-es";
-
-interface Competition extends Tables<"competitions"> {
-  stages: {
-    name: string;
-    table: {
-      team: string;
-      w: number;
-      d: number;
-      l: number;
-      gf: number;
-      ga: number;
-      pts: number;
-    }[];
-    fixtures: {
-      home_team: string;
-      away_team: string;
-      legs: {
-        home_score: string;
-        away_score: string;
-      }[];
-    }[];
-  }[];
-}
 
 type Stage = Competition["stages"][number];
 type StageTableRowData = Stage["table"][number];
@@ -79,6 +59,37 @@ function CompetitionPage() {
     fetchCompetition();
   }, [id, supabase, teamId]);
 
+  const setAppLoading = useSetAtom(appLoadingAtom);
+  const navigate = useNavigate();
+  const onClickDelete = useCallback(() => {
+    modals.openConfirmModal({
+      title: "Delete Team",
+      centered: true,
+      children: (
+        <MText size="sm">
+          Are you sure you want to delete this team? This action cannot be
+          undone.
+        </MText>
+      ),
+      labels: {
+        confirm: "Delete",
+        cancel: "Cancel",
+      },
+      confirmProps: { color: "red" },
+      onConfirm: async () => {
+        try {
+          setAppLoading(true);
+          await supabase.from("competitions").delete().eq("id", id);
+          navigate({ to: `/teams/${teamId}/competitions/` });
+        } catch (error) {
+          console.error(error);
+        } finally {
+          setAppLoading(false);
+        }
+      },
+    });
+  }, [id, navigate, setAppLoading, supabase, teamId]);
+
   const groupStages = useMemo(
     () => competition?.stages?.filter((stage) => stage.table.length > 0) ?? [],
     [competition],
@@ -108,67 +119,110 @@ function CompetitionPage() {
     [knockoutStages, groupStages],
   );
 
-  const onChangeStage = async (
-    category: StageType,
-    index: number,
-    stage: Stage,
-  ) => {
-    if (!competition) {
-      return;
-    }
+  const onAddStage = useCallback(
+    async (stage: Stage) => {
+      if (!competition) {
+        return;
+      }
 
-    const newGroupStages = [...groupStages];
-    const newKnockoutStages = [...knockoutStages];
-    switch (category) {
-      case StageType.Group:
-        newGroupStages[index] = stage;
-        break;
-      case StageType.Knockout:
-        newKnockoutStages[index] = stage;
-    }
-    const stages = [...newGroupStages, ...newKnockoutStages];
-    const { data, error } = await supabase
-      .from("competitions")
-      .update({ stages })
-      .eq("id", competition.id)
-      .select();
-    if (error) {
-      console.error(error);
-    } else {
-      assertType<Competition[]>(data);
-      setCompetition(data[0]);
-    }
-  };
+      const { data, error } = await supabase
+        .from("competitions")
+        .update({ stages: [...(competition.stages ?? []), stage] })
+        .eq("id", competition.id)
+        .select();
+      if (error) {
+        console.error(error);
+      } else {
+        assertType<Competition[]>(data);
+        setCompetition(data[0]);
+      }
+    },
+    [competition, supabase],
+  );
 
-  const onDeleteStage = async (category: StageType, index: number) => {
-    if (!competition) {
-      return;
-    }
+  const onChangeStage = useCallback(
+    async (category: StageType, index: number, stage: Stage) => {
+      if (!competition) {
+        return;
+      }
 
-    const newGroupStages =
-      category === StageType.Group
-        ? [...groupStages.slice(0, index), ...groupStages.slice(index + 1)]
-        : groupStages;
-    const newKnockoutStages =
-      category === StageType.Knockout
-        ? [
-            ...knockoutStages.slice(0, index),
-            ...knockoutStages.slice(index + 1),
-          ]
-        : knockoutStages;
-    const stages = [...newGroupStages, ...newKnockoutStages];
-    const { data, error } = await supabase
-      .from("competitions")
-      .update({ stages })
-      .eq("id", competition.id)
-      .select();
-    if (error) {
-      console.error(error);
-    } else {
-      assertType<Competition[]>(data);
-      setCompetition(data[0]);
-    }
-  };
+      const newGroupStages = [...groupStages];
+      const newKnockoutStages = [...knockoutStages];
+      switch (category) {
+        case StageType.Group:
+          newGroupStages[index] = stage;
+          break;
+        case StageType.Knockout:
+          newKnockoutStages[index] = stage;
+      }
+      const stages = [...newGroupStages, ...newKnockoutStages];
+      const { data, error } = await supabase
+        .from("competitions")
+        .update({ stages })
+        .eq("id", competition.id)
+        .select();
+      if (error) {
+        console.error(error);
+      } else {
+        assertType<Competition[]>(data);
+        setCompetition(data[0]);
+      }
+    },
+    [competition, groupStages, knockoutStages, supabase],
+  );
+
+  const onDeleteStage = useCallback(
+    async (category: StageType, index: number) => {
+      if (!competition) {
+        return;
+      }
+
+      const newGroupStages =
+        category === StageType.Group
+          ? [...groupStages.slice(0, index), ...groupStages.slice(index + 1)]
+          : groupStages;
+      const newKnockoutStages =
+        category === StageType.Knockout
+          ? [
+              ...knockoutStages.slice(0, index),
+              ...knockoutStages.slice(index + 1),
+            ]
+          : knockoutStages;
+      const stages = [...newGroupStages, ...newKnockoutStages];
+      const { data, error } = await supabase
+        .from("competitions")
+        .update({ stages })
+        .eq("id", competition.id)
+        .select();
+      if (error) {
+        console.error(error);
+      } else {
+        assertType<Competition[]>(data);
+        setCompetition(data[0]);
+      }
+    },
+    [competition, groupStages, knockoutStages, supabase],
+  );
+
+  const getTeamColor = useCallback(
+    (name: string | null) => {
+      if (!name || !team || !competition) {
+        return "";
+      }
+
+      if (name === competition.champion) {
+        return "text-amber";
+      } else if (name === team.name) {
+        return "text-blue";
+      } else {
+        return "";
+      }
+    },
+    [competition, team],
+  );
+
+  const [addStageOpened, { open: openAddStage, close: closeAddStage }] =
+    useDisclosure();
 
   if (!team || !competition) {
     return null;
@@ -179,6 +233,13 @@ function CompetitionPage() {
       <Box mb="xl">
         <Title order={5}>{seasonLabel(competition.season)}</Title>
         <Title fw="lighter">{competition.name}</Title>
+        {competition.champion && (
+          <Group gap={4}>
+            <Box className="i-mdi:trophy text-amber mr-1" />
+            {competition.champion}
+            <Box className="i-mdi:trophy text-amber ml-1" />
+          </Group>
+        )}
       </Box>
       <Switch
         label="Readonly Mode"
@@ -192,11 +253,16 @@ function CompetitionPage() {
         >
           Edit
         </Button>
-        <Button onClick={() => alert("TODO")} variant="outline">
+        <AddStageModal
+          opened={addStageOpened}
+          onClose={closeAddStage}
+          onAdd={onAddStage}
+        />
+        <Button onClick={openAddStage} variant="outline">
           Add Stage
         </Button>
         <Button
-          onClick={() => alert("TODO")}
+          onClick={onClickDelete}
           variant="outline"
           color="red"
           className="ml-auto"
@@ -223,6 +289,7 @@ function CompetitionPage() {
                     onChangeStage(category.value, j, newStage)
                   }
                   onDelete={() => onDeleteStage(category.value, j)}
+                  getTeamColor={getTeamColor}
                 />
               ))}
             </Accordion.Panel>
@@ -233,13 +300,147 @@ function CompetitionPage() {
   );
 }
 
+const AddStageModal: React.FC<{
+  opened: boolean;
+  onClose: () => void;
+  onAdd: (stage: Stage) => Promise<void>;
+}> = ({ opened, onClose, onAdd }) => {
+  const form = useForm<Stage>({
+    // mode: "uncontrolled",
+    initialValues: {
+      name: "",
+      table: [],
+      fixtures: [],
+    },
+    validate: {
+      name: isNotEmpty(),
+    },
+    onValuesChange: (values) => {
+      console.log(values);
+    },
+  });
+
+  const [type, setType] = useState<string>(StageType.Group);
+  const [numTeams, setNumTeams] = useState(2);
+  const [numLegs, setNumLegs] = useState(1);
+  useEffect(() => {
+    switch (type) {
+      case StageType.Group:
+        form.setFieldValue("fixtures", []);
+        form.setFieldValue(
+          "table",
+          Array(numTeams).fill({
+            team: "",
+            w: 0,
+            d: 0,
+            l: 0,
+            gf: 0,
+            ga: 0,
+            pts: 0,
+          }),
+        );
+        break;
+      case StageType.Knockout:
+        form.setFieldValue("table", []);
+        form.setFieldValue(
+          "fixtures",
+          Array(Math.ceil(numTeams / 2)).fill({
+            home_team: "",
+            away_team: "",
+            legs: Array(numLegs).fill({
+              home_score: "",
+              away_score: "",
+            }),
+          }),
+        );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [numLegs, numTeams, type]);
+
+  useEffect(() => {
+    if (opened) {
+      form.reset();
+      setType(StageType.Group);
+      setNumTeams(2);
+      setNumLegs(1);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [opened]);
+
+  const [loading, setLoading] = useState(false);
+  const handleSubmit = useCallback(async () => {
+    if (!form.isValid()) {
+      return;
+    }
+
+    setLoading(true);
+    await onAdd(form.values);
+    setLoading(false);
+    onClose();
+  }, [form, onAdd, onClose]);
+
+  return (
+    <Modal
+      opened={opened}
+      onClose={onClose}
+      title="Add Stage"
+      centered
+      closeOnClickOutside={false}
+    >
+      <LoadingOverlay
+        visible={loading}
+        overlayProps={{ radius: "sm", blur: 2 }}
+      />
+      <form onSubmit={form.onSubmit(handleSubmit)}>
+        <TextInput
+          {...form.getInputProps("name")}
+          label="Name"
+          required
+          mb="xs"
+        />
+        <NumberInput
+          value={numTeams}
+          onChange={(value) => setNumTeams(Number(value))}
+          label="Number of Teams"
+          required
+          min={2}
+          mb="xs"
+        />
+        <SegmentedControl
+          value={type}
+          onChange={setType}
+          data={[
+            { label: "Group", value: StageType.Group },
+            { label: "Knockout", value: StageType.Knockout },
+          ]}
+          mb="xs"
+        />
+        {type === StageType.Knockout && (
+          <NumberInput
+            value={numLegs}
+            onChange={(value) => setNumLegs(Number(value))}
+            label="Number of Legs"
+            required
+            min={2}
+            mb="xs"
+          />
+        )}
+        <Button type="submit" fullWidth mt="xl">
+          Add
+        </Button>
+      </form>
+    </Modal>
+  );
+};
+
 const StageItem: React.FC<{
   stage: Stage;
   type: StageType;
   readonly: boolean;
   onChange: (stage: Stage) => Promise<void>;
   onDelete: () => Promise<void>;
-}> = ({ stage, type, readonly, onChange, onDelete }) => {
+  getTeamColor: (name: string | null) => string;
+}> = ({ stage, type, readonly, onChange, onDelete, getTeamColor }) => {
   const field = useField({
     initialValue: stage.name,
     validateOnChange: true,
@@ -347,12 +548,18 @@ const StageItem: React.FC<{
         )}
       </Group>
       {type === StageType.Group ? (
-        <StageTable table={table} isEditing={isEditing} onChange={setTable} />
+        <StageTable
+          table={table}
+          isEditing={isEditing}
+          onChange={setTable}
+          getTeamColor={getTeamColor}
+        />
       ) : (
         <StageFixtures
           fixtures={fixtures}
           isEditing={isEditing}
           onChange={setFixtures}
+          getTeamColor={getTeamColor}
         />
       )}
     </Box>
@@ -363,7 +570,8 @@ const StageTable: React.FC<{
   table: StageTableRowData[];
   isEditing: boolean;
   onChange: (table: StageTableRowData[]) => void;
-}> = ({ table, isEditing, onChange }) => {
+  getTeamColor: (name: string | null) => string;
+}> = ({ table, isEditing, onChange, getTeamColor }) => {
   const onChangeRow = (index: number, row: StageTableRowData) => {
     const newTable = [...table];
     newTable[index] = row;
@@ -402,6 +610,7 @@ const StageTable: React.FC<{
               isEditing={isEditing}
               index={j + 1}
               onChange={(row) => onChangeRow(j, row)}
+              getTeamColor={getTeamColor}
             />
           ))}
         </Table.Tbody>
@@ -425,7 +634,8 @@ const StageTableRow: React.FC<{
   isEditing: boolean;
   index: number;
   onChange: (row: StageTableRowData) => void;
-}> = ({ row, isEditing, index, onChange }) => {
+  getTeamColor: (name: string | null) => string;
+}> = ({ row, isEditing, index, onChange, getTeamColor }) => {
   const form = useForm({
     initialValues: {
       team: row.team ?? "",
@@ -478,12 +688,14 @@ const StageTableRow: React.FC<{
       variant={isEditing ? "default" : "unstyled"}
       hideControls
       readOnly={!isEditing}
-      classNames={{ input: "text-right" }}
+      classNames={{
+        input: ["text-right", getTeamColor(form.values.team)].join(" "),
+      }}
     />
   );
 
   return (
-    <Table.Tr>
+    <Table.Tr className={getTeamColor(form.values.team)}>
       <Table.Td ta="center">{index}</Table.Td>
       <Table.Td>
         {/* TODO: use Team combobox */}
@@ -492,6 +704,7 @@ const StageTableRow: React.FC<{
           size="xs"
           variant={isEditing ? "default" : "unstyled"}
           readOnly={!isEditing}
+          classNames={{ input: getTeamColor(form.values.team) }}
         />
       </Table.Td>
       <Table.Td>{statField("w")}</Table.Td>
@@ -517,7 +730,8 @@ const StageFixtures: React.FC<{
   fixtures: StageFixtureData[];
   isEditing: boolean;
   onChange: (fixtures: StageFixtureData[]) => void;
-}> = ({ fixtures, isEditing, onChange }) => {
+  getTeamColor: (name: string | null) => string;
+}> = ({ fixtures, isEditing, onChange, getTeamColor }) => {
   const onChangeFixture = (index: number, fixture: StageFixtureData) => {
     const newFixtures = [...fixtures];
     newFixtures[index] = fixture;
@@ -562,6 +776,7 @@ const StageFixtures: React.FC<{
               fixture={fixture}
               isEditing={isEditing}
               onChange={(fixture) => onChangeFixture(j, fixture)}
+              getTeamColor={getTeamColor}
             />
           ))}
         </Table.Tbody>
@@ -584,7 +799,8 @@ const StageFixtureRow: React.FC<{
   fixture: StageFixtureData;
   isEditing: boolean;
   onChange: (fixture: StageFixtureData) => void;
-}> = ({ fixture, isEditing, onChange }) => {
+  getTeamColor: (name: string | null) => string;
+}> = ({ fixture, isEditing, onChange, getTeamColor }) => {
   const form = useForm({
     initialValues: {
       home_team: fixture.home_team ?? "",
@@ -642,7 +858,13 @@ const StageFixtureRow: React.FC<{
           size="xs"
           variant={isEditing ? "default" : "unstyled"}
           readOnly={!isEditing}
-          classNames={{ input: "text-right" }}
+          classNames={{
+            input: [
+              "text-right",
+              scoreDiff(fixture) > 0 ? "font-extrabold" : undefined,
+              getTeamColor(fixture.home_team),
+            ].join(" "),
+          }}
         />
       </Table.Td>
       <Table.Td align="center">
@@ -658,7 +880,13 @@ const StageFixtureRow: React.FC<{
               size="xs"
               variant={isEditing ? "default" : "unstyled"}
               readOnly={!isEditing}
-              classNames={{ input: "w-12 text-right" }}
+              classNames={{
+                input: [
+                  "w-12 text-right",
+                  scoreDiff(fixture) > 0 ? "font-extrabold" : undefined,
+                  getTeamColor(fixture.home_team),
+                ].join(" "),
+              }}
             />
             <MText size="xs">-</MText>
             <TextInput
@@ -667,7 +895,13 @@ const StageFixtureRow: React.FC<{
               size="xs"
               variant={isEditing ? "default" : "unstyled"}
               readOnly={!isEditing}
-              classNames={{ input: "w-12" }}
+              classNames={{
+                input: [
+                  "w-12",
+                  scoreDiff(fixture) < 0 ? "font-extrabold" : undefined,
+                  getTeamColor(fixture.away_team),
+                ].join(" "),
+              }}
             />
           </Group>
         ))}
@@ -693,8 +927,41 @@ const StageFixtureRow: React.FC<{
           size="xs"
           variant={isEditing ? "default" : "unstyled"}
           readOnly={!isEditing}
+          classNames={{
+            input: [
+              scoreDiff(fixture) < 0 ? "font-extrabold" : undefined,
+              getTeamColor(fixture.away_team),
+            ].join(" "),
+          }}
         />
       </Table.Td>
     </Table.Tr>
   );
 };
+
+function scoreDiff(fixture: StageFixtureData) {
+  let homeScore = 0;
+  let awayScore = 0;
+
+  const scoreRegex = /^(\d+)(?: \((\d+)\))?$/;
+  fixture.legs.forEach((leg) => {
+    if (!leg.home_score || !leg.away_score) {
+      return;
+    }
+
+    const [, homeLegScore, homePenScore] =
+      scoreRegex.exec(leg.home_score) || [];
+    const [, awayLegScore, awayPenScore] =
+      scoreRegex.exec(leg.away_score) || [];
+
+    if (homePenScore && awayPenScore) {
+      homeScore = parseInt(homePenScore);
+      awayScore = parseInt(awayPenScore);
+    } else {
+      homeScore += parseInt(homeLegScore);
+      awayScore += parseInt(awayLegScore);
+    }
+  });
+
+  return homeScore - awayScore;
+}

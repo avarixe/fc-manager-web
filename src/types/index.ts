@@ -57,3 +57,26 @@ export interface Match extends Tables<"matches"> {
     red_card: boolean;
   }[];
 }
+
+export interface Competition extends Tables<"competitions"> {
+  stages: {
+    name: string;
+    table: {
+      team: string;
+      w: number;
+      d: number;
+      l: number;
+      gf: number;
+      ga: number;
+      pts: number;
+    }[];
+    fixtures: {
+      home_team: string;
+      away_team: string;
+      legs: {
+        home_score: string;
+        away_score: string;
+      }[];
+    }[];
+  }[];
+}

@@ -54,6 +54,13 @@ export function CompetitionForm({
         mb="xs"
         {...form.getInputProps("name")}
       />
+      {record && (
+        <TextInput
+          label="Champion"
+          mb="xs"
+          {...form.getInputProps("champion")}
+        />
+      )}
       <Button mt="xl" type="submit">
         Save Competition
       </Button>
