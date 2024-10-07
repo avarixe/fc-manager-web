@@ -2,12 +2,16 @@ import { Tables } from "@/database-generated.types";
 import { Player } from "@/types";
 import {
   Badge,
+  Button,
+  Group,
   NumberFormatter,
   Table,
   ThemeIcon,
   Timeline,
   Title,
 } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
+import { modals } from "@mantine/modals";
 import { orderBy } from "lodash-es";
 
 enum PlayerEventType {
@@ -17,7 +21,12 @@ enum PlayerEventType {
   Transfer = "Transfer",
 }
 
-type PlayerEvent = { type: PlayerEventType; date: string; priority: number } & (
+type PlayerEvent = {
+  type: PlayerEventType;
+  date: string;
+  priority: number;
+  index: number;
+} & (
   | Player["contracts"][number]
   | Player["injuries"][number]
   | Player["loans"][number]
@@ -26,34 +35,39 @@ type PlayerEvent = { type: PlayerEventType; date: string; priority: number } & (
 
 export const PlayerTimeline: React.FC<{
   player: Player;
+  setPlayer: StateSetter<Player>;
   team: Tables<"teams">;
-}> = ({ player, team }) => {
+}> = ({ player, setPlayer, team }) => {
   const items: PlayerEvent[] = useMemo(
     () =>
       orderBy(
         [
-          ...player.contracts.map((contract) => ({
+          ...player.contracts.map((contract, index) => ({
             type: PlayerEventType.Contract,
             date: contract.started_on,
             priority: 1,
+            index,
             ...contract,
           })),
-          ...player.injuries.map((injury) => ({
+          ...player.injuries.map((injury, index) => ({
             type: PlayerEventType.Injury,
             date: injury.started_on,
             priority: 3,
+            index,
             ...injury,
           })),
-          ...player.loans.map((loan) => ({
+          ...player.loans.map((loan, index) => ({
             type: PlayerEventType.Loan,
             date: loan.started_on,
             priority: loan.destination === team.name ? 2 : 4,
+            index,
             ...loan,
           })),
-          ...player.transfers.map((transfer) => ({
+          ...player.transfers.map((transfer, index) => ({
             type: PlayerEventType.Transfer,
             date: transfer.moved_on,
             priority: transfer.destination === team.name ? 0 : 5,
+            index,
             ...transfer,
           })),
         ],
@@ -68,30 +82,194 @@ export const PlayerTimeline: React.FC<{
       player.transfers,
     ],
   );
+  console.log(items);
+
+  const supabase = useAtomValue(supabaseAtom);
+  const addContract = useCallback(
+    async (contract: Player["contracts"][number]) => {
+      const contracts = [...player.contracts];
+      let status = player.status;
+      if (contract.signed_on) {
+        // Update player status based on the contract.
+        if (team.currently_on < contract.started_on) {
+          status = "Pending";
+        } else if (
+          contract.started_on <= team.currently_on &&
+          team.currently_on < contract.ended_on &&
+          [null, "Pending"].includes(status)
+        ) {
+          status = "Active";
+        }
+
+        // Update previous contract as Renewed.
+        const previousContract = contracts[contracts.length - 1];
+        if (
+          previousContract &&
+          contract.started_on < previousContract.ended_on
+        ) {
+          previousContract.ended_on = contract.started_on;
+          previousContract.conclusion = "Renewed";
+        }
+      }
+      contracts.push(contract);
+
+      const { error } = await supabase
+        .from("players")
+        .update({ status, contracts })
+        .eq("id", player.id);
+      if (error) {
+        console.error(error);
+      } else {
+        setPlayer((prev: Player) => ({ ...prev, status, contracts }));
+      }
+    },
+    [
+      player.contracts,
+      player.id,
+      player.status,
+      setPlayer,
+      supabase,
+      team.currently_on,
+    ],
+  );
+
+  const updateContract = useCallback(
+    async (index: number, contract: Player["contracts"][number]) => {
+      const contracts = [...player.contracts];
+      contracts[index] = contract;
+
+      // Update player status based on the contract.
+      let status = player.status;
+      if (index === contracts.length - 1 && contract.signed_on) {
+        // Update player status based on the contract.
+        if (team.currently_on < contract.started_on) {
+          status = "Pending";
+        } else if (
+          contract.started_on <= team.currently_on &&
+          team.currently_on < contract.ended_on &&
+          [null, "Pending"].includes(status)
+        ) {
+          status = "Active";
+        }
+      }
+
+      const { error } = await supabase
+        .from("players")
+        .update({ status, contracts })
+        .eq("id", player.id);
+      if (error) {
+        console.error(error);
+      } else {
+        setPlayer((prev: Player) => ({ ...prev, status, contracts }));
+      }
+    },
+    [
+      player.contracts,
+      player.id,
+      player.status,
+      setPlayer,
+      supabase,
+      team.currently_on,
+    ],
+  );
+
+  const removeContract = useCallback(
+    async (index: number) => {
+      modals.openConfirmModal({
+        title: "Delete Contract",
+        centered: true,
+        children: (
+          <MText size="sm">
+            Are you sure you want to delete this contract? This action cannot be
+            undone.
+          </MText>
+        ),
+        labels: {
+          confirm: "Delete",
+          cancel: "Cancel",
+        },
+        confirmProps: { color: "red" },
+        onConfirm: async () => {
+          const contracts = [...player.contracts];
+          contracts.splice(index, 1);
+
+          // Update player status based on the contract.
+          let status = player.status;
+          if (index === player.contracts.length - 1) {
+            status = null;
+          }
+
+          const { error } = await supabase
+            .from("players")
+            .update({ status, contracts })
+            .eq("id", player.id);
+          if (error) {
+            console.error(error);
+          } else {
+            setPlayer((prev: Player) => ({ ...prev, status, contracts }));
+          }
+        },
+      });
+    },
+    [player.contracts, player.id, player.status, setPlayer, supabase],
+  );
 
   const renderItem = useCallback(
-    (item: PlayerEvent) => {
+    (item: PlayerEvent, index: number) => {
       switch (item.type) {
         case PlayerEventType.Contract:
           assertType<Player["contracts"][number]>(item);
-          return <ContractEvent contract={item} team={team} />;
+          return (
+            <ContractEvent
+              contract={item}
+              team={team}
+              onSubmit={(contract) => updateContract(index, contract)}
+              onRemove={() => removeContract(index)}
+            />
+          );
         case PlayerEventType.Injury:
           assertType<Player["injuries"][number]>(item);
-          return <InjuryEvent injury={item} team={team} />;
+          return <InjuryEvent injury={item} team={team} index={index} />;
         case PlayerEventType.Loan:
           assertType<Player["loans"][number]>(item);
-          return <LoanEvent loan={item} team={team} />;
+          return <LoanEvent loan={item} team={team} index={index} />;
         case PlayerEventType.Transfer:
           assertType<Player["transfers"][number]>(item);
-          return <TransferEvent transfer={item} team={team} />;
+          return <TransferEvent transfer={item} team={team} index={index} />;
       }
     },
-    [team],
+    [removeContract, team, updateContract],
   );
+
+  const [
+    newContractOpened,
+    { open: openNewContract, close: closeNewContract },
+  ] = useDisclosure();
 
   return (
     <Timeline bulletSize={36}>
-      <Timeline.Item></Timeline.Item>
+      <Timeline.Item
+        bullet={
+          <ThemeIcon size="md" radius="xl" color="lime">
+            <div className="i-mdi:plus" />
+          </ThemeIcon>
+        }
+      >
+        <Button
+          onClick={openNewContract}
+          color="indigo"
+          leftSection={<div className="i-mdi:file-sign" />}
+        >
+          Contract
+        </Button>
+        <ContractForm
+          team={team}
+          opened={newContractOpened}
+          onClose={closeNewContract}
+          onSubmit={addContract}
+        />
+      </Timeline.Item>
+
       {items.map((item, index) => (
         <Timeline.Item
           key={index}
@@ -105,7 +283,7 @@ export const PlayerTimeline: React.FC<{
             </ThemeIcon>
           }
         >
-          {renderItem(item)}
+          {renderItem(item, index)}
         </Timeline.Item>
       ))}
     </Timeline>
@@ -115,13 +293,17 @@ export const PlayerTimeline: React.FC<{
 const ContractEvent: React.FC<{
   contract: Player["contracts"][number];
   team: Tables<"teams">;
-}> = ({ contract, team }) => {
+  onSubmit: (contract: Player["contracts"][number]) => Promise<void>;
+  onRemove: () => Promise<void>;
+}> = ({ contract, team, onSubmit, onRemove }) => {
+  const [opened, { open, close }] = useDisclosure();
+
   return (
     <div>
-      <Title c="blue" order={4}>
+      <Title c="indigo" order={4}>
         Contract
       </Title>
-      <Title c="blue" order={6}>
+      <Title c="indigo" order={6}>
         {!contract.signed_on && (
           <Badge variant="outline" color="red" mr="xs">
             UNSIGNED
@@ -153,7 +335,7 @@ const ContractEvent: React.FC<{
               />
             </Table.Td>
           </Table.Tr>
-          {contract.performance_bonus && (
+          {Boolean(contract.performance_bonus) && (
             <Table.Tr>
               <Table.Th>Performance Bonus</Table.Th>
               <Table.Td>
@@ -166,7 +348,7 @@ const ContractEvent: React.FC<{
               </Table.Td>
             </Table.Tr>
           )}
-          {contract.release_clause && (
+          {Boolean(contract.release_clause) && (
             <Table.Tr>
               <Table.Th>Release Clause</Table.Th>
               <Table.Td>
@@ -180,6 +362,32 @@ const ContractEvent: React.FC<{
           )}
         </Table.Tbody>
       </Table>
+
+      <Group mt="sm">
+        <Button
+          onClick={open}
+          variant="subtle"
+          size="compact-sm"
+          color="orange"
+        >
+          Edit
+        </Button>
+        <ContractForm
+          record={contract}
+          team={team}
+          opened={opened}
+          onClose={close}
+          onSubmit={onSubmit}
+        />
+        <Button
+          onClick={onRemove}
+          variant="subtle"
+          size="compact-sm"
+          color="gray"
+        >
+          Delete
+        </Button>
+      </Group>
     </div>
   );
 };
@@ -187,6 +395,7 @@ const ContractEvent: React.FC<{
 const InjuryEvent: React.FC<{
   injury: Player["injuries"][number];
   team: Tables<"teams">;
+  index: number;
 }> = ({ injury, team }) => {
   const duration = dayjs.duration(
     dayjs(injury.ended_on).diff(dayjs(injury.started_on)),
@@ -219,6 +428,7 @@ const InjuryEvent: React.FC<{
 const LoanEvent: React.FC<{
   loan: Player["loans"][number];
   team: Tables<"teams">;
+  index: number;
 }> = ({ loan, team }) => {
   const title =
     loan.destination === team.name
@@ -315,6 +525,7 @@ const LoanEvent: React.FC<{
 const TransferEvent: React.FC<{
   transfer: Player["transfers"][number];
   team: Tables<"teams">;
+  index: number;
 }> = ({ transfer, team }) => {
   const title =
     transfer.destination === team.name
@@ -390,7 +601,7 @@ function playerEventIconName(item: PlayerEvent, team: Tables<"teams">): string {
 function playerEventColor(item: PlayerEvent, team: Tables<"teams">): string {
   switch (item.type) {
     case PlayerEventType.Contract:
-      return "blue";
+      return "indigo";
     case PlayerEventType.Injury:
       return "pink";
     case PlayerEventType.Loan:

@@ -57,15 +57,15 @@ export const TeamDatePicker: React.FC<{ team: Tables<"teams"> }> = ({
             assertType<
               Pick<Player, "id" | "status" | "contracts" | "injuries" | "loans">
             >(player);
-            const lastContract = player.contracts
-              ? player.contracts[player.contracts.length - 1]
-              : null;
+            const signedContracts =
+              player.contracts?.filter((contract) => contract.signed_on) ?? [];
+            const lastContract = signedContracts[signedContracts.length - 1];
             const lastInjury = player.injuries
               ? player.injuries[player.injuries.length - 1]
               : null;
-            const lastLoan = player.loans
-              ? player.loans[player.loans.length - 1]
-              : null;
+            const signedLoans =
+              player.loans?.filter((loan) => loan.signed_on) ?? [];
+            const lastLoan = signedLoans[signedLoans.length - 1];
 
             if (lastContract) {
               if (currentDate < lastContract.started_on) {
@@ -98,6 +98,11 @@ export const TeamDatePicker: React.FC<{ team: Tables<"teams"> }> = ({
                   kit_no: null,
                 });
               }
+            } else {
+              await updatePlayerStatus(player, {
+                status: null,
+                kit_no: null,
+              });
             }
           }),
         );

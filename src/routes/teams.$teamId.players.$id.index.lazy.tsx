@@ -193,7 +193,7 @@ function PlayerPage() {
         </Title>
         <Divider my="xs" />
 
-        <PlayerTimeline player={player} team={team} />
+        <PlayerTimeline player={player} setPlayer={setPlayer} team={team} />
       </Box>
 
       <Box my="lg">
