@@ -1,4 +1,5 @@
 import { Tables } from "@/database-generated.types";
+import { Squad } from "@/types";
 import {
   ActionIcon,
   Box,
@@ -40,7 +41,7 @@ function SquadsPage() {
   const { teamId } = Route.useParams();
   const { team } = useTeam(teamId);
 
-  const [squads, setSquads] = useState<Tables<"squads">[]>([]);
+  const [squads, setSquads] = useState<Squad[]>([]);
   const [players, setPlayers] = useState<Player[]>([]);
   const supabase = useAtomValue(supabaseAtom);
   useEffect(() => {
@@ -53,6 +54,7 @@ function SquadsPage() {
       if (error) {
         console.error(error);
       } else {
+        assertType<Squad[]>(data);
         setSquads(data);
       }
     };
@@ -133,7 +135,7 @@ const NewSquadSection: React.FC<{ players: Player[]; teamId: string }> = ({
 
 const SquadCard: React.FC<
   CardProps & {
-    squad?: Tables<"squads">;
+    squad?: Squad;
     players: Player[];
     teamId: string;
     onCancel?: () => void;

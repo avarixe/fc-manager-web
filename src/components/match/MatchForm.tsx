@@ -68,12 +68,12 @@ export function MatchForm({
       />
       <TextInput label="Stage" mb="xs" {...form.getInputProps("stage")} />
       <Group grow>
-        <TextInput
+        <TeamAutocomplete
           label="Home Team"
           mb="xs"
           {...form.getInputProps("home_team")}
         />
-        <TextInput
+        <TeamAutocomplete
           label="Away Team"
           mb="xs"
           {...form.getInputProps("away_team")}

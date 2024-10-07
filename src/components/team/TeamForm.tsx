@@ -70,7 +70,7 @@ export function TeamForm({ record }: { record?: Tables<"teams"> }) {
 
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
-      <TextInput
+      <TeamAutocomplete
         {...form.getInputProps("name")}
         label="Name"
         required

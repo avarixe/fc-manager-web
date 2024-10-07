@@ -242,6 +242,30 @@ export type Database = {
           },
         ]
       }
+      options: {
+        Row: {
+          category: string
+          created_at: string
+          id: number
+          user_id: string
+          value: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id?: number
+          user_id?: string
+          value: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: number
+          user_id?: string
+          value?: string
+        }
+        Relationships: []
+      }
       players: {
         Row: {
           birth_year: number | null
@@ -338,7 +362,7 @@ export type Database = {
       squads: {
         Row: {
           created_at: string
-          formation: Record<string, number>
+          formation: Json
           id: number
           name: string
           team_id: number | null
@@ -346,7 +370,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          formation: Record<string, number>
+          formation: Json
           id?: number
           name: string
           team_id?: number | null
@@ -354,7 +378,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          formation?: Record<string, number>
+          formation?: Json
           id?: number
           name?: string
           team_id?: number | null

@@ -35,6 +35,7 @@ function ImportTeamPage() {
   const squadProgress = useProgress();
   const matchProgress = useProgress();
   const appearanceProgress = useProgress();
+  const optionProgress = useProgress();
 
   const idMap = useRef<
     Record<"player" | "match" | "cap", Record<string, number>>
@@ -131,12 +132,40 @@ function ImportTeamPage() {
       [],
     );
 
+    const teamOptions = new Set<string>();
+    players.forEach((player) => {
+      player.transfers.forEach((transfer) => {
+        teamOptions.add(transfer.origin);
+        teamOptions.add(transfer.destination);
+      });
+      player.loans.forEach((loan) => {
+        teamOptions.add(loan.origin);
+        teamOptions.add(loan.destination);
+      });
+    });
+    matches.forEach((match) => {
+      teamOptions.add(match.home);
+      teamOptions.add(match.away);
+    });
+    competitions.forEach((competition) => {
+      competition.stages.forEach((stage) => {
+        stage.fixtures.forEach((fixture) => {
+          teamOptions.add(fixture.homeTeam);
+          teamOptions.add(fixture.awayTeam);
+        });
+        stage.tableRows.forEach((row) => {
+          teamOptions.add(row.name);
+        });
+      });
+    });
+
     teamProgress.setTotal(1);
     playerProgress.setTotal(players.length);
     competitionProgress.setTotal(competitions.length);
     squadProgress.setTotal(squads.length);
     matchProgress.setTotal(matches.length);
     appearanceProgress.setTotal(caps.length);
+    optionProgress.setTotal(teamOptions.size);
 
     // Create Team
     const userId = session?.user.id;
@@ -159,6 +188,18 @@ function ImportTeamPage() {
     }
     const teamId = teamInsertData[0].id;
     teamProgress.increment();
+
+    // Add Options
+    teamOptions.forEach(async (value: string) => {
+      const { error } = await supabase
+        .from("options")
+        .insert({ user_id: session?.user.id, category: "Team", value });
+      if (error) {
+        // Probably already exists. Ignore.
+        console.error(error);
+      }
+      optionProgress.increment();
+    });
 
     // Create Players
     const playerInsertData: TablesInsert<"players">[] = players.map(
@@ -432,6 +473,7 @@ function ImportTeamPage() {
     squadProgress,
     matchProgress,
     appearanceProgress,
+    optionProgress,
     session?.user.id,
     supabase,
     importReadyCaps,
@@ -462,6 +504,7 @@ function ImportTeamPage() {
       {teamProgress.total > 0 && <Divider my="xl" />}
 
       <ImportProgress label="Team" color="yellow" {...teamProgress} />
+      <ImportProgress label="Options" color="teal" {...optionProgress} />
       <ImportProgress
         label="Competitions"
         color="cyan"

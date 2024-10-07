@@ -21,6 +21,7 @@ declare global {
   const PlayerForm: typeof import('./src/components/player/PlayerForm')['PlayerForm']
   const PlayerStatus: typeof import('./src/components/player/PlayerStatus')['PlayerStatus']
   const PlayerTimeline: typeof import('./src/components/player/PlayerTimeline')['PlayerTimeline']
+  const TeamAutocomplete: typeof import('./src/components/team/TeamAutocomplete')['TeamAutocomplete']
   const TeamDatePicker: typeof import('./src/components/team/TeamDatePicker')['TeamDatePicker']
   const TeamForm: typeof import('./src/components/team/TeamForm')['TeamForm']
   const appLoadingAtom: typeof import('./src/atoms/index')['appLoadingAtom']

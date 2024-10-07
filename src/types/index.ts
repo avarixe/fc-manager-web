@@ -80,3 +80,7 @@ export interface Competition extends Tables<"competitions"> {
     }[];
   }[];
 }
+
+export interface Squad extends Tables<"squads"> {
+  formation: Record<string, number>;
+}

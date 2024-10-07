@@ -698,8 +698,7 @@ const StageTableRow: React.FC<{
     <Table.Tr className={getTeamColor(form.values.team)}>
       <Table.Td ta="center">{index}</Table.Td>
       <Table.Td>
-        {/* TODO: use Team combobox */}
-        <TextInput
+        <TeamAutocomplete
           {...form.getInputProps("team")}
           size="xs"
           variant={isEditing ? "default" : "unstyled"}
@@ -853,7 +852,7 @@ const StageFixtureRow: React.FC<{
   return (
     <Table.Tr>
       <Table.Td align="right">
-        <TextInput
+        <TeamAutocomplete
           {...form.getInputProps("home_team")}
           size="xs"
           variant={isEditing ? "default" : "unstyled"}
@@ -922,7 +921,7 @@ const StageFixtureRow: React.FC<{
         )}
       </Table.Td>
       <Table.Td align="left">
-        <TextInput
+        <TeamAutocomplete
           {...form.getInputProps("away_team")}
           size="xs"
           variant={isEditing ? "default" : "unstyled"}
