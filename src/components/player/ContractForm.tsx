@@ -1,5 +1,4 @@
-import { Tables } from "@/database-generated.types";
-import { Player } from "@/types";
+import { Contract } from "@/types";
 import {
   ActionIcon,
   Button,
@@ -11,15 +10,12 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 
-type Contract = Player["contracts"][number];
-
 export const ContractForm: React.FC<{
   record?: Contract;
-  team: Tables<"teams">;
   opened: boolean;
   onClose: () => void;
   onSubmit: (contract: Contract) => Promise<void>;
-}> = ({ record, team, opened, onClose, onSubmit }) => {
+}> = ({ record, opened, onClose, onSubmit }) => {
   const form = useForm<Contract>({
     initialValues: {
       signed_on: record?.signed_on ?? "",
@@ -52,6 +48,7 @@ export const ContractForm: React.FC<{
   }, [opened]);
 
   const [numSeasons, setNumSeasons] = useState(1);
+  const team = useAtomValue(teamAtom)!;
   const { currentSeason } = useTeamHelpers(team);
   useEffect(() => {
     form.setFieldValue(
@@ -139,7 +136,7 @@ export const ContractForm: React.FC<{
                 : null
             }
             required
-            min={0}
+            min={1}
             mb="xs"
           />
         )}

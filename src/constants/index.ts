@@ -15,3 +15,17 @@ export const positions = [
   "ST",
   "RW",
 ];
+
+export enum PlayerEventKey {
+  Contract = "contracts",
+  Injury = "injuries",
+  Loan = "loans",
+  Transfer = "transfers",
+}
+
+export enum PlayerEventType {
+  Contract = "Contract",
+  Injury = "Injury",
+  Loan = "Loan",
+  Transfer = "Transfer",
+}

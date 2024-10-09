@@ -75,7 +75,7 @@ function PlayerPage() {
 
     fetchPlayer();
     fetchStats();
-  }, [id, supabase, teamId]);
+  }, [id, supabase, teamId, team?.currently_on]);
 
   if (!team || !player) {
     return null;

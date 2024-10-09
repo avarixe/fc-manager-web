@@ -1,4 +1,4 @@
-import { Tables, TablesUpdate } from "@/database-generated.types";
+import { Tables } from "@/database-generated.types";
 import { Player } from "@/types";
 import { NavLink, Popover } from "@mantine/core";
 import { Calendar } from "@mantine/dates";
@@ -9,26 +9,9 @@ export const TeamDatePicker: React.FC<{ team: Tables<"teams"> }> = ({
   const [opened, setOpened] = useState(false);
 
   const supabase = useAtomValue(supabaseAtom);
-  const updatePlayerStatus = useCallback(
-    async (
-      player: Pick<Player, "id" | "status">,
-      updates: TablesUpdate<"players">,
-    ) => {
-      if (player.status === updates.status) return;
-
-      const { error } = await supabase
-        .from("players")
-        .update(updates)
-        .eq("id", player.id);
-      if (error) {
-        console.error(error);
-      }
-    },
-    [supabase],
-  );
-
   const setAppLoading = useSetAtom(appLoadingAtom);
   const setTeam = useSetAtom(teamAtom);
+  const { updatePlayerStatus } = useDbCallbacks();
   const onClick = useCallback(
     async (date: Date) => {
       setAppLoading(true);
@@ -41,8 +24,6 @@ export const TeamDatePicker: React.FC<{ team: Tables<"teams"> }> = ({
       if (teamUpdateError) {
         console.error(teamUpdateError);
         return;
-      } else {
-        setTeam({ ...team, currently_on: currentDate });
       }
 
       // load players to check and update statuses
@@ -57,58 +38,15 @@ export const TeamDatePicker: React.FC<{ team: Tables<"teams"> }> = ({
             assertType<
               Pick<Player, "id" | "status" | "contracts" | "injuries" | "loans">
             >(player);
-            const signedContracts =
-              player.contracts?.filter((contract) => contract.signed_on) ?? [];
-            const lastContract = signedContracts[signedContracts.length - 1];
-            const lastInjury = player.injuries
-              ? player.injuries[player.injuries.length - 1]
-              : null;
-            const signedLoans =
-              player.loans?.filter((loan) => loan.signed_on) ?? [];
-            const lastLoan = signedLoans[signedLoans.length - 1];
-
-            if (lastContract) {
-              if (currentDate < lastContract.started_on) {
-                await updatePlayerStatus(player, { status: "Pending" });
-              } else if (
-                lastContract.started_on <= currentDate &&
-                currentDate < lastContract.ended_on
-              ) {
-                if (
-                  lastInjury &&
-                  lastInjury.started_on <= currentDate &&
-                  currentDate < lastInjury.ended_on
-                ) {
-                  await updatePlayerStatus(player, { status: "Injured" });
-                } else if (
-                  lastLoan &&
-                  lastLoan.started_on <= currentDate &&
-                  currentDate < lastLoan.ended_on
-                ) {
-                  await updatePlayerStatus(player, {
-                    status: "Loaned",
-                    kit_no: null,
-                  });
-                } else {
-                  await updatePlayerStatus(player, { status: "Active" });
-                }
-              } else {
-                await updatePlayerStatus(player, {
-                  status: null,
-                  kit_no: null,
-                });
-              }
-            } else {
-              await updatePlayerStatus(player, {
-                status: null,
-                kit_no: null,
-              });
-            }
+            updatePlayerStatus(player, currentDate);
           }),
         );
       } else {
         console.error(playerFetchError);
       }
+
+      // update team after to trigger re-render after all players are updated
+      setTeam({ ...team, currently_on: currentDate });
 
       setAppLoading(false);
       setOpened(false);

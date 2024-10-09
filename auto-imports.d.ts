@@ -9,15 +9,19 @@ declare global {
   const AppNavbar: typeof import('./src/components/app/AppNavbar')['AppNavbar']
   const CompetitionForm: typeof import('./src/components/competition/CompetitionForm')['CompetitionForm']
   const CompetitionList: typeof import('./src/components/competition/CompetitionList')['CompetitionList']
-  const ContractForm: typeof import('./src/components/contract/ContractForm')['ContractForm']
+  const ContractForm: typeof import('./src/components/player/ContractForm')['ContractForm']
   const DataTabl: typeof import('./src/components/base/DataTable')['DataTabl']
   const DataTable: typeof import('./src/components/base/DataTable')['DataTable']
   const DatePickerInput: typeof import('./src/components/base/DatePickerInput')['DatePickerInput']
   const FormationGrid: typeof import('./src/components/formation/FormationGrid')['FormationGrid']
+  const InjuryForm: typeof import('./src/components/player/InjuryForm')['InjuryForm']
   const Link: typeof import('@tanstack/react-router')['Link']
+  const LoanForm: typeof import('./src/components/player/InjuryForm')['LoanForm']
   const MText: typeof import('@mantine/core')['Text']
   const MatchForm: typeof import('./src/components/match/MatchForm')['MatchForm']
   const MatchTimeline: typeof import('./src/components/match/MatchTimeline')['MatchTimeline']
+  const PlayerEventKey: typeof import('./src/constants/index')['PlayerEventKey']
+  const PlayerEventType: typeof import('./src/constants/index')['PlayerEventType']
   const PlayerFlag: typeof import('./src/components/player/PlayerFlag')['PlayerFlag']
   const PlayerForm: typeof import('./src/components/player/PlayerForm')['PlayerForm']
   const PlayerStatus: typeof import('./src/components/player/PlayerStatus')['PlayerStatus']
@@ -49,6 +53,7 @@ declare global {
   const useAtomValue: typeof import('jotai')['useAtomValue']
   const useCallback: typeof import('react')['useCallback']
   const useContext: typeof import('react')['useContext']
+  const useDbCallbacks: typeof import('./src/hooks/useDbCallbacks')['useDbCallbacks']
   const useDebugValue: typeof import('react')['useDebugValue']
   const useDeferredValue: typeof import('react')['useDeferredValue']
   const useEffect: typeof import('react')['useEffect']
@@ -59,6 +64,7 @@ declare global {
   const useMemo: typeof import('react')['useMemo']
   const useNavigate: typeof import('@tanstack/react-router')['useNavigate']
   const useParams: typeof import('@tanstack/react-router')['useParams']
+  const usePlayerEvents: typeof import('./src/hooks/usePlayerEvents')['usePlayerEvents']
   const useProgress: typeof import('./src/hooks/useProgress')['useProgress']
   const useReducer: typeof import('react')['useReducer']
   const useRef: typeof import('react')['useRef']
@@ -75,4 +81,7 @@ declare global {
   // @ts-ignore
   export type { StateSetter } from 'src/hooks'
   import('src/hooks')
+  // @ts-ignore
+  export type { PlayerEventKey, PlayerEventType } from './src/constants/index'
+  import('./src/constants/index')
 }

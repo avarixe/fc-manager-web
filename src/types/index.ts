@@ -40,6 +40,11 @@ export interface Player extends Tables<"players"> {
     addon_clause: number;
   }[];
 }
+export type Contract = Player[PlayerEventKey.Contract][number];
+export type Injury = Player[PlayerEventKey.Injury][number];
+export type Loan = Player[PlayerEventKey.Loan][number];
+export type Transfer = Player[PlayerEventKey.Transfer][number];
+export type PlayerEvent = Contract | Injury | Loan | Transfer;
 
 export interface Match extends Tables<"matches"> {
   goals: {

@@ -43,7 +43,7 @@ const statusFilters = [
     icon: "i-mdi:transit-transfer",
     color: "orange",
   },
-  { value: StatusFilter.Pending, icon: "i-mdi:account-lock", color: "yellow" },
+  { value: StatusFilter.Pending, icon: "i-mdi:lock-clock", color: "yellow" },
 ];
 
 export const Route = createLazyFileRoute("/teams/$teamId/players/")({
@@ -90,7 +90,9 @@ function PlayersPage() {
           break;
         case StatusFilter.Active:
           pageQuery.neq("status", null);
+          pageQuery.neq("status", StatusFilter.Pending);
           countQuery.neq("status", null);
+          countQuery.neq("status", StatusFilter.Pending);
           break;
         case StatusFilter.Injured:
         case StatusFilter.Loaned:
@@ -136,6 +138,8 @@ function PlayersPage() {
     tableState.sorting.desc,
     tableState.sorting.id,
     teamId,
+    // Reload on date change to get updated statuses
+    team?.currently_on,
   ]);
 
   const onChangeStatusFilter = useCallback((status: StatusFilter) => {

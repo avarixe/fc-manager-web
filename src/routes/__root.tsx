@@ -44,14 +44,14 @@ function App() {
       header={{ height: 60 }}
       navbar={{
         width: 300,
-        breakpoint: "sm",
+        breakpoint: "md",
         collapsed: { mobile: !opened },
       }}
       padding="md"
     >
       <AppShell.Header>
         <Group h="100%" px="md">
-          <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
+          <Burger opened={opened} onClick={toggle} hiddenFrom="md" size="sm" />
           <div>MyFC Manager</div>
         </Group>
       </AppShell.Header>
