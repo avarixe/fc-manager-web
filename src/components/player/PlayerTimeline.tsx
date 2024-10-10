@@ -88,7 +88,31 @@ export const PlayerTimeline: React.FC<{
           previousContract.ended_on = contract.started_on;
           previousContract.conclusion = "Renewed";
         }
+
+        // Update player current wage and contract end date.
+        return {
+          contracts,
+          wage: contract.wage,
+          contract_ends_on: contract.ended_on,
+        };
       }
+
+      return { contracts };
+    },
+    beforeUpdate: (contracts) => {
+      const currentContract = contracts.find(
+        (contract) => !contract.conclusion,
+      );
+      if (currentContract) {
+        // Update player current wage and contract end date.
+        return {
+          contracts,
+          wage: currentContract.wage,
+          contract_ends_on: currentContract.ended_on,
+        };
+      }
+
+      return { contracts };
     },
   });
   const {
@@ -96,17 +120,51 @@ export const PlayerTimeline: React.FC<{
     update: updateInjury,
     remove: removeInjury,
   } = usePlayerEvents(player, setPlayer, PlayerEventKey.Injury);
+  const {
+    create: createTransfer,
+    update: updateTransfer,
+    remove: removeTransfer,
+  } = usePlayerEvents(player, setPlayer, PlayerEventKey.Transfer, {
+    beforeCreate: (transfers) => {
+      const transfer = transfers[transfers.length - 1];
+      if (transfer.signed_on && transfer.origin === team.name) {
+        // End current contract if player transfers out.
+        const contracts = [...player.contracts];
+        const currentContract = contracts[contracts.length - 1];
+        currentContract.ended_on = transfer.moved_on;
+        currentContract.conclusion = "Transferred";
+
+        return { contracts, transfers };
+      }
+
+      return { transfers };
+    },
+    beforeUpdate: (transfers) => {
+      const transfer = transfers[transfers.length - 1];
+      if (transfer.signed_on && transfer.origin === team.name) {
+        // End current contract if player transfers out.
+        const contracts = [...player.contracts];
+        const currentContract = contracts[contracts.length - 1];
+        currentContract.ended_on = transfer.moved_on;
+        currentContract.conclusion = "Transferred";
+
+        return { contracts, transfers };
+      }
+
+      return { transfers };
+    },
+  });
 
   const renderItem = useCallback(
-    (item: PlayerTimelineEvent, index: number) => {
+    (item: PlayerTimelineEvent) => {
       switch (item.type) {
         case PlayerEventType.Contract:
           assertType<Contract>(item);
           return (
             <ContractEvent
               contract={item}
-              onSubmit={(contract) => updateContract(index, contract)}
-              onRemove={() => removeContract(index)}
+              onSubmit={(contract) => updateContract(item.index, contract)}
+              onRemove={() => removeContract(item.index)}
             />
           );
         case PlayerEventType.Injury:
@@ -114,8 +172,8 @@ export const PlayerTimeline: React.FC<{
           return (
             <InjuryEvent
               injury={item}
-              onSubmit={(injury) => updateInjury(index, injury)}
-              onRemove={() => removeInjury(index)}
+              onSubmit={(injury) => updateInjury(item.index, injury)}
+              onRemove={() => removeInjury(item.index)}
             />
           );
         case PlayerEventType.Loan:
@@ -123,10 +181,23 @@ export const PlayerTimeline: React.FC<{
           return <LoanEvent loan={item} />;
         case PlayerEventType.Transfer:
           assertType<Transfer>(item);
-          return <TransferEvent transfer={item} />;
+          return (
+            <TransferEvent
+              transfer={item}
+              onSubmit={(transfer) => updateTransfer(item.index, transfer)}
+              onRemove={() => removeTransfer(item.index)}
+            />
+          );
       }
     },
-    [removeContract, removeInjury, updateContract, updateInjury],
+    [
+      removeContract,
+      removeInjury,
+      removeTransfer,
+      updateContract,
+      updateInjury,
+      updateTransfer,
+    ],
   );
 
   const [
@@ -135,6 +206,10 @@ export const PlayerTimeline: React.FC<{
   ] = useDisclosure();
   const [newInjuryOpened, { open: openNewInjury, close: closeNewInjury }] =
     useDisclosure();
+  const [
+    newTransferOpened,
+    { open: openNewTransfer, close: closeNewTransfer },
+  ] = useDisclosure();
 
   return (
     <Timeline bulletSize={36}>
@@ -170,6 +245,27 @@ export const PlayerTimeline: React.FC<{
             onClose={closeNewInjury}
             onSubmit={createInjury}
           />
+          <Button
+            onClick={openNewTransfer}
+            color={player.status ? "red" : "green"}
+            leftSection={
+              <div
+                className={
+                  player.status
+                    ? "i-mdi:airplane-landing"
+                    : "i-mdi:airplane-takeoff"
+                }
+              />
+            }
+          >
+            Transfer
+          </Button>
+          <TransferForm
+            direction={player.status ? "out" : "in"}
+            opened={newTransferOpened}
+            onClose={closeNewTransfer}
+            onSubmit={createTransfer}
+          />
         </Group>
       </Timeline.Item>
 
@@ -186,7 +282,7 @@ export const PlayerTimeline: React.FC<{
             </ThemeIcon>
           }
         >
-          {renderItem(item, index)}
+          {renderItem(item)}
         </Timeline.Item>
       ))}
     </Timeline>
@@ -453,14 +549,18 @@ const LoanEvent: React.FC<{
 
 const TransferEvent: React.FC<{
   transfer: Transfer;
-}> = ({ transfer }) => {
+  onSubmit: (injury: Transfer) => Promise<void>;
+  onRemove: () => Promise<void>;
+}> = ({ transfer, onSubmit, onRemove }) => {
   const team = useAtomValue(teamAtom)!;
+  const direction = transfer.destination === team.name ? "in" : "out";
+  const color = direction === "in" ? "green" : "red";
   const title =
-    transfer.destination === team.name
+    direction === "in"
       ? `Transfer from ${transfer.origin}`
       : `Transfer to ${transfer.destination}`;
 
-  const color = transfer.destination === team.name ? "green" : "red";
+  const [opened, { open, close }] = useDisclosure();
 
   return (
     <div>
@@ -504,6 +604,32 @@ const TransferEvent: React.FC<{
           )}
         </Table.Tbody>
       </Table>
+
+      <Group mt="sm">
+        <Button
+          onClick={open}
+          variant="subtle"
+          size="compact-sm"
+          color="orange"
+        >
+          Edit
+        </Button>
+        <TransferForm
+          record={transfer}
+          direction={direction}
+          opened={opened}
+          onClose={close}
+          onSubmit={onSubmit}
+        />
+        <Button
+          onClick={onRemove}
+          variant="subtle"
+          size="compact-sm"
+          color="gray"
+        >
+          Delete
+        </Button>
+      </Group>
     </div>
   );
 };

@@ -29,6 +29,7 @@ declare global {
   const TeamAutocomplete: typeof import('./src/components/team/TeamAutocomplete')['TeamAutocomplete']
   const TeamDatePicker: typeof import('./src/components/team/TeamDatePicker')['TeamDatePicker']
   const TeamForm: typeof import('./src/components/team/TeamForm')['TeamForm']
+  const TransferForm: typeof import('./src/components/player/TransferForm')['TransferForm']
   const appLoadingAtom: typeof import('./src/atoms/index')['appLoadingAtom']
   const assertType: typeof import('./src/utils/assert')['assertType']
   const atom: typeof import('jotai')['atom']

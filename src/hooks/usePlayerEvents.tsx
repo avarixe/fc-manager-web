@@ -1,3 +1,4 @@
+import { TablesUpdate } from "@/database-generated.types";
 import { Contract, Injury, Loan, Player, PlayerEvent, Transfer } from "@/types";
 import { modals } from "@mantine/modals";
 
@@ -8,7 +9,8 @@ interface UsePlayerEventsReturnType<T extends PlayerEvent> {
 }
 
 interface PlayerEventCallbacks<T extends PlayerEvent> {
-  beforeCreate?: (events: T[]) => void;
+  beforeCreate?: (events: T[]) => TablesUpdate<"players">;
+  beforeUpdate?: (events: T[]) => TablesUpdate<"players">;
 }
 
 const eventNamesByKey: Record<PlayerEventKey, PlayerEventType> = {
@@ -56,20 +58,26 @@ function usePlayerEvents<T extends PlayerEvent>(
     async (event: T) => {
       const events = player[key].slice() as T[];
       events.push(event);
-      callbacks?.beforeCreate?.(events);
+      const updates = callbacks?.beforeCreate
+        ? callbacks.beforeCreate(events)
+        : { [key]: events };
 
       const { error } = await supabase
         .from("players")
-        .update({ [key]: events })
+        .update(updates)
         .eq("id", player.id);
       if (error) {
         console.error(error);
       } else {
-        const updates = await updatePlayerStatus(
+        const statusUpdates = await updatePlayerStatus(
           { ...player, [key]: events },
           team.currently_on,
         );
-        setPlayer((prev: Player) => ({ ...prev, ...updates, [key]: events }));
+        setPlayer((prev: Player) => ({
+          ...prev,
+          ...statusUpdates,
+          [key]: events,
+        }));
       }
     },
     [callbacks, key, player, setPlayer, supabase, team, updatePlayerStatus],
@@ -77,24 +85,39 @@ function usePlayerEvents<T extends PlayerEvent>(
 
   const update = useCallback(
     async (index: number, event: T) => {
-      const events = player[key].slice();
+      const events = player[key].slice() as T[];
       events[index] = event;
+      const updates = callbacks?.beforeUpdate
+        ? callbacks.beforeUpdate(events)
+        : { [key]: events };
 
       const { error } = await supabase
         .from("players")
-        .update({ [key]: events })
+        .update(updates)
         .eq("id", player.id);
       if (error) {
         console.error(error);
       } else {
-        const updates = await updatePlayerStatus(
+        const statusUpdates = await updatePlayerStatus(
           { ...player, [key]: events },
           team.currently_on,
         );
-        setPlayer((prev: Player) => ({ ...prev, ...updates, [key]: events }));
+        setPlayer((prev: Player) => ({
+          ...prev,
+          ...statusUpdates,
+          [key]: events,
+        }));
       }
     },
-    [key, player, setPlayer, supabase, team, updatePlayerStatus],
+    [
+      callbacks,
+      key,
+      player,
+      setPlayer,
+      supabase,
+      team.currently_on,
+      updatePlayerStatus,
+    ],
   );
 
   const remove = useCallback(
