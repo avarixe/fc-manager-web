@@ -63,7 +63,7 @@ function CompetitionPage() {
   const navigate = useNavigate();
   const onClickDelete = useCallback(() => {
     modals.openConfirmModal({
-      title: "Delete Team",
+      title: "Delete Competition",
       centered: true,
       children: (
         <MText size="sm">

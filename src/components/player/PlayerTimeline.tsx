@@ -11,6 +11,7 @@ import {
   Title,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { modals } from "@mantine/modals";
 import { orderBy } from "lodash-es";
 
 type PlayerTimelineEvent = PlayerEvent & {
@@ -23,8 +24,8 @@ type PlayerTimelineEvent = PlayerEvent & {
 export const PlayerTimeline: React.FC<{
   player: Player;
   setPlayer: StateSetter<Player>;
-  team: Tables<"teams">;
-}> = ({ player, setPlayer, team }) => {
+}> = ({ player, setPlayer }) => {
+  const team = useAtomValue(teamAtom)!;
   const items: PlayerTimelineEvent[] = useMemo(
     () =>
       orderBy(
@@ -69,7 +70,6 @@ export const PlayerTimeline: React.FC<{
       player.transfers,
     ],
   );
-  console.log(items);
 
   const {
     create: createContract,
@@ -159,6 +159,43 @@ export const PlayerTimeline: React.FC<{
       return { transfers };
     },
   });
+
+  const { endOfCurrentSeason } = useTeamHelpers(team);
+  const onClickRetire = useCallback(() => {
+    modals.openConfirmModal({
+      title: `${player.name} is retiring at the end of the season?`,
+      centered: true,
+      labels: {
+        confirm: "Yes",
+        cancel: "No",
+      },
+      onConfirm: async () => {
+        const contracts = [...player.contracts];
+        const currentContract = contracts[contracts.length - 1];
+        currentContract.ended_on = endOfCurrentSeason;
+        currentContract.conclusion = "Retired";
+        await updateContract(contracts.length - 1, currentContract);
+      },
+    });
+  }, [endOfCurrentSeason, player.contracts, player.name, updateContract]);
+  const onClickRelease = useCallback(() => {
+    modals.openConfirmModal({
+      title: `Terminate contract for ${player.name}?`,
+      centered: true,
+      labels: {
+        confirm: "Yes",
+        cancel: "No",
+      },
+      confirmProps: { color: "red.9" },
+      onConfirm: async () => {
+        const contracts = [...player.contracts];
+        const currentContract = contracts[contracts.length - 1];
+        currentContract.ended_on = team.currently_on;
+        currentContract.conclusion = "Released";
+        await updateContract(contracts.length - 1, currentContract);
+      },
+    });
+  }, [player.contracts, player.name, team.currently_on, updateContract]);
 
   const renderItem = useCallback(
     (item: PlayerTimelineEvent) => {
@@ -275,16 +312,8 @@ export const PlayerTimeline: React.FC<{
           />
           <Button
             onClick={openNewTransfer}
-            color={player.status ? "red" : "green"}
-            leftSection={
-              <div
-                className={
-                  player.status
-                    ? "i-mdi:airplane-landing"
-                    : "i-mdi:airplane-takeoff"
-                }
-              />
-            }
+            color="green"
+            leftSection={<div className="i-mdi:airplane" />}
           >
             Transfer
           </Button>
@@ -294,6 +323,20 @@ export const PlayerTimeline: React.FC<{
             onClose={closeNewTransfer}
             onSubmit={createTransfer}
           />
+          <Button
+            onClick={onClickRetire}
+            color="gray.6"
+            leftSection={<div className="i-mdi:weather-sunset" />}
+          >
+            Retire
+          </Button>
+          <Button
+            onClick={onClickRelease}
+            color="red.9"
+            leftSection={<div className="i-mdi:file-document-remove" />}
+          >
+            Release
+          </Button>
         </Group>
       </Timeline.Item>
 

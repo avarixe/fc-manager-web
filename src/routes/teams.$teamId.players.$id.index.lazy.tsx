@@ -1,4 +1,3 @@
-import { Tables } from "@/database-generated.types";
 import {
   Box,
   Button,
@@ -16,6 +15,7 @@ import {
   getFilteredChartTooltipPayload,
 } from "@mantine/charts";
 import { Player } from "@/types";
+import { modals } from "@mantine/modals";
 
 export const Route = createLazyFileRoute("/teams/$teamId/players/$id/")({
   component: PlayerPage,
@@ -77,6 +77,37 @@ function PlayerPage() {
     fetchStats();
   }, [id, supabase, teamId, team?.currently_on]);
 
+  const setAppLoading = useSetAtom(appLoadingAtom);
+  const navigate = useNavigate();
+  const onClickDelete = useCallback(() => {
+    modals.openConfirmModal({
+      title: "Delete Player",
+      centered: true,
+      children: (
+        <MText size="sm">
+          Are you sure you want to delete this player? This action cannot be
+          undone.
+        </MText>
+      ),
+      labels: {
+        confirm: "Delete",
+        cancel: "Cancel",
+      },
+      confirmProps: { color: "red" },
+      onConfirm: async () => {
+        try {
+          setAppLoading(true);
+          await supabase.from("players").delete().eq("id", id);
+          navigate({ to: `/teams/${teamId}/players/` });
+        } catch (error) {
+          console.error(error);
+        } finally {
+          setAppLoading(false);
+        }
+      },
+    });
+  }, [id, navigate, setAppLoading, supabase, teamId]);
+
   if (!team || !player) {
     return null;
   }
@@ -92,7 +123,12 @@ function PlayerPage() {
           Edit
         </Button>
 
-        <Button color="red" variant="outline" className="ml-auto">
+        <Button
+          onClick={onClickDelete}
+          color="red"
+          variant="outline"
+          className="ml-auto"
+        >
           Delete
         </Button>
       </Group>
@@ -193,7 +229,7 @@ function PlayerPage() {
         </Title>
         <Divider my="xs" />
 
-        <PlayerTimeline player={player} setPlayer={setPlayer} team={team} />
+        <PlayerTimeline player={player} setPlayer={setPlayer} />
       </Box>
 
       <Box my="lg">
@@ -205,16 +241,14 @@ function PlayerPage() {
         </Title>
         <Divider my="xs" />
 
-        <PlayerHistoryChart player={player} team={team} />
+        <PlayerHistoryChart player={player} />
       </Box>
     </Stack>
   );
 }
 
-const PlayerHistoryChart: React.FC<{
-  player: Player;
-  team: Tables<"teams">;
-}> = ({ player, team }) => {
+const PlayerHistoryChart: React.FC<{ player: Player }> = ({ player }) => {
+  const team = useAtomValue(teamAtom)!;
   const data = useMemo(() => {
     const history = Object.entries(player.history).map(([date, data]) => ({
       date: dayjs(date).valueOf(),
