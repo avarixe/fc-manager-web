@@ -121,6 +121,11 @@ export const PlayerTimeline: React.FC<{
     remove: removeInjury,
   } = usePlayerEvents(player, setPlayer, PlayerEventKey.Injury);
   const {
+    create: createLoan,
+    update: updateLoan,
+    remove: removeLoan,
+  } = usePlayerEvents(player, setPlayer, PlayerEventKey.Loan);
+  const {
     create: createTransfer,
     update: updateTransfer,
     remove: removeTransfer,
@@ -178,7 +183,13 @@ export const PlayerTimeline: React.FC<{
           );
         case PlayerEventType.Loan:
           assertType<Loan>(item);
-          return <LoanEvent loan={item} />;
+          return (
+            <LoanEvent
+              loan={item}
+              onSubmit={(loan) => updateLoan(item.index, loan)}
+              onRemove={() => removeLoan(item.index)}
+            />
+          );
         case PlayerEventType.Transfer:
           assertType<Transfer>(item);
           return (
@@ -193,9 +204,11 @@ export const PlayerTimeline: React.FC<{
     [
       removeContract,
       removeInjury,
+      removeLoan,
       removeTransfer,
       updateContract,
       updateInjury,
+      updateLoan,
       updateTransfer,
     ],
   );
@@ -205,6 +218,8 @@ export const PlayerTimeline: React.FC<{
     { open: openNewContract, close: closeNewContract },
   ] = useDisclosure();
   const [newInjuryOpened, { open: openNewInjury, close: closeNewInjury }] =
+    useDisclosure();
+  const [newLoanOpened, { open: openNewLoan, close: closeNewLoan }] =
     useDisclosure();
   const [
     newTransferOpened,
@@ -244,6 +259,19 @@ export const PlayerTimeline: React.FC<{
             opened={newInjuryOpened}
             onClose={closeNewInjury}
             onSubmit={createInjury}
+          />
+          <Button
+            onClick={openNewLoan}
+            color="orange"
+            leftSection={<div className="i-mdi:transit-transfer" />}
+          >
+            Loan
+          </Button>
+          <LoanForm
+            direction={player.status ? "out" : "in"}
+            opened={newLoanOpened}
+            onClose={closeNewLoan}
+            onSubmit={createLoan}
           />
           <Button
             onClick={openNewTransfer}
@@ -452,11 +480,14 @@ const InjuryEvent: React.FC<{
 
 const LoanEvent: React.FC<{
   loan: Loan;
-}> = ({ loan }) => {
+  onSubmit: (loan: Loan) => Promise<void>;
+  onRemove: () => Promise<void>;
+}> = ({ loan, onSubmit, onRemove }) => {
   const team = useAtomValue(teamAtom)!;
 
+  const direction = loan.destination === team.name ? "in" : "out";
   const title =
-    loan.destination === team.name
+    direction === "in"
       ? `Loan from ${loan.origin}`
       : `Loan at ${loan.destination}`;
 
@@ -470,13 +501,14 @@ const LoanEvent: React.FC<{
     }
   }, [loan.ended_on, loan.started_on, team.currently_on]);
 
-  const timeBeforeDeparture = dayjs(loan.started_on).diff(
-    dayjs(team.currently_on),
+  const timeBeforeDeparture = dayjs.duration(
+    dayjs(loan.started_on).diff(dayjs(team.currently_on)),
   );
-
   const duration = dayjs.duration(
     dayjs(loan.ended_on).diff(dayjs(loan.started_on)),
   );
+
+  const [opened, { open, close }] = useDisclosure();
 
   return (
     <div>
@@ -543,6 +575,32 @@ const LoanEvent: React.FC<{
           )}
         </Table.Tbody>
       </Table>
+
+      <Group mt="sm">
+        <Button
+          onClick={open}
+          variant="subtle"
+          size="compact-sm"
+          color="orange"
+        >
+          Edit
+        </Button>
+        <LoanForm
+          record={loan}
+          direction={direction}
+          opened={opened}
+          onClose={close}
+          onSubmit={onSubmit}
+        />
+        <Button
+          onClick={onRemove}
+          variant="subtle"
+          size="compact-sm"
+          color="gray"
+        >
+          Delete
+        </Button>
+      </Group>
     </div>
   );
 };

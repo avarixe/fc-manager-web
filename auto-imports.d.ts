@@ -16,7 +16,7 @@ declare global {
   const FormationGrid: typeof import('./src/components/formation/FormationGrid')['FormationGrid']
   const InjuryForm: typeof import('./src/components/player/InjuryForm')['InjuryForm']
   const Link: typeof import('@tanstack/react-router')['Link']
-  const LoanForm: typeof import('./src/components/player/InjuryForm')['LoanForm']
+  const LoanForm: typeof import('./src/components/player/LoanForm')['LoanForm']
   const MText: typeof import('@mantine/core')['Text']
   const MatchForm: typeof import('./src/components/match/MatchForm')['MatchForm']
   const MatchTimeline: typeof import('./src/components/match/MatchTimeline')['MatchTimeline']
