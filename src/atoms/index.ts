@@ -22,3 +22,11 @@ export const sessionAtom = atom<Session | null>(null);
 export const teamAtom = atom<Tables<"teams"> | null>(null);
 
 export const appLoadingAtom = atom(false);
+
+export const appearanceMapAtom = atom(new AppearanceMap());
+
+export const appearancesArrayAtom = atom((get) =>
+  [...get(appearanceMapAtom).values()].map((appearanceAtom) =>
+    get(appearanceAtom),
+  ),
+);

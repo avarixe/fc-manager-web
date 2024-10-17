@@ -89,3 +89,22 @@ export interface Competition extends Tables<"competitions"> {
 export interface Squad extends Tables<"squads"> {
   formation: Record<string, number>;
 }
+
+export interface Appearance extends Tables<"appearances"> {
+  players: {
+    name: string;
+  };
+  next: {
+    pos: string;
+    players: {
+      name: string;
+    };
+  } | null;
+  previous: {
+    injured: boolean;
+    pos: string;
+    players: {
+      name: string;
+    };
+  }[];
+}

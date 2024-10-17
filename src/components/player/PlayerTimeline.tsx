@@ -276,7 +276,7 @@ export const PlayerTimeline: React.FC<{
           <Button
             onClick={openNewContract}
             color="indigo"
-            leftSection={<div className="i-mdi:file-sign" />}
+            leftSection={<ContractIcon c="white" />}
           >
             Contract
           </Button>
@@ -288,7 +288,7 @@ export const PlayerTimeline: React.FC<{
           <Button
             onClick={openNewInjury}
             color="pink"
-            leftSection={<div className="i-mdi:ambulance" />}
+            leftSection={<InjuryIcon c="white" />}
           >
             Injury
           </Button>
@@ -300,7 +300,7 @@ export const PlayerTimeline: React.FC<{
           <Button
             onClick={openNewLoan}
             color="orange"
-            leftSection={<div className="i-mdi:transit-transfer" />}
+            leftSection={<LoanIcon c="white" />}
           >
             Loan
           </Button>
@@ -313,7 +313,7 @@ export const PlayerTimeline: React.FC<{
           <Button
             onClick={openNewTransfer}
             color="green"
-            leftSection={<div className="i-mdi:airplane" />}
+            leftSection={<TransferIcon c="white" />}
           >
             Transfer
           </Button>
@@ -349,7 +349,7 @@ export const PlayerTimeline: React.FC<{
               radius="xl"
               color={playerEventColor(item, team)}
             >
-              <div className={playerEventIconName(item, team)} />
+              {playerEventIcon(item, team)}
             </ThemeIcon>
           }
         >
@@ -735,23 +735,20 @@ const TransferEvent: React.FC<{
   );
 };
 
-function playerEventIconName(
-  item: PlayerTimelineEvent,
-  team: Tables<"teams">,
-): string {
+function playerEventIcon(item: PlayerTimelineEvent, team: Tables<"teams">) {
   switch (item.type) {
     case PlayerEventType.Contract:
-      return "i-mdi:file-sign";
+      return <ContractIcon c="white" />;
     case PlayerEventType.Injury:
-      return "i-mdi:ambulance";
+      return <InjuryIcon c="white" />;
     case PlayerEventType.Loan:
-      return "i-mdi:transit-transfer";
+      return <LoanIcon c="white" />;
     case PlayerEventType.Transfer:
       assertType<Transfer>(item);
       if (item.destination === team.name) {
-        return "i-mdi:airplane-landing";
+        return <TransferInIcon c="white" />;
       } else {
-        return "i-mdi:airplane-takeoff";
+        return <TransferOutIcon c="white" />;
       }
   }
 }

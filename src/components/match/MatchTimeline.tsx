@@ -1,5 +1,4 @@
-import { Tables } from "@/database-generated.types";
-import { Match } from "@/types";
+import { Appearance, Match } from "@/types";
 import { Box, ThemeIcon, Timeline } from "@mantine/core";
 import { groupBy, orderBy } from "lodash-es";
 
@@ -7,19 +6,6 @@ enum MatchEventType {
   Goal = "Goal",
   Booking = "Booking",
   Substitution = "Substitution",
-}
-
-interface Substitution extends Tables<"appearances"> {
-  players: {
-    name: string;
-  };
-  previous: {
-    injured: boolean;
-    pos: string;
-    players: {
-      name: string;
-    };
-  }[];
 }
 
 type MatchEvent = {
@@ -30,39 +16,17 @@ type MatchEvent = {
 } & (
   | Match["goals"][number]
   | Match["bookings"][number]
-  | { substitutions: Substitution[] }
+  | { substitutions: Appearance[] }
 );
 
-export const MatchTimeline: React.FC<{
-  match: Match;
-  team: Tables<"teams">;
-}> = ({ match, team }) => {
-  const [substitutions, setSubstitutions] = useState<Substitution[]>([]);
-  const supabase = useAtomValue(supabaseAtom);
-  useEffect(() => {
-    const fetchSubstitutions = async () => {
-      const { data, error } = await supabase
-        .from("appearances")
-        .select(
-          `
-        *,
-        players(name),
-        previous:appearances(players(name), injured, pos)
-      `,
-        )
-        .eq("match_id", match.id)
-        .gt("start_minute", 0);
-      if (error) {
-        console.error(error);
-      } else {
-        assertType<Substitution[]>(data);
-        setSubstitutions(data);
-      }
-    };
+export const MatchTimeline: React.FC<{ match: Match }> = ({ match }) => {
+  const appearancesArray = useAtomValue(appearancesArrayAtom);
+  const substitutions = useMemo(
+    () => appearancesArray.filter((app) => app.start_minute > 0),
+    [appearancesArray],
+  );
 
-    fetchSubstitutions();
-  }, [match.id, supabase]);
-
+  const team = useAtomValue(teamAtom)!;
   const items: MatchEvent[] = useMemo(() => {
     const subsByMinute = Object.entries(
       groupBy(substitutions, "start_minute"),
@@ -102,7 +66,7 @@ export const MatchTimeline: React.FC<{
         assertType<Match["bookings"][number]>(item);
         return <BookingEvent booking={item} />;
       case MatchEventType.Substitution:
-        assertType<{ substitutions: Substitution[] }>(item);
+        assertType<{ substitutions: Appearance[] }>(item);
         return <SubstitutionEvent substitutions={item.substitutions} />;
     }
   }, []);
@@ -129,7 +93,6 @@ export const MatchTimeline: React.FC<{
           {renderItem(item)}
         </Timeline.Item>
       ))}
-      {/* TODO: add Penalty Shootout */}
       {Boolean(match.home_penalty_score || match.away_penalty_score) && (
         <Timeline.Item
           bullet={
@@ -175,12 +138,12 @@ export const MatchTimeline: React.FC<{
 
 const GoalEvent: React.FC<{ goal: Match["goals"][number] }> = ({ goal }) => (
   <div className="flex items-center flex-gap-1">
-    <Box className="i-mdi:soccer" c="blue" />
+    <GoalIcon />
     {goal.player_name}
     {goal.set_piece ? ` (${goal.set_piece})` : null}
     {goal.assisted_by && (
       <>
-        <Box className="i-mdi:shoe-cleat -rotate-45" c="blue.2" />
+        <AssistIcon />
         {goal.assisted_by}
       </>
     )}
@@ -191,16 +154,13 @@ const BookingEvent: React.FC<{ booking: Match["bookings"][number] }> = ({
   booking,
 }) => (
   <div className="flex items-center flex-gap-1">
-    <Box
-      className="i-mdi:card rotate-90"
-      c={booking.red_card ? "red" : "yellow"}
-    />
+    {booking.red_card ? <RedCardIcon /> : <YellowCardIcon />}
     {booking.player_name}
   </div>
 );
 
 const SubstitutionEvent: React.FC<{
-  substitutions: Substitution[];
+  substitutions: Appearance[];
 }> = ({ substitutions }) => {
   return (
     <div>
