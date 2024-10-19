@@ -84,6 +84,8 @@ function ImportTeamPage() {
           capStats.current[cap.playerId]?.[cap.matchId]?.num_red_cards ?? 0,
         clean_sheet:
           capStats.current[cap.playerId]?.[cap.matchId]?.clean_sheet ?? false,
+        num_own_goals:
+          capStats.current[cap.playerId]?.[cap.matchId]?.num_own_goals ?? 0,
       }));
       const { error } = await supabase.from("appearances").insert(data);
       if (error) {
@@ -407,13 +409,17 @@ function ImportTeamPage() {
     let numGoals = 0;
     for (const match of matches) {
       for (const goal of match.goals) {
-        if (goal.playerId && !goal.ownGoal) {
+        if (goal.playerId) {
           capStats.current[goal.playerId] =
             capStats.current[goal.playerId] || {};
           capStats.current[goal.playerId][match.id] =
             capStats.current[goal.playerId][match.id] || {};
-          capStats.current[goal.playerId][match.id].num_goals =
-            (capStats.current[goal.playerId][match.id].num_goals || 0) + 1;
+          capStats.current[goal.playerId][match.id][
+            goal.ownGoal ? "num_own_goals" : "num_goals"
+          ] =
+            (capStats.current[goal.playerId][match.id][
+              goal.ownGoal ? "num_own_goals" : "num_goals"
+            ] || 0) + 1;
           numGoals++;
         }
         if (goal.assistId) {

@@ -20,6 +20,7 @@ export type Database = {
           next_id: number | null
           num_assists: number
           num_goals: number
+          num_own_goals: number | null
           num_red_cards: number
           num_yellow_cards: number
           ovr: number
@@ -41,6 +42,7 @@ export type Database = {
           next_id?: number | null
           num_assists?: number
           num_goals?: number
+          num_own_goals?: number | null
           num_red_cards?: number
           num_yellow_cards?: number
           ovr: number
@@ -62,6 +64,7 @@ export type Database = {
           next_id?: number | null
           num_assists?: number
           num_goals?: number
+          num_own_goals?: number | null
           num_red_cards?: number
           num_yellow_cards?: number
           ovr?: number

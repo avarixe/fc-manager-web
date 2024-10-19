@@ -1,3 +1,23 @@
+# FC Manager Web
+
+## TODO
+
+- Apply Squad to Match
+- Save Lineup to Squad
+- Create Goal
+  - Update match.goals[]
+  - Calculate and set appearance.num_goals
+  - Calculate and set appearance.num_own_goals
+  - Calculate and set appearance.num_assists
+  - Calculate and set match.home_score and match.away_score
+- Create Substitution
+  - Create/update appearance
+  - Update previous appearance "injury", "stop_minute"
+- Create Booking
+  - Update match.bookings[]
+  - Calculate and set appearance.num_yellow_cards OR appearance.num_red_cards
+
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.

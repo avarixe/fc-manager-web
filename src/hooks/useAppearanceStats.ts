@@ -15,9 +15,7 @@ function useAppearanceStats(match: Match, playerId: number) {
   const subbedOut = stopMinute < (match.extra_time ? 120 : 90);
 
   const numGoals = sumBy(playerAppearances, "num_goals");
-  const numOwnGoals = sumBy(match.goals, (goal) =>
-    goal.player_name === startRole.players.name && goal.own_goal ? 1 : 0,
-  );
+  const numOwnGoals = sumBy(playerAppearances, "num_own_goals");
   const numAssists = sumBy(playerAppearances, "num_assists");
   const numYellowCards = sumBy(playerAppearances, "num_yellow_cards");
   const numRedCards = sumBy(playerAppearances, "num_red_cards");
