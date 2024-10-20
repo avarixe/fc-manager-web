@@ -27,9 +27,13 @@ export function CompetitionForm({
   const navigate = useNavigate();
   const handleSubmit = useCallback(
     async (values: typeof form.values) => {
+      const upsertData = record
+        ? { ...values, id: record.id, stages: record.stages }
+        : { ...values, stages: [] };
+
       const { data, error } = await supabase
         .from("competitions")
-        .upsert({ id: record?.id, ...values })
+        .upsert(upsertData)
         .select();
       if (data) {
         navigate({ to: `/teams/${team.id}/competitions/${data[0].id}` });
@@ -37,7 +41,7 @@ export function CompetitionForm({
         console.error(error);
       }
     },
-    [form, navigate, record?.id, supabase, team.id],
+    [form, navigate, record, supabase, team.id],
   );
 
   return (
@@ -55,7 +59,7 @@ export function CompetitionForm({
         {...form.getInputProps("name")}
       />
       {record && (
-        <TextInput
+        <TeamAutocomplete
           label="Champion"
           mb="xs"
           {...form.getInputProps("champion")}

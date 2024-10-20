@@ -107,7 +107,7 @@ export type Database = {
           id: number
           name: string
           season: number
-          stages: Json | null
+          stages: Json
           team_id: number
           user_id: string
         }
@@ -117,7 +117,7 @@ export type Database = {
           id?: number
           name: string
           season: number
-          stages?: Json | null
+          stages: Json
           team_id: number
           user_id?: string
         }
@@ -127,7 +127,7 @@ export type Database = {
           id?: number
           name?: string
           season?: number
-          stages?: Json | null
+          stages?: Json
           team_id?: number
           user_id?: string
         }
@@ -148,12 +148,12 @@ export type Database = {
           away_score: number
           away_team: string
           away_xg: number | null
-          bookings: Json | null
+          bookings: Json
           competition: string | null
           created_at: string
           extra_time: boolean
           friendly: boolean
-          goals: Json | null
+          goals: Json
           home_penalty_score: number | null
           home_possession: number | null
           home_score: number
@@ -173,12 +173,12 @@ export type Database = {
           away_score?: number
           away_team: string
           away_xg?: number | null
-          bookings?: Json | null
+          bookings: Json
           competition?: string | null
           created_at?: string
           extra_time?: boolean
           friendly?: boolean
-          goals?: Json | null
+          goals: Json
           home_penalty_score?: number | null
           home_possession?: number | null
           home_score?: number
@@ -198,12 +198,12 @@ export type Database = {
           away_score?: number
           away_team?: string
           away_xg?: number | null
-          bookings?: Json | null
+          bookings?: Json
           competition?: string | null
           created_at?: string
           extra_time?: boolean
           friendly?: boolean
-          goals?: Json | null
+          goals?: Json
           home_penalty_score?: number | null
           home_possession?: number | null
           home_score?: number
@@ -255,14 +255,14 @@ export type Database = {
         Row: {
           birth_year: number | null
           contract_ends_on: string | null
-          contracts: Json | null
+          contracts: Json
           created_at: string
-          history: Json | null
+          history: Json
           id: number
           import_id: number | null
-          injuries: Json | null
+          injuries: Json
           kit_no: number | null
-          loans: Json | null
+          loans: Json
           name: string
           nationality: string | null
           ovr: number
@@ -271,7 +271,7 @@ export type Database = {
           sec_pos: string[] | null
           status: string | null
           team_id: number
-          transfers: Json | null
+          transfers: Json
           user_id: string
           value: number
           wage: number | null
@@ -280,14 +280,14 @@ export type Database = {
         Insert: {
           birth_year?: number | null
           contract_ends_on?: string | null
-          contracts?: Json | null
+          contracts: Json
           created_at?: string
-          history?: Json | null
+          history: Json
           id?: number
           import_id?: number | null
-          injuries?: Json | null
+          injuries: Json
           kit_no?: number | null
-          loans?: Json | null
+          loans: Json
           name: string
           nationality?: string | null
           ovr: number
@@ -296,7 +296,7 @@ export type Database = {
           sec_pos?: string[] | null
           status?: string | null
           team_id: number
-          transfers?: Json | null
+          transfers: Json
           user_id?: string
           value: number
           wage?: number | null
@@ -305,14 +305,14 @@ export type Database = {
         Update: {
           birth_year?: number | null
           contract_ends_on?: string | null
-          contracts?: Json | null
+          contracts?: Json
           created_at?: string
-          history?: Json | null
+          history?: Json
           id?: number
           import_id?: number | null
-          injuries?: Json | null
+          injuries?: Json
           kit_no?: number | null
-          loans?: Json | null
+          loans?: Json
           name?: string
           nationality?: string | null
           ovr?: number
@@ -321,7 +321,7 @@ export type Database = {
           sec_pos?: string[] | null
           status?: string | null
           team_id?: number
-          transfers?: Json | null
+          transfers?: Json
           user_id?: string
           value?: number
           wage?: number | null

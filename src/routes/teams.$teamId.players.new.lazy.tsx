@@ -40,7 +40,12 @@ const PlayerForm: React.FC<{ team: Tables<"teams"> }> = ({ team }) => {
   const { currentYear } = useTeamHelpers(team);
 
   const session = useAtomValue(sessionAtom);
-  const form = useForm<TablesInsert<"players">>({
+  const form = useForm<
+    Omit<
+      TablesInsert<"players">,
+      "history" | "contracts" | "injuries" | "loans" | "transfers"
+    >
+  >({
     initialValues: {
       user_id: session?.user?.id,
       team_id: team.id,

@@ -1,5 +1,5 @@
 import { Appearance, Match } from "@/types";
-import { Box, Button, Group, ThemeIcon, Timeline } from "@mantine/core";
+import { Box, Button, Group, Switch, ThemeIcon, Timeline } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { groupBy, orderBy } from "lodash-es";
 
@@ -20,7 +20,10 @@ type MatchEvent = {
   | { substitutions: Appearance[] }
 );
 
-export const MatchTimeline: React.FC<{ match: Match }> = ({ match }) => {
+export const MatchTimeline: React.FC<{
+  match: Match;
+  setMatch: StateSetter<Match>;
+}> = ({ match, setMatch }) => {
   const appearancesArray = useAtomValue(appearancesArrayAtom);
   const substitutions = useMemo(
     () => appearancesArray.filter((app) => app.start_minute > 0),
@@ -76,6 +79,58 @@ export const MatchTimeline: React.FC<{ match: Match }> = ({ match }) => {
     useDisclosure();
   const [newBookingOpened, { open: openNewBooking, close: closeNewBooking }] =
     useDisclosure();
+  const [
+    newSubstitutionOpened,
+    { open: openNewSubstitution, close: closeNewSubstitution },
+  ] = useDisclosure();
+
+  const supabase = useAtomValue(supabaseAtom);
+  const updateMatch = useCallback(
+    async (changes: Partial<Match>) => {
+      const { error } = await supabase
+        .from("matches")
+        .update(changes)
+        .eq("id", match.id);
+      if (error) {
+        console.error(error);
+      } else {
+        setMatch((prev: Match) => ({ ...prev, ...changes }));
+      }
+    },
+    [match, setMatch, supabase],
+  );
+
+  const setAppearanceMap = useSetAtom(appearanceMapAtom);
+  const onChangeExtraTime = useCallback(
+    async (value: boolean) => {
+      await updateMatch({ extra_time: value });
+
+      const newAppearanceMap = new AppearanceMap();
+      await Promise.all(
+        appearancesArray.map(async (appearance) => {
+          if (appearance.next_id) {
+            newAppearanceMap.set(appearance.id, atom(appearance));
+          } else {
+            const changes = { stop_minute: value ? 120 : 90 };
+            const { error } = await supabase
+              .from("appearances")
+              .update(changes)
+              .eq("id", appearance.id);
+            if (error) {
+              console.error(error);
+            } else {
+              newAppearanceMap.set(
+                appearance.id,
+                atom({ ...appearance, ...changes }),
+              );
+            }
+          }
+        }),
+      );
+      setAppearanceMap(newAppearanceMap);
+    },
+    [appearancesArray, setAppearanceMap, supabase, updateMatch],
+  );
 
   return (
     <Timeline bulletSize={36}>
@@ -113,6 +168,19 @@ export const MatchTimeline: React.FC<{ match: Match }> = ({ match }) => {
             onClose={closeNewBooking}
             // onSubmit={createBooking}
           />
+          <Button
+            onClick={openNewSubstitution}
+            color="green"
+            leftSection={<SubstitutionIcon c="white" />}
+          >
+            Substitution
+          </Button>
+          <SubstitutionForm
+            match={match}
+            opened={newSubstitutionOpened}
+            onClose={closeNewSubstitution}
+            // onSubmit={createSubstitution}
+          />
         </Group>
       </Timeline.Item>
 
@@ -135,6 +203,21 @@ export const MatchTimeline: React.FC<{ match: Match }> = ({ match }) => {
           {renderItem(item)}
         </Timeline.Item>
       ))}
+      <Timeline.Item
+        bullet={
+          <ThemeIcon size="md" radius="xl" color="transparent">
+            <Box className="i-mdi:timer-outline h-6 w-6" />
+          </ThemeIcon>
+        }
+      >
+        End of Match
+        <Switch
+          label="After Extra Time"
+          checked={match.extra_time}
+          onChange={(event) => onChangeExtraTime(event.currentTarget.checked)}
+          my="xs"
+        />
+      </Timeline.Item>
       {Boolean(match.home_penalty_score || match.away_penalty_score) && (
         <Timeline.Item
           bullet={
@@ -165,15 +248,6 @@ export const MatchTimeline: React.FC<{ match: Match }> = ({ match }) => {
           </MText>
         </Timeline.Item>
       )}
-      <Timeline.Item
-        bullet={
-          <ThemeIcon size="md" radius="xl" color="transparent">
-            <Box className="i-mdi:timer-outline h-6 w-6" />
-          </ThemeIcon>
-        }
-      >
-        End of Match
-      </Timeline.Item>
     </Timeline>
   );
 };

@@ -35,7 +35,12 @@ export function MatchForm({
   const handleSubmit = useCallback(
     async (values: typeof form.values) => {
       const upsertData = record
-        ? { ...values, id: record.id }
+        ? {
+            ...values,
+            id: record.id,
+            goals: record.goals,
+            bookings: record.bookings,
+          }
         : { ...values, goals: [], bookings: [] };
 
       const { data, error } = await supabase

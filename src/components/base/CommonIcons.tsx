@@ -62,3 +62,7 @@ export const SubInIcon: React.FC<IconProps> = ({ size, ...props }) => (
 export const SubOutIcon: React.FC<IconProps> = ({ size, ...props }) => (
   <BaseIcon name="i-mdi:arrow-left-bottom" c="red" {...props} />
 );
+
+export const SubstitutionIcon: React.FC<IconProps> = ({ size, ...props }) => (
+  <BaseIcon name="i-mdi:repeat" c="green" {...props} />
+);
