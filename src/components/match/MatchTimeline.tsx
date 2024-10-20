@@ -1,6 +1,7 @@
 import { Appearance, Match } from "@/types";
 import { Box, Button, Group, Switch, ThemeIcon, Timeline } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { modals } from "@mantine/modals";
 import { groupBy, orderBy } from "lodash-es";
 
 enum MatchEventType {
@@ -82,6 +83,10 @@ export const MatchTimeline: React.FC<{
   const [
     newSubstitutionOpened,
     { open: openNewSubstitution, close: closeNewSubstitution },
+  ] = useDisclosure();
+  const [
+    penaltyShootoutOpened,
+    { open: openPenaltyShootout, close: closePenaltyShootout },
   ] = useDisclosure();
 
   const supabase = useAtomValue(supabaseAtom);
@@ -217,36 +222,22 @@ export const MatchTimeline: React.FC<{
           onChange={(event) => onChangeExtraTime(event.currentTarget.checked)}
           my="xs"
         />
+        {!(match.home_penalty_score || match.away_penalty_score) && (
+          <>
+            <Button onClick={openPenaltyShootout} color="grape">
+              Penalty Shootout
+            </Button>
+            <PenaltyShootoutForm
+              match={match}
+              opened={penaltyShootoutOpened}
+              onClose={closePenaltyShootout}
+              onSubmit={updateMatch}
+            />
+          </>
+        )}
       </Timeline.Item>
       {Boolean(match.home_penalty_score || match.away_penalty_score) && (
-        <Timeline.Item
-          bullet={
-            <ThemeIcon size="md" radius="xl" color="grape">
-              <MText size="xs">{match.extra_time ? 120 : 90}'</MText>
-            </ThemeIcon>
-          }
-        >
-          <MText
-            fw={
-              Number(match.home_penalty_score) >
-              Number(match.away_penalty_score)
-                ? "bold"
-                : undefined
-            }
-          >
-            {match.home_penalty_score} - {match.home_team}
-          </MText>
-          <MText
-            fw={
-              Number(match.home_penalty_score) <
-              Number(match.away_penalty_score)
-                ? "bold"
-                : undefined
-            }
-          >
-            {match.away_penalty_score} - {match.away_team}
-          </MText>
-        </Timeline.Item>
+        <PenaltyShootoutEvent match={match} onSubmit={updateMatch} />
       )}
     </Timeline>
   );
@@ -303,5 +294,87 @@ const SubstitutionEvent: React.FC<{
         );
       })}
     </div>
+  );
+};
+
+const PenaltyShootoutEvent: React.FC<{
+  match: Match;
+  onSubmit: (match: Partial<Match>) => Promise<void>;
+}> = ({ match, onSubmit }) => {
+  const [opened, { open, close }] = useDisclosure();
+
+  const removePenaltyShootout = useCallback(async () => {
+    modals.openConfirmModal({
+      title: `Delete Penalty Shootout`,
+      centered: true,
+      children: (
+        <MText size="sm">
+          Are you sure you want to delete the penalty shootout? This action
+          cannot be undone.
+        </MText>
+      ),
+      labels: {
+        confirm: "Delete",
+        cancel: "Cancel",
+      },
+      confirmProps: { color: "red" },
+      onConfirm: async () => {
+        await onSubmit({ home_penalty_score: null, away_penalty_score: null });
+      },
+    });
+  }, [onSubmit]);
+
+  return (
+    <Timeline.Item
+      bullet={
+        <ThemeIcon size="md" radius="xl" color="grape">
+          <MText size="xs">PS</MText>
+        </ThemeIcon>
+      }
+    >
+      <MText
+        fw={
+          Number(match.home_penalty_score) > Number(match.away_penalty_score)
+            ? "bold"
+            : undefined
+        }
+      >
+        {match.home_penalty_score} - {match.home_team}
+      </MText>
+      <MText
+        fw={
+          Number(match.home_penalty_score) < Number(match.away_penalty_score)
+            ? "bold"
+            : undefined
+        }
+      >
+        {match.away_penalty_score} - {match.away_team}
+      </MText>
+
+      <Group mt="sm">
+        <Button
+          onClick={open}
+          variant="subtle"
+          size="compact-sm"
+          color="orange"
+        >
+          Edit
+        </Button>
+        <PenaltyShootoutForm
+          match={match}
+          opened={opened}
+          onClose={close}
+          onSubmit={onSubmit}
+        />
+        <Button
+          onClick={removePenaltyShootout}
+          variant="subtle"
+          size="compact-sm"
+          color="gray"
+        >
+          Delete
+        </Button>
+      </Group>
+    </Timeline.Item>
   );
 };
