@@ -1,4 +1,4 @@
-import { Tables } from "@/database-generated.types";
+import { Player } from "@/types";
 import {
   Button,
   Group,
@@ -7,22 +7,6 @@ import {
   Title,
   Tooltip,
 } from "@mantine/core";
-
-type Player = Pick<
-  Tables<"players">,
-  | "id"
-  | "name"
-  | "nationality"
-  | "status"
-  | "birth_year"
-  | "pos"
-  | "sec_pos"
-  | "kit_no"
-  | "ovr"
-  | "value"
-  | "wage"
-  | "contract_ends_on"
->;
 
 enum StatusFilter {
   All = "All",
@@ -71,7 +55,7 @@ function PlayersPage() {
       const pageQuery = supabase
         .from("players")
         .select(
-          "id, name, nationality, status, birth_year, pos, sec_pos, kit_no, ovr, value, wage, contract_ends_on",
+          "id, name, nationality, status, birth_year, pos, sec_pos, kit_no, ovr, value, wage, contract_ends_on, history",
         )
         .range(
           tableState.pageSize * tableState.pageIndex,
@@ -121,6 +105,7 @@ function PlayersPage() {
       if (error) {
         console.error(error);
       } else {
+        assertType<Player[]>(data);
         setPlayers(data);
         setTableState((prev) => ({
           ...prev,
@@ -146,6 +131,15 @@ function PlayersPage() {
     setStatusFilter(status);
     setTableState((prev) => ({ ...prev, pageIndex: 0 }));
   }, []);
+
+  const updatePlayer = useCallback(
+    (index: number, changes: Partial<Player>) => {
+      const newPlayers = [...players];
+      newPlayers[index] = { ...newPlayers[index], ...changes };
+      setPlayers(newPlayers);
+    },
+    [players],
+  );
 
   const columnHelper = createColumnHelper<Player>();
   const columns = useMemo(
@@ -202,24 +196,32 @@ function PlayersPage() {
       }),
       columnHelper.accessor("kit_no", {
         header: "Kit No",
+        cell: (info) => (
+          <PlayerKitNo
+            player={info.row.original}
+            setPlayer={(changes) => updatePlayer(info.row.index, changes)}
+          />
+        ),
         meta: { align: "center", sortable: true },
       }),
       columnHelper.accessor("ovr", {
         header: "OVR",
+        cell: (info) => (
+          <PlayerOvr
+            player={info.row.original}
+            setPlayer={(changes) => updatePlayer(info.row.index, changes)}
+          />
+        ),
         meta: { align: "center", sortable: true },
       }),
       columnHelper.accessor("value", {
         header: "Value",
-        cell: (info) => {
-          const value = info.getValue();
-          return (
-            <NumberFormatter
-              value={value}
-              prefix={team?.currency}
-              thousandSeparator
-            />
-          );
-        },
+        cell: (info) => (
+          <PlayerValue
+            player={info.row.original}
+            setPlayer={(changes) => updatePlayer(info.row.index, changes)}
+          />
+        ),
         meta: { align: "end", sortable: true },
       }),
       columnHelper.accessor("wage", {
@@ -242,7 +244,7 @@ function PlayersPage() {
         meta: { align: "end", sortable: true },
       }),
     ],
-    [columnHelper, team, teamId],
+    [columnHelper, team, teamId, updatePlayer],
   );
 
   if (!team) {

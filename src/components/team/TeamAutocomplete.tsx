@@ -20,7 +20,6 @@ export const TeamAutocomplete: React.FC<AutocompleteProps> = ({
         return;
       }
 
-      console.log(options, input, options.includes(input));
       if (options.includes(input)) {
         return;
       }

@@ -315,9 +315,6 @@ const AddStageModal: React.FC<{
     validate: {
       name: isNotEmpty(),
     },
-    onValuesChange: (values) => {
-      console.log(values);
-    },
   });
 
   const [type, setType] = useState<string>(StageType.Group);

@@ -108,6 +108,10 @@ function PlayerPage() {
     });
   }, [id, navigate, setAppLoading, supabase, teamId]);
 
+  const updatePlayer = useCallback(async (changes: Partial<Player>) => {
+    setPlayer((prev) => (prev ? { ...prev, ...changes } : null));
+  }, []);
+
   if (!team || !player) {
     return null;
   }
@@ -168,19 +172,28 @@ function PlayerPage() {
 
       <Group grow>
         <Box ta="center">
-          <Title>{player.kit_no ?? "-"}</Title>
+          <Title>
+            <PlayerKitNo
+              player={player}
+              setPlayer={(changes) => updatePlayer(changes)}
+            />
+          </Title>
           <Title order={6}>Kit No</Title>
         </Box>
         <Box ta="center">
-          <Title>{player.ovr}</Title>
+          <Title>
+            <PlayerOvr
+              player={player}
+              setPlayer={(changes) => updatePlayer(changes)}
+            />
+          </Title>
           <Title order={6}>OVR</Title>
         </Box>
         <Box ta="center">
           <Title>
-            <NumberFormatter
-              value={player.value}
-              prefix={team.currency}
-              thousandSeparator
+            <PlayerValue
+              player={player}
+              setPlayer={(changes) => updatePlayer(changes)}
             />
           </Title>
           <Title order={6}>Value</Title>
@@ -315,7 +328,7 @@ const PlayerHistoryChartTooltip: React.FC<
 
   return (
     <Paper px="md" py="sm" withBorder shadow="md" radius="md">
-      <MText fw={500} mb={5}>
+      <Box fw={500} mb={5}>
         {dayjs(label).format("MMM DD, YYYY")}
         {getFilteredChartTooltipPayload(payload).map((item) => (
           <Group key={item.name}>
@@ -334,7 +347,7 @@ const PlayerHistoryChartTooltip: React.FC<
             </MText>
           </Group>
         ))}
-      </MText>
+      </Box>
     </Paper>
   );
 };

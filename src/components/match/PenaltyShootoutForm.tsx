@@ -19,9 +19,6 @@ export const PenaltyShootoutForm: React.FC<{
       home_penalty_score: match.home_penalty_score,
       away_penalty_score: match.away_penalty_score,
     },
-    onValuesChange: (values) => {
-      console.log(values);
-    },
   });
 
   useEffect(() => {
