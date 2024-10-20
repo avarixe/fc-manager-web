@@ -1,5 +1,6 @@
 import { Appearance, Match } from "@/types";
-import { Box, ThemeIcon, Timeline } from "@mantine/core";
+import { Box, Button, Group, ThemeIcon, Timeline } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 import { groupBy, orderBy } from "lodash-es";
 
 enum MatchEventType {
@@ -71,9 +72,50 @@ export const MatchTimeline: React.FC<{ match: Match }> = ({ match }) => {
     }
   }, []);
 
+  const [newGoalOpened, { open: openNewGoal, close: closeNewGoal }] =
+    useDisclosure();
+  const [newBookingOpened, { open: openNewBooking, close: closeNewBooking }] =
+    useDisclosure();
+
   return (
     <Timeline bulletSize={36}>
-      <Timeline.Item></Timeline.Item>
+      <Timeline.Item
+        bullet={
+          <ThemeIcon size="md" radius="xl" color="lime">
+            <div className="i-mdi:plus" />
+          </ThemeIcon>
+        }
+      >
+        <Group>
+          <Button
+            onClick={openNewGoal}
+            color="blue"
+            leftSection={<GoalIcon c="white" />}
+          >
+            Goal
+          </Button>
+          <GoalForm
+            match={match}
+            opened={newGoalOpened}
+            onClose={closeNewGoal}
+            // onSubmit={createGoal}
+          />
+          <Button
+            onClick={openNewBooking}
+            color="yellow"
+            leftSection={<YellowCardIcon c="white" />}
+          >
+            Booking
+          </Button>
+          <BookingForm
+            match={match}
+            opened={newBookingOpened}
+            onClose={closeNewBooking}
+            // onSubmit={createBooking}
+          />
+        </Group>
+      </Timeline.Item>
+
       {items.map((item, index) => (
         <Timeline.Item
           key={index}

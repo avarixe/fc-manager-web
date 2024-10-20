@@ -20,31 +20,31 @@ const eventNamesByKey: Record<PlayerEventKey, PlayerEventType> = {
   [PlayerEventKey.Transfer]: PlayerEventType.Transfer,
 };
 
-function usePlayerEvents(
+function useManagePlayerEvents(
   player: Player,
   setPlayer: StateSetter<Player>,
   key: PlayerEventKey.Contract,
   callbacks?: PlayerEventCallbacks<Contract>,
 ): UsePlayerEventsReturnType<Contract>;
-function usePlayerEvents(
+function useManagePlayerEvents(
   player: Player,
   setPlayer: StateSetter<Player>,
   key: PlayerEventKey.Injury,
   callbacks?: PlayerEventCallbacks<Injury>,
 ): UsePlayerEventsReturnType<Injury>;
-function usePlayerEvents(
+function useManagePlayerEvents(
   player: Player,
   setPlayer: StateSetter<Player>,
   key: PlayerEventKey.Loan,
   callbacks?: PlayerEventCallbacks<Loan>,
 ): UsePlayerEventsReturnType<Loan>;
-function usePlayerEvents(
+function useManagePlayerEvents(
   player: Player,
   setPlayer: StateSetter<Player>,
   key: PlayerEventKey.Transfer,
   callbacks?: PlayerEventCallbacks<Transfer>,
 ): UsePlayerEventsReturnType<Transfer>;
-function usePlayerEvents<T extends PlayerEvent>(
+function useManagePlayerEvents<T extends PlayerEvent>(
   player: Player,
   setPlayer: StateSetter<Player>,
   key: PlayerEventKey,
@@ -170,4 +170,4 @@ function usePlayerEvents<T extends PlayerEvent>(
   };
 }
 
-export { usePlayerEvents };
+export { useManagePlayerEvents };

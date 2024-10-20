@@ -75,7 +75,7 @@ export const PlayerTimeline: React.FC<{
     create: createContract,
     update: updateContract,
     remove: removeContract,
-  } = usePlayerEvents(player, setPlayer, PlayerEventKey.Contract, {
+  } = useManagePlayerEvents(player, setPlayer, PlayerEventKey.Contract, {
     beforeCreate: (contracts) => {
       const contract = contracts[contracts.length - 1];
       if (contract.signed_on) {
@@ -119,17 +119,17 @@ export const PlayerTimeline: React.FC<{
     create: createInjury,
     update: updateInjury,
     remove: removeInjury,
-  } = usePlayerEvents(player, setPlayer, PlayerEventKey.Injury);
+  } = useManagePlayerEvents(player, setPlayer, PlayerEventKey.Injury);
   const {
     create: createLoan,
     update: updateLoan,
     remove: removeLoan,
-  } = usePlayerEvents(player, setPlayer, PlayerEventKey.Loan);
+  } = useManagePlayerEvents(player, setPlayer, PlayerEventKey.Loan);
   const {
     create: createTransfer,
     update: updateTransfer,
     remove: removeTransfer,
-  } = usePlayerEvents(player, setPlayer, PlayerEventKey.Transfer, {
+  } = useManagePlayerEvents(player, setPlayer, PlayerEventKey.Transfer, {
     beforeCreate: (transfers) => {
       const transfer = transfers[transfers.length - 1];
       if (transfer.signed_on && transfer.origin === team.name) {

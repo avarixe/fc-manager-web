@@ -63,6 +63,9 @@ export interface Match extends Tables<"matches"> {
   }[];
 }
 
+export type Goal = Match["goals"][number];
+export type Booking = Match["bookings"][number];
+
 export interface Competition extends Tables<"competitions"> {
   stages: {
     name: string;
