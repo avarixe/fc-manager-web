@@ -16,15 +16,15 @@ export type Database = {
           id: number
           import_id: number | null
           injured: boolean
-          match_id: number | null
+          match_id: number
           next_id: number | null
           num_assists: number
           num_goals: number
-          num_own_goals: number | null
+          num_own_goals: number
           num_red_cards: number
           num_yellow_cards: number
           ovr: number
-          player_id: number | null
+          player_id: number
           pos: string
           pos_order: number | null
           rating: number | null
@@ -38,15 +38,15 @@ export type Database = {
           id?: number
           import_id?: number | null
           injured?: boolean
-          match_id?: number | null
+          match_id: number
           next_id?: number | null
           num_assists?: number
           num_goals?: number
-          num_own_goals?: number | null
+          num_own_goals?: number
           num_red_cards?: number
           num_yellow_cards?: number
           ovr: number
-          player_id?: number | null
+          player_id: number
           pos: string
           pos_order?: number | null
           rating?: number | null
@@ -60,15 +60,15 @@ export type Database = {
           id?: number
           import_id?: number | null
           injured?: boolean
-          match_id?: number | null
+          match_id?: number
           next_id?: number | null
           num_assists?: number
           num_goals?: number
-          num_own_goals?: number | null
+          num_own_goals?: number
           num_red_cards?: number
           num_yellow_cards?: number
           ovr?: number
-          player_id?: number | null
+          player_id?: number
           pos?: string
           pos_order?: number | null
           rating?: number | null

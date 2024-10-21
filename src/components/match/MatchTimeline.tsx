@@ -24,7 +24,8 @@ type MatchEvent = {
 export const MatchTimeline: React.FC<{
   match: Match;
   setMatch: StateSetter<Match>;
-}> = ({ match, setMatch }) => {
+  readonly: boolean;
+}> = ({ match, setMatch, readonly }) => {
   const appearancesArray = useAtomValue(appearancesArrayAtom);
   const substitutions = useMemo(
     () => appearancesArray.filter((app) => app.start_minute > 0),
@@ -139,55 +140,57 @@ export const MatchTimeline: React.FC<{
 
   return (
     <Timeline bulletSize={36}>
-      <Timeline.Item
-        bullet={
-          <ThemeIcon size="md" radius="xl" color="lime">
-            <div className="i-mdi:plus" />
-          </ThemeIcon>
-        }
-      >
-        <Group>
-          <Button
-            onClick={openNewGoal}
-            color="blue"
-            leftSection={<GoalIcon c="white" />}
-          >
-            Goal
-          </Button>
-          <GoalForm
-            match={match}
-            opened={newGoalOpened}
-            onClose={closeNewGoal}
-            // onSubmit={createGoal}
-          />
-          <Button
-            onClick={openNewBooking}
-            color="yellow"
-            leftSection={<YellowCardIcon c="white" />}
-          >
-            Booking
-          </Button>
-          <BookingForm
-            match={match}
-            opened={newBookingOpened}
-            onClose={closeNewBooking}
-            // onSubmit={createBooking}
-          />
-          <Button
-            onClick={openNewSubstitution}
-            color="green"
-            leftSection={<SubstitutionIcon c="white" />}
-          >
-            Substitution
-          </Button>
-          <SubstitutionForm
-            match={match}
-            opened={newSubstitutionOpened}
-            onClose={closeNewSubstitution}
-            // onSubmit={createSubstitution}
-          />
-        </Group>
-      </Timeline.Item>
+      {!readonly && (
+        <Timeline.Item
+          bullet={
+            <ThemeIcon size="md" radius="xl" color="lime">
+              <div className="i-mdi:plus" />
+            </ThemeIcon>
+          }
+        >
+          <Group>
+            <Button
+              onClick={openNewGoal}
+              color="blue"
+              leftSection={<GoalIcon c="white" />}
+            >
+              Goal
+            </Button>
+            <GoalForm
+              match={match}
+              opened={newGoalOpened}
+              onClose={closeNewGoal}
+              // onSubmit={createGoal}
+            />
+            <Button
+              onClick={openNewBooking}
+              color="yellow"
+              leftSection={<YellowCardIcon c="white" />}
+            >
+              Booking
+            </Button>
+            <BookingForm
+              match={match}
+              opened={newBookingOpened}
+              onClose={closeNewBooking}
+              // onSubmit={createBooking}
+            />
+            <Button
+              onClick={openNewSubstitution}
+              color="green"
+              leftSection={<SubstitutionIcon c="white" />}
+            >
+              Substitution
+            </Button>
+            <SubstitutionForm
+              match={match}
+              opened={newSubstitutionOpened}
+              onClose={closeNewSubstitution}
+              // onSubmit={createSubstitution}
+            />
+          </Group>
+        </Timeline.Item>
+      )}
 
       {items.map((item, index) => (
         <Timeline.Item
@@ -216,28 +219,38 @@ export const MatchTimeline: React.FC<{
         }
       >
         End of Match
-        <Switch
-          label="After Extra Time"
-          checked={match.extra_time}
-          onChange={(event) => onChangeExtraTime(event.currentTarget.checked)}
-          my="xs"
-        />
-        {!(match.home_penalty_score || match.away_penalty_score) && (
+        {!readonly && (
           <>
-            <Button onClick={openPenaltyShootout} color="grape">
-              Penalty Shootout
-            </Button>
-            <PenaltyShootoutForm
-              match={match}
-              opened={penaltyShootoutOpened}
-              onClose={closePenaltyShootout}
-              onSubmit={updateMatch}
+            <Switch
+              label="After Extra Time"
+              checked={match.extra_time}
+              onChange={(event) =>
+                onChangeExtraTime(event.currentTarget.checked)
+              }
+              my="xs"
             />
+            {!(match.home_penalty_score || match.away_penalty_score) && (
+              <>
+                <Button onClick={openPenaltyShootout} color="grape">
+                  Penalty Shootout
+                </Button>
+                <PenaltyShootoutForm
+                  match={match}
+                  opened={penaltyShootoutOpened}
+                  onClose={closePenaltyShootout}
+                  onSubmit={updateMatch}
+                />
+              </>
+            )}
           </>
         )}
       </Timeline.Item>
       {Boolean(match.home_penalty_score || match.away_penalty_score) && (
-        <PenaltyShootoutEvent match={match} onSubmit={updateMatch} />
+        <PenaltyShootoutEvent
+          match={match}
+          onSubmit={updateMatch}
+          readonly={readonly}
+        />
       )}
     </Timeline>
   );
@@ -300,7 +313,8 @@ const SubstitutionEvent: React.FC<{
 const PenaltyShootoutEvent: React.FC<{
   match: Match;
   onSubmit: (match: Partial<Match>) => Promise<void>;
-}> = ({ match, onSubmit }) => {
+  readonly: boolean;
+}> = ({ match, onSubmit, readonly }) => {
   const [opened, { open, close }] = useDisclosure();
 
   const removePenaltyShootout = useCallback(async () => {
@@ -351,30 +365,32 @@ const PenaltyShootoutEvent: React.FC<{
         {match.away_penalty_score} - {match.away_team}
       </MText>
 
-      <Group mt="sm">
-        <Button
-          onClick={open}
-          variant="subtle"
-          size="compact-sm"
-          color="orange"
-        >
-          Edit
-        </Button>
-        <PenaltyShootoutForm
-          match={match}
-          opened={opened}
-          onClose={close}
-          onSubmit={onSubmit}
-        />
-        <Button
-          onClick={removePenaltyShootout}
-          variant="subtle"
-          size="compact-sm"
-          color="gray"
-        >
-          Delete
-        </Button>
-      </Group>
+      {!readonly && (
+        <Group mt="sm">
+          <Button
+            onClick={open}
+            variant="subtle"
+            size="compact-sm"
+            color="orange"
+          >
+            Edit
+          </Button>
+          <PenaltyShootoutForm
+            match={match}
+            opened={opened}
+            onClose={close}
+            onSubmit={onSubmit}
+          />
+          <Button
+            onClick={removePenaltyShootout}
+            variant="subtle"
+            size="compact-sm"
+            color="gray"
+          >
+            Delete
+          </Button>
+        </Group>
+      )}
     </Timeline.Item>
   );
 };
