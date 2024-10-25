@@ -1,6 +1,7 @@
 import { createClient, Session, SupabaseClient } from "@supabase/supabase-js";
 import { atom } from "jotai";
 import { Database, Tables } from "@/database-generated.types";
+import { Appearance, Match } from "@/types";
 
 export const supabaseAtom = atom<SupabaseClient<Database>>(
   createClient<Database>(
@@ -19,14 +20,10 @@ export const supabaseAtom = atom<SupabaseClient<Database>>(
 
 export const sessionAtom = atom<Session | null>(null);
 
-export const teamAtom = atom<Tables<"teams"> | null>(null);
-
 export const appLoadingAtom = atom(false);
 
-export const appearanceMapAtom = atom(new AppearanceMap());
+export const teamAtom = atom<Tables<"teams"> | null>(null);
 
-export const appearancesArrayAtom = atom((get) =>
-  [...get(appearanceMapAtom).values()].map((appearanceAtom) =>
-    get(appearanceAtom),
-  ),
-);
+export const matchAtom = atom<Match | null>(null);
+
+export const appearancesAtom = atom<Appearance[]>([]);

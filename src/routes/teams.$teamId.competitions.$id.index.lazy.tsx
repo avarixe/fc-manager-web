@@ -246,30 +246,32 @@ function CompetitionPage() {
         checked={readonly}
         onChange={(event) => setReadonly(event.currentTarget.checked)}
       />
-      <Group>
-        <Button
-          component={Link}
-          to={`/teams/${team.id}/competitions/${id}/edit`}
-        >
-          Edit
-        </Button>
-        <AddStageModal
-          opened={addStageOpened}
-          onClose={closeAddStage}
-          onAdd={onAddStage}
-        />
-        <Button onClick={openAddStage} variant="outline">
-          Add Stage
-        </Button>
-        <Button
-          onClick={onClickDelete}
-          variant="outline"
-          color="red"
-          className="ml-auto"
-        >
-          Delete
-        </Button>
-      </Group>
+      {!readonly && (
+        <Group>
+          <Button
+            component={Link}
+            to={`/teams/${team.id}/competitions/${id}/edit`}
+          >
+            Edit
+          </Button>
+          <AddStageModal
+            opened={addStageOpened}
+            onClose={closeAddStage}
+            onAdd={onAddStage}
+          />
+          <Button onClick={openAddStage} variant="outline">
+            Add Stage
+          </Button>
+          <Button
+            onClick={onClickDelete}
+            variant="outline"
+            color="red"
+            className="ml-auto"
+          >
+            Delete
+          </Button>
+        </Group>
+      )}
       <Accordion defaultValue={[StageType.Group, StageType.Knockout]} multiple>
         {categories.map((category, i) => (
           <Accordion.Item

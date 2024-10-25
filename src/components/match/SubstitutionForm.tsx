@@ -1,4 +1,3 @@
-import { Match } from "@/types";
 import {
   Button,
   Checkbox,
@@ -19,11 +18,10 @@ interface SubstituteAttributes {
 }
 
 export const SubstitutionForm: React.FC<{
-  match: Match;
   opened: boolean;
   onClose: () => void;
   // onSubmit: (substitution: Appearance) => Promise<void>;
-}> = ({ match, opened, onClose }) => {
+}> = ({ opened, onClose }) => {
   const form = useForm<SubstituteAttributes>({
     initialValues: {
       start_minute: 1,
@@ -56,6 +54,7 @@ export const SubstitutionForm: React.FC<{
     onClose();
   }, [form, onClose]);
 
+  const match = useAtomValue(matchAtom)!;
   return (
     <Modal
       opened={opened}

@@ -24,10 +24,10 @@ function MatchPage() {
   const { id, teamId } = Route.useParams();
   const { team } = useTeam(teamId);
 
-  const [match, setMatch] = useState<Match | null>(null);
+  const [match, setMatch] = useAtom(matchAtom);
   const [squads, setSquads] = useState<Squad[]>([]);
   const playerOvrByIdRef = useRef(new Map<number, number>());
-  const setAppearanceMap = useSetAtom(appearanceMapAtom);
+  const setAppearances = useSetAtom(appearancesAtom);
   const supabase = useAtomValue(supabaseAtom);
   useEffect(() => {
     const fetchMatch = async () => {
@@ -54,14 +54,7 @@ function MatchPage() {
         setMatch(data);
 
         assertType<Appearance[]>(data.appearances);
-        setAppearanceMap(
-          new AppearanceMap(
-            data.appearances.map((appearance: Appearance) => [
-              appearance.id,
-              atom(appearance),
-            ]),
-          ),
-        );
+        setAppearances(data.appearances);
       }
     };
 
@@ -95,7 +88,7 @@ function MatchPage() {
     fetchMatch();
     fetchSquads();
     fetchPlayerOvr();
-  }, [id, setAppearanceMap, supabase, teamId]);
+  }, [id, setAppearances, setMatch, supabase, teamId]);
 
   const setAppLoading = useSetAtom(appLoadingAtom);
   const navigate = useNavigate();
@@ -128,7 +121,7 @@ function MatchPage() {
     });
   }, [id, navigate, setAppLoading, supabase, teamId]);
 
-  const appearances = useAtomValue(appearancesArrayAtom);
+  const appearances = useAtomValue(appearancesAtom);
   const session = useAtomValue(sessionAtom);
   const applySquad = useCallback(
     async (squad: Squad) => {
@@ -185,17 +178,10 @@ function MatchPage() {
         console.error(error);
       } else {
         assertType<Appearance[]>(data);
-        setAppearanceMap(
-          new AppearanceMap(
-            data.map((appearance: Appearance) => [
-              appearance.id,
-              atom(appearance),
-            ]),
-          ),
-        );
+        setAppearances(data);
       }
     },
-    [appearances, id, session?.user?.id, setAppearanceMap, supabase],
+    [appearances, id, session?.user?.id, setAppearances, setMatch, supabase],
   );
 
   const [squadName, setSquadName] = useState("");
@@ -261,20 +247,22 @@ function MatchPage() {
         checked={readonly}
         onChange={(event) => setReadonly(event.currentTarget.checked)}
       />
-      <Group>
-        <Button component={Link} to={`/teams/${team.id}/matches/${id}/edit`}>
-          Edit
-        </Button>
-        <Button
-          onClick={onClickDelete}
-          variant="outline"
-          color="red"
-          className="ml-auto"
-        >
-          Delete
-        </Button>
-      </Group>
-      <MatchInfo match={match} setMatch={setMatch} readonly={readonly} />
+      {!readonly && (
+        <Group>
+          <Button component={Link} to={`/teams/${team.id}/matches/${id}/edit`}>
+            Edit
+          </Button>
+          <Button
+            onClick={onClickDelete}
+            variant="outline"
+            color="red"
+            className="ml-auto"
+          >
+            Delete
+          </Button>
+        </Group>
+      )}
+      <MatchInfo readonly={readonly} />
 
       <Box my="lg">
         <Title order={2}>
@@ -360,17 +348,17 @@ function MatchPage() {
         </Title>
         <Divider my="xs" />
 
-        <MatchTimeline match={match} setMatch={setMatch} readonly={readonly} />
+        <MatchTimeline readonly={readonly} />
       </Box>
     </Stack>
   );
 }
 
 const MatchInfo: React.FC<{
-  match: Match;
-  setMatch: StateSetter<Match>;
   readonly: boolean;
-}> = ({ match, setMatch, readonly }) => {
+}> = ({ readonly }) => {
+  const [match, setMatch] = useAtom(matchAtom);
+  assertType<Match>(match);
   const form = useForm({
     initialValues: {
       home_xg: match.home_xg ?? 0,
@@ -411,7 +399,7 @@ const MatchInfo: React.FC<{
     if (error) {
       console.error(error);
     } else {
-      setMatch((prev: Match) => ({ ...prev, ...changes }));
+      setMatch((prev) => (prev ? { ...prev, ...changes } : prev));
       form.resetDirty();
     }
   }, [form, match.id, setMatch, supabase]);

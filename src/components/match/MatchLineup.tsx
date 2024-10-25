@@ -3,7 +3,7 @@ import { Box, Group, Indicator, NavLink, Rating } from "@mantine/core";
 import { orderBy } from "lodash-es";
 
 export const MatchLineup: React.FC<{ match: Match }> = ({ match }) => {
-  const appearances = useAtomValue(appearancesArrayAtom);
+  const appearances = useAtomValue(appearancesAtom);
   const sortedAppearances = useMemo(() => {
     return orderBy(
       appearances.filter(

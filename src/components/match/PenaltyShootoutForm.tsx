@@ -9,11 +9,11 @@ import {
 import { useForm } from "@mantine/form";
 
 export const PenaltyShootoutForm: React.FC<{
-  match: Match;
   opened: boolean;
   onClose: () => void;
   onSubmit: (changes: Partial<Match>) => Promise<void>;
-}> = ({ match, opened, onClose, onSubmit }) => {
+}> = ({ opened, onClose, onSubmit }) => {
+  const match = useAtomValue(matchAtom)!;
   const form = useForm({
     initialValues: {
       home_penalty_score: match.home_penalty_score,

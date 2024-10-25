@@ -1,22 +1,25 @@
-import { Booking, Match } from "@/types";
+import { Appearance, Booking } from "@/types";
 import {
   Button,
+  ComboboxItem,
   Group,
   LoadingOverlay,
   Modal,
   NumberInput,
   SegmentedControl,
+  Select,
   TextInput,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 
+type AppearanceOption = ComboboxItem & Appearance;
+
 export const BookingForm: React.FC<{
-  match: Match;
   record?: Booking;
   opened: boolean;
   onClose: () => void;
   // onSubmit: (booking: Booking) => Promise<void>;
-}> = ({ match, record, opened, onClose }) => {
+}> = ({ record, opened, onClose }) => {
   const form = useForm<Booking>({
     initialValues: {
       minute: record?.minute ?? 1,
@@ -50,6 +53,23 @@ export const BookingForm: React.FC<{
     setLoading(false);
     onClose();
   }, [form, onClose]);
+
+  const { appearancesAtMinute } = useMatchState(form.values.minute);
+  const appearanceOptions = useMemo(
+    () =>
+      appearancesAtMinute.map((appearance) => ({
+        ...appearance,
+        value: appearance.players.name,
+        label: `${appearance.pos} · ${appearance.players.name}`,
+      })),
+    [appearancesAtMinute],
+  );
+
+  const team = useAtomValue(teamAtom)!;
+  const match = useAtomValue(matchAtom)!;
+  const isUserGoal = form.values.home
+    ? team.name === match.home_team
+    : team.name === match.away_team;
 
   return (
     <Modal
@@ -97,12 +117,34 @@ export const BookingForm: React.FC<{
           max={match.extra_time ? 120 : 90}
           mb="xs"
         />
-        <TextInput
-          {...form.getInputProps("player_name")}
-          label="Player"
-          required
-          mb="xs"
-        />
+        {isUserGoal ? (
+          <Select
+            {...form.getInputProps("player_name")}
+            label="Player"
+            placeholder="Select player"
+            required
+            data={appearanceOptions}
+            renderOption={({ option }) => {
+              assertType<AppearanceOption>(option);
+              return (
+                <Group>
+                  <MText size="xs" fw="bold">
+                    {option.pos}
+                  </MText>
+                  <MText size="xs">{option.value}</MText>
+                </Group>
+              );
+            }}
+            mb="xs"
+          />
+        ) : (
+          <TextInput
+            {...form.getInputProps("player_name")}
+            label="Player"
+            required
+            mb="xs"
+          />
+        )}
         <Button type="submit" fullWidth mt="xl">
           Save
         </Button>

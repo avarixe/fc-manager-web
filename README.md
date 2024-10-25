@@ -2,8 +2,6 @@
 
 ## TODO
 
-- Apply Squad to Match
-- Save Lineup to Squad
 - Create Goal
   - Update match.goals[]
   - Calculate and set appearance.num_goals
@@ -16,7 +14,7 @@
 - Create Booking
   - Update match.bookings[]
   - Calculate and set appearance.num_yellow_cards OR appearance.num_red_cards
-
+- Set Appearance Rating
 
 # React + TypeScript + Vite
 

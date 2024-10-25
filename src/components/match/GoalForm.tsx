@@ -1,4 +1,4 @@
-import { Goal, Match } from "@/types";
+import { Goal } from "@/types";
 import {
   Button,
   Checkbox,
@@ -12,12 +12,11 @@ import {
 import { useForm } from "@mantine/form";
 
 export const GoalForm: React.FC<{
-  match: Match;
   record?: Goal;
   opened: boolean;
   onClose: () => void;
   // onSubmit: (goal: Goal) => Promise<void>;
-}> = ({ match, record, opened, onClose }) => {
+}> = ({ record, opened, onClose }) => {
   const form = useForm<Goal>({
     initialValues: {
       minute: record?.minute ?? 1,
@@ -67,6 +66,7 @@ export const GoalForm: React.FC<{
     onClose();
   }, [form, onClose]);
 
+  const match = useAtomValue(matchAtom)!;
   return (
     <Modal
       opened={opened}

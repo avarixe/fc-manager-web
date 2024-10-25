@@ -2,7 +2,7 @@ import { Match } from "@/types";
 import { orderBy, sumBy } from "lodash-es";
 
 function useAppearanceStats(match: Match, playerId: number) {
-  const appearances = useAtomValue(appearancesArrayAtom);
+  const appearances = useAtomValue(appearancesAtom);
   const playerAppearances = orderBy(
     appearances.filter((app) => app.player_id === playerId),
     "start_minute",

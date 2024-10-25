@@ -1,13 +1,4 @@
 import { Tables } from "@/database-generated.types";
-import { Appearance } from "@/types";
-import { Atom } from "jotai";
-
-type AppearanceAtom = Atom<Appearance>;
-export class AppearanceMap extends Map<number, AppearanceAtom> {
-  constructor(entries?: readonly (readonly [number, AppearanceAtom])[]) {
-    super(entries);
-  }
-}
 
 export function matchScore(
   match: Pick<

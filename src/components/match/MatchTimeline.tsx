@@ -1,4 +1,4 @@
-import { Appearance, Match } from "@/types";
+import { Appearance, Booking, Goal, Match } from "@/types";
 import { Box, Button, Group, Switch, ThemeIcon, Timeline } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
@@ -22,17 +22,17 @@ type MatchEvent = {
 );
 
 export const MatchTimeline: React.FC<{
-  match: Match;
-  setMatch: StateSetter<Match>;
   readonly: boolean;
-}> = ({ match, setMatch, readonly }) => {
-  const appearancesArray = useAtomValue(appearancesArrayAtom);
+}> = ({ readonly }) => {
+  const [appearances, setAppearances] = useAtom(appearancesAtom);
   const substitutions = useMemo(
-    () => appearancesArray.filter((app) => app.start_minute > 0),
-    [appearancesArray],
+    () => appearances.filter((app) => app.start_minute > 0),
+    [appearances],
   );
 
   const team = useAtomValue(teamAtom)!;
+  const [match, setMatch] = useAtom(matchAtom);
+  assertType<Match>(match);
   const items: MatchEvent[] = useMemo(() => {
     const subsByMinute = Object.entries(
       groupBy(substitutions, "start_minute"),
@@ -100,22 +100,21 @@ export const MatchTimeline: React.FC<{
       if (error) {
         console.error(error);
       } else {
-        setMatch((prev: Match) => ({ ...prev, ...changes }));
+        setMatch((prev) => (prev ? { ...prev, ...changes } : prev));
       }
     },
     [match, setMatch, supabase],
   );
 
-  const setAppearanceMap = useSetAtom(appearanceMapAtom);
   const onChangeExtraTime = useCallback(
     async (value: boolean) => {
       await updateMatch({ extra_time: value });
 
-      const newAppearanceMap = new AppearanceMap();
+      const newAppearances: Appearance[] = [];
       await Promise.all(
-        appearancesArray.map(async (appearance) => {
+        appearances.map(async (appearance) => {
           if (appearance.next_id) {
-            newAppearanceMap.set(appearance.id, atom(appearance));
+            newAppearances.push(appearance);
           } else {
             const changes = { stop_minute: value ? 120 : 90 };
             const { error } = await supabase
@@ -125,17 +124,14 @@ export const MatchTimeline: React.FC<{
             if (error) {
               console.error(error);
             } else {
-              newAppearanceMap.set(
-                appearance.id,
-                atom({ ...appearance, ...changes }),
-              );
+              newAppearances.push({ ...appearance, ...changes });
             }
           }
         }),
       );
-      setAppearanceMap(newAppearanceMap);
+      setAppearances(newAppearances);
     },
-    [appearancesArray, setAppearanceMap, supabase, updateMatch],
+    [appearances, setAppearances, supabase, updateMatch],
   );
 
   return (
@@ -157,7 +153,6 @@ export const MatchTimeline: React.FC<{
               Goal
             </Button>
             <GoalForm
-              match={match}
               opened={newGoalOpened}
               onClose={closeNewGoal}
               // onSubmit={createGoal}
@@ -170,7 +165,6 @@ export const MatchTimeline: React.FC<{
               Booking
             </Button>
             <BookingForm
-              match={match}
               opened={newBookingOpened}
               onClose={closeNewBooking}
               // onSubmit={createBooking}
@@ -183,7 +177,6 @@ export const MatchTimeline: React.FC<{
               Substitution
             </Button>
             <SubstitutionForm
-              match={match}
               opened={newSubstitutionOpened}
               onClose={closeNewSubstitution}
               // onSubmit={createSubstitution}
@@ -235,7 +228,6 @@ export const MatchTimeline: React.FC<{
                   Penalty Shootout
                 </Button>
                 <PenaltyShootoutForm
-                  match={match}
                   opened={penaltyShootoutOpened}
                   onClose={closePenaltyShootout}
                   onSubmit={updateMatch}
@@ -246,17 +238,13 @@ export const MatchTimeline: React.FC<{
         )}
       </Timeline.Item>
       {Boolean(match.home_penalty_score || match.away_penalty_score) && (
-        <PenaltyShootoutEvent
-          match={match}
-          onSubmit={updateMatch}
-          readonly={readonly}
-        />
+        <PenaltyShootoutEvent onSubmit={updateMatch} readonly={readonly} />
       )}
     </Timeline>
   );
 };
 
-const GoalEvent: React.FC<{ goal: Match["goals"][number] }> = ({ goal }) => (
+const GoalEvent: React.FC<{ goal: Goal }> = ({ goal }) => (
   <div className="flex items-center flex-gap-1">
     <GoalIcon />
     {goal.player_name}
@@ -270,9 +258,7 @@ const GoalEvent: React.FC<{ goal: Match["goals"][number] }> = ({ goal }) => (
   </div>
 );
 
-const BookingEvent: React.FC<{ booking: Match["bookings"][number] }> = ({
-  booking,
-}) => (
+const BookingEvent: React.FC<{ booking: Booking }> = ({ booking }) => (
   <div className="flex items-center flex-gap-1">
     {booking.red_card ? <RedCardIcon /> : <YellowCardIcon />}
     {booking.player_name}
@@ -311,10 +297,9 @@ const SubstitutionEvent: React.FC<{
 };
 
 const PenaltyShootoutEvent: React.FC<{
-  match: Match;
   onSubmit: (match: Partial<Match>) => Promise<void>;
   readonly: boolean;
-}> = ({ match, onSubmit, readonly }) => {
+}> = ({ onSubmit, readonly }) => {
   const [opened, { open, close }] = useDisclosure();
 
   const removePenaltyShootout = useCallback(async () => {
@@ -338,6 +323,7 @@ const PenaltyShootoutEvent: React.FC<{
     });
   }, [onSubmit]);
 
+  const match = useAtomValue(matchAtom)!;
   return (
     <Timeline.Item
       bullet={
@@ -376,7 +362,6 @@ const PenaltyShootoutEvent: React.FC<{
             Edit
           </Button>
           <PenaltyShootoutForm
-            match={match}
             opened={opened}
             onClose={close}
             onSubmit={onSubmit}
