@@ -87,6 +87,7 @@ declare global {
   const useInsertionEffect: typeof import('react')['useInsertionEffect']
   const useLayoutEffect: typeof import('react')['useLayoutEffect']
   const useManageBookings: typeof import('./src/hooks/useManageBookings')['useManageBookings']
+  const useManageGoals: typeof import('./src/hooks/useManageGoals')['useManageGoals']
   const useManagePlayerEvents: typeof import('./src/hooks/useManagePlayerEvents')['useManagePlayerEvents']
   const useMatchCallbacks: typeof import('./src/hooks/useMatchCallbacks')['useMatchCallbacks']
   const useMatchState: typeof import('./src/hooks/useMatchState')['default']

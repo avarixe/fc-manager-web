@@ -3,8 +3,9 @@ import { omit } from "lodash-es";
 
 export const useMatchCallbacks = () => {
   const team = useAtomValue(teamAtom)!;
-  const match = useAtomValue(matchAtom)!;
   const [appearances, setAppearances] = useAtom(appearancesAtom);
+  const [match, setMatch] = useAtom(matchAtom);
+  assertType<Match>(match);
 
   const supabase = useAtomValue(supabaseAtom);
   const resolvePlayerStats = useCallback(
@@ -71,7 +72,29 @@ export const useMatchCallbacks = () => {
     [appearances, match, setAppearances, supabase, team.name],
   );
 
+  const resolveMatchScores = useCallback(
+    async (updatedMatch?: Match) => {
+      updatedMatch = updatedMatch ?? match;
+      const homeScore = updatedMatch.goals.filter(
+        (goal) => goal.home !== goal.own_goal,
+      ).length;
+      const awayScore = updatedMatch.goals.length - homeScore;
+
+      await supabase
+        .from("matches")
+        .update({ home_score: homeScore, away_score: awayScore })
+        .eq("id", match.id);
+      setMatch({
+        ...updatedMatch,
+        home_score: homeScore,
+        away_score: awayScore,
+      });
+    },
+    [match, setMatch, supabase],
+  );
+
   return {
     resolvePlayerStats,
+    resolveMatchScores,
   };
 };

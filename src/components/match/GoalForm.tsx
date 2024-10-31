@@ -1,7 +1,9 @@
-import { Goal } from "@/types";
+import { Appearance, Goal } from "@/types";
 import {
   Button,
   Checkbox,
+  ComboboxItem,
+  Group,
   LoadingOverlay,
   Modal,
   NumberInput,
@@ -11,12 +13,14 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 
+type AppearanceOption = ComboboxItem & Appearance;
+
 export const GoalForm: React.FC<{
   record?: Goal;
   opened: boolean;
   onClose: () => void;
-  // onSubmit: (goal: Goal) => Promise<void>;
-}> = ({ record, opened, onClose }) => {
+  onSubmit: (goal: Goal) => Promise<void>;
+}> = ({ record, opened, onClose, onSubmit }) => {
   const form = useForm<Goal>({
     initialValues: {
       minute: record?.minute ?? 1,
@@ -32,7 +36,12 @@ export const GoalForm: React.FC<{
   });
   form.watch("home", () => {
     form.setFieldValue("player_name", "");
-    form.setFieldValue("assisted_by", "");
+    form.setFieldValue("assisted_by", null);
+  });
+  form.watch("player_name", ({ value }) => {
+    if (value === form.values.assisted_by) {
+      form.setFieldValue("assisted_by", null);
+    }
   });
   form.watch("own_goal", ({ value }) => {
     if (value) {
@@ -61,12 +70,35 @@ export const GoalForm: React.FC<{
     }
 
     setLoading(true);
-    // await onSubmit(form.values);
+    await onSubmit(form.values);
     setLoading(false);
     onClose();
-  }, [form, onClose]);
+  }, [form, onClose, onSubmit]);
 
+  const { appearancesAtMinute } = useMatchState(form.values.minute);
+  const appearanceOptions = useMemo(
+    () =>
+      appearancesAtMinute.map((appearance) => ({
+        ...appearance,
+        value: appearance.players.name,
+        label: `${appearance.pos} · ${appearance.players.name}`,
+      })),
+    [appearancesAtMinute],
+  );
+  const assistedByOptions = useMemo(
+    () =>
+      appearanceOptions.filter(
+        (appearance) => appearance.value !== form.values.player_name,
+      ),
+    [appearanceOptions, form.values.player_name],
+  );
+
+  const team = useAtomValue(teamAtom)!;
   const match = useAtomValue(matchAtom)!;
+  const isUserGoal = form.values.home
+    ? team.name === match.home_team
+    : team.name === match.away_team;
+
   return (
     <Modal
       opened={opened}
@@ -99,17 +131,61 @@ export const GoalForm: React.FC<{
           max={match.extra_time ? 120 : 90}
           mb="xs"
         />
-        <TextInput
-          {...form.getInputProps("player_name")}
-          label="Goal Scorer"
-          required
-          mb="xs"
-        />
-        <TextInput
-          {...form.getInputProps("assisted_by")}
-          label="Assisted By"
-          mb="xs"
-        />
+        {isUserGoal ? (
+          <>
+            <Select
+              {...form.getInputProps("player_name")}
+              label="Player"
+              placeholder="Select player"
+              required
+              data={appearanceOptions}
+              renderOption={({ option }) => {
+                assertType<AppearanceOption>(option);
+                return (
+                  <Group>
+                    <MText size="xs" fw="bold">
+                      {option.pos}
+                    </MText>
+                    <MText size="xs">{option.value}</MText>
+                  </Group>
+                );
+              }}
+              mb="xs"
+            />
+            <Select
+              {...form.getInputProps("assisted_by")}
+              label="Assisted By"
+              placeholder="Select player"
+              data={assistedByOptions}
+              renderOption={({ option }) => {
+                assertType<AppearanceOption>(option);
+                return (
+                  <Group>
+                    <MText size="xs" fw="bold">
+                      {option.pos}
+                    </MText>
+                    <MText size="xs">{option.value}</MText>
+                  </Group>
+                );
+              }}
+              mb="xs"
+            />
+          </>
+        ) : (
+          <>
+            <TextInput
+              {...form.getInputProps("player_name")}
+              label="Player"
+              required
+              mb="xs"
+            />
+            <TextInput
+              {...form.getInputProps("assisted_by")}
+              label="Assisted By"
+              mb="xs"
+            />
+          </>
+        )}
         <Select
           {...form.getInputProps("set_piece")}
           label="Set Piece"
@@ -123,6 +199,7 @@ export const GoalForm: React.FC<{
           mb="xs"
         />
         <Checkbox
+          checked={form.values.own_goal}
           {...form.getInputProps("own_goal")}
           label="Own Goal"
           mt="md"

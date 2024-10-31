@@ -64,18 +64,27 @@ export const MatchTimeline: React.FC<{
   }, [substitutions, match.goals, match.bookings, match.home_team, team.name]);
 
   const { createBooking, updateBooking, removeBooking } = useManageBookings();
+  const { createGoal, updateGoal, removeGoal } = useManageGoals();
 
   const renderItem = useCallback(
     (item: MatchEvent) => {
       switch (item.type) {
         case MatchEventType.Goal:
           assertType<Goal>(item);
-          return <GoalEvent goal={item} />;
+          return (
+            <GoalEvent
+              goal={item}
+              readonly={readonly}
+              onSubmit={(goal) => updateGoal(item.index, goal)}
+              onRemove={() => removeGoal(item.index)}
+            />
+          );
         case MatchEventType.Booking:
           assertType<Booking>(item);
           return (
             <BookingEvent
               booking={item}
+              readonly={readonly}
               onSubmit={(booking) => updateBooking(item.index, booking)}
               onRemove={() => removeBooking(item.index)}
             />
@@ -85,7 +94,7 @@ export const MatchTimeline: React.FC<{
           return <SubstitutionEvent substitutions={item.substitutions} />;
       }
     },
-    [removeBooking, updateBooking],
+    [readonly, removeBooking, removeGoal, updateBooking, updateGoal],
   );
 
   const [newGoalOpened, { open: openNewGoal, close: closeNewGoal }] =
@@ -166,7 +175,7 @@ export const MatchTimeline: React.FC<{
             <GoalForm
               opened={newGoalOpened}
               onClose={closeNewGoal}
-              // onSubmit={createGoal}
+              onSubmit={createGoal}
             />
             <Button
               onClick={openNewBooking}
@@ -255,25 +264,63 @@ export const MatchTimeline: React.FC<{
   );
 };
 
-const GoalEvent: React.FC<{ goal: Goal }> = ({ goal }) => (
-  <div className="flex items-center flex-gap-1">
-    <GoalIcon />
-    {goal.player_name}
-    {goal.set_piece ? ` (${goal.set_piece})` : null}
-    {goal.assisted_by && (
-      <>
-        <AssistIcon />
-        {goal.assisted_by}
-      </>
-    )}
-  </div>
-);
+const GoalEvent: React.FC<{
+  goal: Goal;
+  readonly: boolean;
+  onSubmit: (goal: Goal) => Promise<void>;
+  onRemove: () => Promise<void>;
+}> = ({ goal, readonly, onSubmit, onRemove }) => {
+  const [opened, { open, close }] = useDisclosure();
+
+  return (
+    <div>
+      <div className="flex items-center flex-gap-1">
+        <GoalIcon c={goal.own_goal ? "red.9" : "blue"} />
+        {goal.player_name}
+        {goal.set_piece ? ` (${goal.set_piece})` : null}
+        {goal.assisted_by && (
+          <>
+            <AssistIcon />
+            {goal.assisted_by}
+          </>
+        )}
+      </div>
+      {!readonly && (
+        <Group mt="sm">
+          <Button
+            onClick={open}
+            variant="subtle"
+            size="compact-sm"
+            color="orange"
+          >
+            Edit
+          </Button>
+          <GoalForm
+            record={goal}
+            opened={opened}
+            onClose={close}
+            onSubmit={onSubmit}
+          />
+          <Button
+            onClick={onRemove}
+            variant="subtle"
+            size="compact-sm"
+            color="gray"
+          >
+            Delete
+          </Button>
+        </Group>
+      )}
+    </div>
+  );
+};
 
 const BookingEvent: React.FC<{
   booking: Booking;
+  readonly: boolean;
   onSubmit: (booking: Booking) => Promise<void>;
   onRemove: () => Promise<void>;
-}> = ({ booking, onSubmit, onRemove }) => {
+}> = ({ booking, readonly, onSubmit, onRemove }) => {
   const [opened, { open, close }] = useDisclosure();
 
   return (
@@ -282,30 +329,32 @@ const BookingEvent: React.FC<{
         {booking.red_card ? <RedCardIcon /> : <YellowCardIcon />}
         {booking.player_name}
       </div>
-      <Group mt="sm">
-        <Button
-          onClick={open}
-          variant="subtle"
-          size="compact-sm"
-          color="orange"
-        >
-          Edit
-        </Button>
-        <BookingForm
-          record={booking}
-          opened={opened}
-          onClose={close}
-          onSubmit={onSubmit}
-        />
-        <Button
-          onClick={onRemove}
-          variant="subtle"
-          size="compact-sm"
-          color="gray"
-        >
-          Delete
-        </Button>
-      </Group>
+      {!readonly && (
+        <Group mt="sm">
+          <Button
+            onClick={open}
+            variant="subtle"
+            size="compact-sm"
+            color="orange"
+          >
+            Edit
+          </Button>
+          <BookingForm
+            record={booking}
+            opened={opened}
+            onClose={close}
+            onSubmit={onSubmit}
+          />
+          <Button
+            onClick={onRemove}
+            variant="subtle"
+            size="compact-sm"
+            color="gray"
+          >
+            Delete
+          </Button>
+        </Group>
+      )}
     </div>
   );
 };
