@@ -15,11 +15,8 @@ type MatchEvent = {
   minute: number;
   home: boolean;
   priority: number;
-} & (
-  | Match["goals"][number]
-  | Match["bookings"][number]
-  | { substitutions: Appearance[] }
-);
+  index: number;
+} & (Goal | Booking | { substitutions: Appearance[] });
 
 export const MatchTimeline: React.FC<{
   readonly: boolean;
@@ -41,19 +38,22 @@ export const MatchTimeline: React.FC<{
       minute: Number(minute),
       home: team.name === match.home_team,
       priority: 1,
+      index: 0,
       substitutions: subs,
     }));
 
     return orderBy(
       [
-        ...match.goals.map((goal) => ({
+        ...match.goals.map((goal, index) => ({
           type: MatchEventType.Goal,
           priority: 2,
+          index,
           ...goal,
         })),
-        ...match.bookings.map((booking) => ({
+        ...match.bookings.map((booking, index) => ({
           type: MatchEventType.Booking,
           priority: 3,
+          index,
           ...booking,
         })),
         ...subsByMinute,
@@ -63,19 +63,30 @@ export const MatchTimeline: React.FC<{
     );
   }, [substitutions, match.goals, match.bookings, match.home_team, team.name]);
 
-  const renderItem = useCallback((item: MatchEvent) => {
-    switch (item.type) {
-      case MatchEventType.Goal:
-        assertType<Match["goals"][number]>(item);
-        return <GoalEvent goal={item} />;
-      case MatchEventType.Booking:
-        assertType<Match["bookings"][number]>(item);
-        return <BookingEvent booking={item} />;
-      case MatchEventType.Substitution:
-        assertType<{ substitutions: Appearance[] }>(item);
-        return <SubstitutionEvent substitutions={item.substitutions} />;
-    }
-  }, []);
+  const { createBooking, updateBooking, removeBooking } = useManageBookings();
+
+  const renderItem = useCallback(
+    (item: MatchEvent) => {
+      switch (item.type) {
+        case MatchEventType.Goal:
+          assertType<Goal>(item);
+          return <GoalEvent goal={item} />;
+        case MatchEventType.Booking:
+          assertType<Booking>(item);
+          return (
+            <BookingEvent
+              booking={item}
+              onSubmit={(booking) => updateBooking(item.index, booking)}
+              onRemove={() => removeBooking(item.index)}
+            />
+          );
+        case MatchEventType.Substitution:
+          assertType<{ substitutions: Appearance[] }>(item);
+          return <SubstitutionEvent substitutions={item.substitutions} />;
+      }
+    },
+    [removeBooking, updateBooking],
+  );
 
   const [newGoalOpened, { open: openNewGoal, close: closeNewGoal }] =
     useDisclosure();
@@ -167,7 +178,7 @@ export const MatchTimeline: React.FC<{
             <BookingForm
               opened={newBookingOpened}
               onClose={closeNewBooking}
-              // onSubmit={createBooking}
+              onSubmit={createBooking}
             />
             <Button
               onClick={openNewSubstitution}
@@ -258,12 +269,46 @@ const GoalEvent: React.FC<{ goal: Goal }> = ({ goal }) => (
   </div>
 );
 
-const BookingEvent: React.FC<{ booking: Booking }> = ({ booking }) => (
-  <div className="flex items-center flex-gap-1">
-    {booking.red_card ? <RedCardIcon /> : <YellowCardIcon />}
-    {booking.player_name}
-  </div>
-);
+const BookingEvent: React.FC<{
+  booking: Booking;
+  onSubmit: (booking: Booking) => Promise<void>;
+  onRemove: () => Promise<void>;
+}> = ({ booking, onSubmit, onRemove }) => {
+  const [opened, { open, close }] = useDisclosure();
+
+  return (
+    <div>
+      <div className="flex items-center flex-gap-1">
+        {booking.red_card ? <RedCardIcon /> : <YellowCardIcon />}
+        {booking.player_name}
+      </div>
+      <Group mt="sm">
+        <Button
+          onClick={open}
+          variant="subtle"
+          size="compact-sm"
+          color="orange"
+        >
+          Edit
+        </Button>
+        <BookingForm
+          record={booking}
+          opened={opened}
+          onClose={close}
+          onSubmit={onSubmit}
+        />
+        <Button
+          onClick={onRemove}
+          variant="subtle"
+          size="compact-sm"
+          color="gray"
+        >
+          Delete
+        </Button>
+      </Group>
+    </div>
+  );
+};
 
 const SubstitutionEvent: React.FC<{
   substitutions: Appearance[];

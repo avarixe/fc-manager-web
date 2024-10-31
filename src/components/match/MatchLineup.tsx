@@ -63,10 +63,13 @@ export const MatchLineup: React.FC<{ match: Match }> = ({ match }) => {
         />
       )}
       {/* TODO: remove temporary data check UI */}
-      {appearances.map((appearance) => (
+      {sortedAppearances.map((appearance) => (
         <div key={appearance.id}>
           Appearance#{appearance.id} Player#{appearance.player_id} Start:
-          {appearance.start_minute} Stop:{appearance.stop_minute}
+          {appearance.start_minute} Stop:{appearance.stop_minute} #YellowCards:
+          {appearance.num_yellow_cards} #RedCards:{appearance.num_red_cards}{" "}
+          #Goals:{appearance.num_goals} #Assists:{appearance.num_assists}{" "}
+          #OwnGoals:{appearance.num_own_goals}
         </div>
       ))}
     </>
@@ -89,6 +92,10 @@ const MatchLineupStats: React.FC<{ match: Match; playerId: number }> = ({
     subbedOut,
     injured,
   } = useAppearanceStats(match, playerId);
+
+  console.log(
+    `${playerName} #redCards: ${numRedCards} #yellowCards: ${numYellowCards} #goals: ${numGoals} #assists: ${numAssists} #ownGoals: ${numOwnGoals} startMinute: ${startMinute} stopMinute: ${stopMinute} subbedOut: ${subbedOut} injured: ${injured}`,
+  );
 
   return (
     <Group gap="xs">
@@ -136,7 +143,7 @@ const MatchLineupStats: React.FC<{ match: Match; playerId: number }> = ({
         </Indicator>
       )}
       {numYellowCards > 0 && <YellowCardIcon />}
-      {numRedCards > 0 || (numYellowCards > 1 && <RedCardIcon />)}
+      {(numRedCards > 0 || numYellowCards > 1) && <RedCardIcon />}
       {subbedOut && (
         <Indicator
           label={stopMinute}

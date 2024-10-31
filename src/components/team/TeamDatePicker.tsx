@@ -11,7 +11,7 @@ export const TeamDatePicker: React.FC<{ team: Tables<"teams"> }> = ({
   const supabase = useAtomValue(supabaseAtom);
   const setAppLoading = useSetAtom(appLoadingAtom);
   const setTeam = useSetAtom(teamAtom);
-  const { updatePlayerStatus } = useDbCallbacks();
+  const { updatePlayerStatus } = usePlayerCallbacks();
   const onClick = useCallback(
     async (date: Date) => {
       setAppLoading(true);

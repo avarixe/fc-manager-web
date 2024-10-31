@@ -1,7 +1,7 @@
 import { TablesUpdate } from "@/database-generated.types";
 import { Player } from "@/types";
 
-export const useDbCallbacks = () => {
+export const usePlayerCallbacks = () => {
   const supabase = useAtomValue(supabaseAtom);
   const savePlayerStatus = useCallback(
     async (

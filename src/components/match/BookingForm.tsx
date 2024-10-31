@@ -18,8 +18,8 @@ export const BookingForm: React.FC<{
   record?: Booking;
   opened: boolean;
   onClose: () => void;
-  // onSubmit: (booking: Booking) => Promise<void>;
-}> = ({ record, opened, onClose }) => {
+  onSubmit: (booking: Booking) => Promise<void>;
+}> = ({ record, opened, onClose, onSubmit }) => {
   const form = useForm<Booking>({
     initialValues: {
       minute: record?.minute ?? 1,
@@ -49,10 +49,10 @@ export const BookingForm: React.FC<{
     }
 
     setLoading(true);
-    // await onSubmit(form.values);
+    await onSubmit(form.values);
     setLoading(false);
     onClose();
-  }, [form, onClose]);
+  }, [form, onClose, onSubmit]);
 
   const { appearancesAtMinute } = useMatchState(form.values.minute);
   const appearanceOptions = useMemo(

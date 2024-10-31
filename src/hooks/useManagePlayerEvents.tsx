@@ -51,7 +51,7 @@ function useManagePlayerEvents<T extends PlayerEvent>(
   callbacks: PlayerEventCallbacks<T> = {},
 ) {
   const team = useAtomValue(teamAtom)!;
-  const { updatePlayerStatus } = useDbCallbacks();
+  const { updatePlayerStatus } = usePlayerCallbacks();
 
   const supabase = useAtomValue(supabaseAtom);
   const create = useCallback(
