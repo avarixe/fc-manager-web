@@ -1,8 +1,18 @@
-import { Match } from "@/types";
-import { Box, Group, Indicator, NavLink, Rating } from "@mantine/core";
+import { Appearance, Match } from "@/types";
+import {
+  ActionIcon,
+  Box,
+  Group,
+  Indicator,
+  NavLink,
+  Rating,
+} from "@mantine/core";
 import { orderBy } from "lodash-es";
 
-export const MatchLineup: React.FC<{ match: Match }> = ({ match }) => {
+export const MatchLineup: React.FC<{ match: Match; readonly: boolean }> = ({
+  match,
+  readonly,
+}) => {
   const appearances = useAtomValue(appearancesAtom);
   const sortedAppearances = useMemo(() => {
     return orderBy(
@@ -32,7 +42,7 @@ export const MatchLineup: React.FC<{ match: Match }> = ({ match }) => {
             </Box>
           }
           rightSection={
-            <Rating value={appearance.rating ?? undefined} readOnly />
+            <AppearanceRating appearance={appearance} readonly={readonly} />
           }
           classNames={{
             body: "overflow-visible",
@@ -73,6 +83,69 @@ export const MatchLineup: React.FC<{ match: Match }> = ({ match }) => {
         </div>
       ))}
     </>
+  );
+};
+
+const AppearanceRating: React.FC<{
+  appearance: Appearance;
+  readonly: boolean;
+}> = ({ appearance, readonly }) => {
+  const [hoverValue, setHoverValue] = useState<number | null>(null);
+  const onHover = useCallback((value: number) => {
+    setHoverValue(value > 0 ? value : null);
+  }, []);
+
+  const color = useMemo(() => {
+    switch (hoverValue || appearance.rating) {
+      case 1:
+        return "red";
+      case 2:
+        return "orange";
+      case 3:
+        return "yellow";
+      case 4:
+        return "lime";
+      case 5:
+        return "green";
+    }
+  }, [appearance.rating, hoverValue]);
+
+  const supabase = useAtomValue(supabaseAtom);
+  const setAppearances = useSetAtom(appearancesAtom);
+  const onChange = useCallback(
+    async (value: number | null) => {
+      await supabase
+        .from("appearances")
+        .update({ rating: value })
+        .eq("id", appearance.id);
+      setAppearances((prev) => {
+        return prev.map((app) => {
+          if (app.player_id === appearance.player_id) {
+            return { ...app, rating: value };
+          }
+          return app;
+        });
+      });
+    },
+    [supabase, appearance.id, appearance.player_id, setAppearances],
+  );
+
+  return (
+    <Group>
+      {appearance.rating && (
+        <ActionIcon onClick={() => onChange(null)} variant="subtle" c="gray">
+          <BaseIcon name="i-mdi:delete" />
+        </ActionIcon>
+      )}
+      <Rating
+        value={appearance.rating ?? undefined}
+        onChange={onChange}
+        onHover={onHover}
+        readOnly={readonly}
+        emptySymbol={<BaseIcon name="i-mdi:star-four-points" />}
+        fullSymbol={<BaseIcon name="i-mdi:star-four-points" c={color} />}
+      />
+    </Group>
   );
 };
 

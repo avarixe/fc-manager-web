@@ -336,7 +336,7 @@ function MatchPage() {
             )}
           </Group>
         )}
-        <MatchLineup match={match} />
+        <MatchLineup match={match} readonly={readonly} />
       </Box>
 
       <Box my="lg">
