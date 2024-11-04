@@ -129,6 +129,7 @@ function MatchPage() {
       const matchChanges = {
         goals: [],
         bookings: [],
+        changes: [],
         extra_time: false,
         home_score: 0,
         away_score: 0,

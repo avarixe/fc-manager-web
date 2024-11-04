@@ -1,5 +1,13 @@
 import { Cap, Booking, Goal, Match, Player, Change } from "@/types";
-import { Box, Button, Group, Switch, ThemeIcon, Timeline } from "@mantine/core";
+import {
+  Box,
+  Button,
+  Group,
+  Stack,
+  Switch,
+  ThemeIcon,
+  Timeline,
+} from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
 import { groupBy, orderBy } from "lodash-es";
@@ -16,7 +24,7 @@ type MatchEvent = {
   home: boolean;
   priority: number;
   index: number;
-} & (Goal | Booking | { changes: Change[] });
+} & (Goal | Booking | { changes: (Change & { index: number })[] });
 
 type PlayerOption = Pick<Player, "id" | "name" | "status" | "pos" | "ovr">;
 
@@ -28,8 +36,12 @@ export const MatchTimeline: React.FC<{
   const [match, setMatch] = useAtom(matchAtom);
   assertType<Match>(match);
   const items: MatchEvent[] = useMemo(() => {
+    const indexedChanges = match.changes.map((change, index) => ({
+      ...change,
+      index,
+    }));
     const changesByMinute = Object.entries(
-      groupBy(match.changes, "minute"),
+      groupBy(indexedChanges, "minute"),
     ).map(([minute, changes]) => ({
       type: MatchEventType.Change,
       minute: Number(minute),
@@ -60,8 +72,9 @@ export const MatchTimeline: React.FC<{
     );
   }, [match.changes, match.goals, match.bookings, match.home_team, team.name]);
 
-  const { createBooking, updateBooking, removeBooking } = useManageBookings();
   const { createGoal, updateGoal, removeGoal } = useManageGoals();
+  const { createBooking, updateBooking, removeBooking } = useManageBookings();
+  const { createChange, updateChange, removeChange } = useManageChanges();
 
   const renderItem = useCallback(
     (item: MatchEvent) => {
@@ -88,20 +101,40 @@ export const MatchTimeline: React.FC<{
           );
         case MatchEventType.Change:
           assertType<{ changes: Change[] }>(item);
-          return <ChangeEvent changes={item.changes} />;
+          return (
+            <Stack>
+              {item.changes.map((itemChange, i) => (
+                <ChangeEvent
+                  key={i}
+                  change={itemChange}
+                  playerOptions={playerOptions}
+                  readonly={readonly}
+                  onSubmit={(change) => updateChange(itemChange.index, change)}
+                  onRemove={() => removeChange(itemChange.index)}
+                />
+              ))}
+            </Stack>
+          );
       }
     },
-    [readonly, removeBooking, removeGoal, updateBooking, updateGoal],
+    [
+      playerOptions,
+      readonly,
+      removeBooking,
+      removeChange,
+      removeGoal,
+      updateBooking,
+      updateChange,
+      updateGoal,
+    ],
   );
 
   const [newGoalOpened, { open: openNewGoal, close: closeNewGoal }] =
     useDisclosure();
   const [newBookingOpened, { open: openNewBooking, close: closeNewBooking }] =
     useDisclosure();
-  const [
-    newSubstitutionOpened,
-    { open: openNewSubstitution, close: closeNewSubstitution },
-  ] = useDisclosure();
+  const [newChangeOpened, { open: openNewChange, close: closeNewChange }] =
+    useDisclosure();
   const [
     penaltyShootoutOpened,
     { open: openPenaltyShootout, close: closePenaltyShootout },
@@ -190,16 +223,16 @@ export const MatchTimeline: React.FC<{
               onSubmit={createBooking}
             />
             <Button
-              onClick={openNewSubstitution}
+              onClick={openNewChange}
               color="green"
               leftSection={<SubstitutionIcon c="white" />}
             >
-              Substitution
+              Change
             </Button>
-            <SubstitutionForm
-              opened={newSubstitutionOpened}
-              onClose={closeNewSubstitution}
-              // onSubmit={createSubstitution}
+            <ChangeForm
+              opened={newChangeOpened}
+              onClose={closeNewChange}
+              onSubmit={createChange}
               playerOptions={playerOptions}
             />
           </Group>
@@ -361,31 +394,60 @@ const BookingEvent: React.FC<{
 };
 
 const ChangeEvent: React.FC<{
-  changes: Change[];
-}> = ({ changes }) => {
+  change: Change;
+  playerOptions: PlayerOption[];
+  readonly: boolean;
+  onSubmit: (change: Change) => Promise<void>;
+  onRemove: () => Promise<void>;
+}> = ({ change, playerOptions, readonly, onSubmit, onRemove }) => {
+  const [opened, { open, close }] = useDisclosure();
+
   return (
     <div>
-      {changes.map((change, i) => {
-        return (
-          <div key={i} className="flex items-center flex-gap-1">
-            <Box
-              className={
-                change.injured ? "i-mdi:ambulance" : "i-mdi:arrow-left-bottom"
-              }
-              c={change.injured ? "pink" : "red"}
-            />
-            {change.out.name}
-            <MText component="span" fw="bold">
-              {change.out.pos}
-            </MText>
-            <Box className="i-mdi:arrow-right-bottom" c="green" />
-            {change.in.name}
-            <MText component="span" fw="bold">
-              {change.in.pos}
-            </MText>
-          </div>
-        );
-      })}
+      <div className="flex items-center flex-gap-1">
+        <Box
+          className={
+            change.injured ? "i-mdi:ambulance" : "i-mdi:arrow-left-bottom"
+          }
+          c={change.injured ? "pink" : "red"}
+        />
+        {change.out.name}
+        <MText component="span" fw="bold">
+          {change.out.pos}
+        </MText>
+        <Box className="i-mdi:arrow-right-bottom" c="green" />
+        {change.in.name}
+        <MText component="span" fw="bold">
+          {change.in.pos}
+        </MText>
+      </div>
+      {!readonly && (
+        <Group mt="sm">
+          <Button
+            onClick={open}
+            variant="subtle"
+            size="compact-sm"
+            color="orange"
+          >
+            Edit
+          </Button>
+          <ChangeForm
+            record={change}
+            playerOptions={playerOptions}
+            opened={opened}
+            onClose={close}
+            onSubmit={onSubmit}
+          />
+          <Button
+            onClick={onRemove}
+            variant="subtle"
+            size="compact-sm"
+            color="gray"
+          >
+            Delete
+          </Button>
+        </Group>
+      )}
     </div>
   );
 };

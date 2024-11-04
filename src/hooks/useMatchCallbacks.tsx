@@ -1,5 +1,6 @@
-import { Match } from "@/types";
-import { omit } from "lodash-es";
+import { TablesInsert } from "@/database-generated.types";
+import { Cap, Match } from "@/types";
+import { keyBy, omit, orderBy } from "lodash-es";
 
 export const useMatchCallbacks = () => {
   const team = useAtomValue(teamAtom)!;
@@ -85,8 +86,82 @@ export const useMatchCallbacks = () => {
     [match, setMatch, supabase],
   );
 
+  const session = useAtomValue(sessionAtom)!;
+  const resolveFormationChanges = useCallback(
+    async (updatedMatch?: Match) => {
+      updatedMatch = updatedMatch ?? match;
+
+      // Remove caps with start_minute > 0
+      await supabase
+        .from("caps")
+        .delete()
+        .eq("match_id", updatedMatch.id)
+        .gt("start_minute", 0);
+
+      const { data: playerData } = await supabase
+        .from("players")
+        .select("id, name, ovr")
+        .eq("team_id", team.id)
+        .eq("status", "Active");
+      const playerMap: Record<string, { id: number; ovr: number }> = {};
+      for (const player of playerData ?? []) {
+        playerMap[player.name] = player;
+      }
+
+      const ratingsMap: Record<string, number | null> = {};
+      for (const cap of caps) {
+        ratingsMap[cap.players.name] = cap.rating;
+      }
+
+      const starters = caps.filter((cap) => cap.start_minute === 0);
+      // Reset stop_minute for all starters
+      starters.forEach((cap) => {
+        cap.stop_minute = updatedMatch.extra_time ? 120 : 90;
+      });
+      const currentCapByPlayer: Record<string, Cap | TablesInsert<"caps">> =
+        keyBy(starters, (cap) => cap.players.name);
+      const sortedChanges = orderBy(updatedMatch.changes, ["minute"]);
+      // For each sorted change, create corresponding cap
+      const newCapData: TablesInsert<"caps">[] = [];
+      for (const change of sortedChanges) {
+        const newCap = {
+          user_id: session.user.id,
+          match_id: updatedMatch.id,
+          player_id: playerMap[change.in.name]!.id,
+          ovr: playerMap[change.in.name]!.ovr,
+          start_minute: change.minute,
+          stop_minute: match.extra_time ? 120 : 90,
+          pos: change.in.pos,
+          rating: ratingsMap[change.in.name],
+        };
+
+        const outCap = currentCapByPlayer[change.out.name];
+        outCap.stop_minute = change.minute;
+        currentCapByPlayer[change.in.name] = newCap;
+        newCapData.push(newCap);
+      }
+
+      await Promise.all(
+        starters.map(async (cap) => {
+          await supabase
+            .from("caps")
+            .update({ stop_minute: cap.stop_minute })
+            .eq("id", cap.id);
+        }),
+      );
+      const { data: newCaps } = await supabase
+        .from("caps")
+        .insert(newCapData)
+        .select("*, players(name)");
+      assertType<Cap[]>(newCaps);
+      setCaps([...starters, ...newCaps]);
+    },
+    [caps, match, session.user.id, setCaps, supabase, team.id],
+  );
+
   return {
     resolvePlayerStats,
     resolveMatchScores,
+    resolveFormationChanges,
   };
 };

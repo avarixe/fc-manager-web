@@ -125,16 +125,18 @@ function ImportTeamPage() {
     teamProgress.increment();
 
     // Add Options
-    teamOptions.forEach(async (value: string) => {
-      const { error } = await supabase
-        .from("options")
-        .insert({ user_id: session?.user.id, category: "Team", value });
-      if (error) {
-        // Probably already exists. Ignore.
-        console.error(error);
-      }
-      optionProgress.increment();
-    });
+    await supabase.from("options").upsert(
+      [...teamOptions].map((value) => ({
+        user_id: session?.user.id,
+        category: "Team",
+        value,
+      })),
+      {
+        onConflict: "user_id, category, value",
+        ignoreDuplicates: true,
+      },
+    );
+    optionProgress.increment(teamOptions.size);
 
     // Create Players
     const playerInsertData: TablesInsert<"players">[] = players.map(

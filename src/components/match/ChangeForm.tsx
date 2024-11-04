@@ -1,4 +1,4 @@
-import { Cap, Player } from "@/types";
+import { Cap, Change, Player } from "@/types";
 import {
   Button,
   Checkbox,
@@ -15,42 +15,59 @@ type CapOption = ComboboxItem & Cap;
 type PlayerOption = Pick<Player, "id" | "name" | "status" | "pos" | "ovr">;
 type ReplacementOption = ComboboxItem & PlayerOption;
 
-interface SubstituteAttributes {
-  start_minute: number;
-  previous_id: string | null;
-  player_id: string | null;
-  pos: string | null;
+interface ChangeAttributes {
+  minute: number;
+  injured: boolean;
+  out: {
+    name: string;
+    pos: string;
+  };
+  in: {
+    name: string;
+    pos: string;
+  };
 }
 
-export const SubstitutionForm: React.FC<{
+export const ChangeForm: React.FC<{
+  record?: Change;
   opened: boolean;
   onClose: () => void;
   playerOptions: PlayerOption[];
-  // onSubmit: (substitution: Cap) => Promise<void>;
-}> = ({ opened, onClose, playerOptions }) => {
-  const form = useForm<SubstituteAttributes>({
+  onSubmit: (change: Change) => Promise<void>;
+}> = ({ record, opened, onClose, onSubmit, playerOptions }) => {
+  const form = useForm<ChangeAttributes>({
     initialValues: {
-      start_minute: 1,
-      previous_id: null,
-      player_id: null,
-      pos: null,
+      minute: record?.minute ?? 1,
+      injured: record?.injured ?? false,
+      out: {
+        name: record?.out?.name ?? "",
+        pos: record?.out?.pos ?? "",
+      },
+      in: {
+        name: record?.in?.name ?? "",
+        pos: record?.in?.pos ?? "",
+      },
     },
     validate: {
-      previous_id: isNotEmpty("Player"),
-      player_id: isNotEmpty("Replaced By"),
-      pos: isNotEmpty("Position"),
+      out: {
+        name: isNotEmpty("Player"),
+        pos: isNotEmpty("Position"),
+      },
+      in: {
+        name: isNotEmpty("Replaced By"),
+        pos: isNotEmpty("Position"),
+      },
     },
     onValuesChange: (values) => {
       console.log(values);
     },
   });
-  form.watch("previous_id", ({ value }) => {
-    const playerCap = capsAtMinute.find(
-      (cap) => cap.player_id === Number(value),
-    );
+  form.watch("out.name", ({ value }) => {
+    const playerCap = capsAtMinute.find((cap) => cap.players.name === value);
 
     if (playerCap) {
-      form.setFieldValue("pos", playerCap.pos);
+      form.setFieldValue("out.pos", playerCap.pos);
+      form.setFieldValue("in.pos", playerCap.pos);
     }
   });
 
@@ -68,20 +85,18 @@ export const SubstitutionForm: React.FC<{
       return;
     }
 
-    assertDefined(form.values.pos);
-
     setLoading(true);
-    // await onSubmit(form.values);
+    await onSubmit(form.values);
     setLoading(false);
     onClose();
-  }, [form, onClose]);
+  }, [form, onClose, onSubmit]);
 
-  const { capsAtMinute } = useMatchState(form.values.start_minute);
+  const { capsAtMinute } = useMatchState(form.values.minute);
   const capOptions = useMemo(
     () =>
       capsAtMinute.map((cap) => ({
         ...cap,
-        value: String(cap.player_id),
+        value: cap.players.name,
         label: `${cap.pos} · ${cap.players.name}`,
       })),
     [capsAtMinute],
@@ -93,7 +108,7 @@ export const SubstitutionForm: React.FC<{
         .filter((player) => player.status === "Active")
         .map((player) => ({
           ...player,
-          value: String(player.id),
+          value: player.name,
           label: `${player.pos} · ${player.name}`,
         })),
     [playerOptions],
@@ -103,7 +118,7 @@ export const SubstitutionForm: React.FC<{
     <Modal
       opened={opened}
       onClose={onClose}
-      title="New Substitution"
+      title="New Formation Change"
       centered
       closeOnClickOutside={false}
     >
@@ -113,7 +128,7 @@ export const SubstitutionForm: React.FC<{
       />
       <form onSubmit={form.onSubmit(handleSubmit)}>
         <NumberInput
-          {...form.getInputProps("start_minute")}
+          {...form.getInputProps("minute")}
           label="Minute"
           suffix="'"
           required
@@ -122,7 +137,7 @@ export const SubstitutionForm: React.FC<{
           mb="xs"
         />
         <Select
-          {...form.getInputProps("previous_id")}
+          {...form.getInputProps("out.name")}
           label="Player"
           placeholder="Select player"
           required
@@ -141,7 +156,7 @@ export const SubstitutionForm: React.FC<{
           mb="xs"
         />
         <Select
-          {...form.getInputProps("player_id")}
+          {...form.getInputProps("in.name")}
           label="Replaced By"
           placeholder="Select player"
           required
@@ -160,7 +175,7 @@ export const SubstitutionForm: React.FC<{
           mb="xs"
         />
         <Select
-          {...form.getInputProps("pos")}
+          {...form.getInputProps("in.pos")}
           label="Position"
           data={matchPositions}
           required
