@@ -1,34 +1,23 @@
-import { orderBy } from "lodash-es";
-
 export default (minute: number) => {
-  const appearances = useAtomValue(appearancesAtom);
+  const { sortedCaps } = useCapHelpers();
 
-  const sortedAppearances = useMemo(
-    () => orderBy(appearances, ["pos_order", "start"]),
-    [appearances],
+  const capsAtMinute = useMemo(
+    () =>
+      sortedCaps.filter(
+        (cap) => cap.start_minute <= minute && minute <= cap.stop_minute,
+      ),
+    [minute, sortedCaps],
   );
 
-  const appearancesAtMinute = useMemo(
-    () =>
-      sortedAppearances.filter(
-        (appearance) =>
-          appearance.start_minute <= minute && minute <= appearance.stop_minute,
-      ),
-    [minute, sortedAppearances],
-  );
-
-  const activeAppearances = useMemo(
-    () =>
-      appearancesAtMinute.filter(
-        (appearance) => !appearance.next_id || appearance.stop_minute > minute,
-      ),
-    [appearancesAtMinute, minute],
+  const activeCaps = useMemo(
+    () => capsAtMinute.filter((cap) => cap.stop_minute > minute),
+    [capsAtMinute, minute],
   );
 
   return {
     minute,
-    sortedAppearances,
-    activeAppearances,
-    appearancesAtMinute,
+    sortedCaps,
+    activeCaps,
+    capsAtMinute,
   };
 };

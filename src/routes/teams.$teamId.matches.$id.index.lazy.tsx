@@ -1,4 +1,4 @@
-import { Appearance, Match, Squad } from "@/types";
+import { Cap, Match, Player, Squad } from "@/types";
 import {
   ActionIcon,
   Box,
@@ -16,6 +16,8 @@ import {
 import { useForm } from "@mantine/form";
 import { modals } from "@mantine/modals";
 
+type PlayerOption = Pick<Player, "id" | "name" | "status" | "pos" | "ovr">;
+
 export const Route = createLazyFileRoute("/teams/$teamId/matches/$id/")({
   component: MatchPage,
 });
@@ -26,24 +28,15 @@ function MatchPage() {
 
   const [match, setMatch] = useAtom(matchAtom);
   const [squads, setSquads] = useState<Squad[]>([]);
+  const [playerOptions, setPlayerOptions] = useState<PlayerOption[]>([]);
   const playerOvrByIdRef = useRef(new Map<number, number>());
-  const setAppearances = useSetAtom(appearancesAtom);
+  const setCaps = useSetAtom(capsAtom);
   const supabase = useAtomValue(supabaseAtom);
   useEffect(() => {
     const fetchMatch = async () => {
       const { data, error } = await supabase
         .from("matches")
-        .select(
-          `
-          *,
-          appearances(
-            *,
-            players(name),
-            next:next_id(players(name), pos),
-            previous:appearances(players(name), injured, pos)
-          )
-        `,
-        )
+        .select("*, caps(*, players(name))")
         .eq("team_id", teamId)
         .eq("id", id)
         .single();
@@ -53,8 +46,8 @@ function MatchPage() {
         assertType<Match>(data);
         setMatch(data);
 
-        assertType<Appearance[]>(data.appearances);
-        setAppearances(data.appearances);
+        assertType<Cap[]>(data.caps);
+        setCaps(data.caps);
       }
     };
 
@@ -72,23 +65,21 @@ function MatchPage() {
     };
 
     const fetchPlayerOvr = async () => {
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from("players")
-        .select("id, ovr")
-        .eq("team_id", teamId);
-      if (error) {
-        console.error(error);
-      } else {
-        data.forEach((item) => {
-          playerOvrByIdRef.current.set(item.id, item.ovr);
-        });
-      }
+        .select("id, name, status, pos, ovr")
+        .eq("team_id", teamId)
+        .order("pos_order");
+      setPlayerOptions(data ?? []);
+      data?.forEach((item) => {
+        playerOvrByIdRef.current.set(item.id, item.ovr);
+      });
     };
 
     fetchMatch();
     fetchSquads();
     fetchPlayerOvr();
-  }, [id, setAppearances, setMatch, supabase, teamId]);
+  }, [id, setCaps, setMatch, supabase, teamId]);
 
   const setAppLoading = useSetAtom(appLoadingAtom);
   const navigate = useNavigate();
@@ -121,17 +112,17 @@ function MatchPage() {
     });
   }, [id, navigate, setAppLoading, supabase, teamId]);
 
-  const appearances = useAtomValue(appearancesAtom);
+  const caps = useAtomValue(capsAtom);
   const session = useAtomValue(sessionAtom);
   const applySquad = useCallback(
     async (squad: Squad) => {
-      // Delete existing appearances.
+      // Delete existing caps.
       await supabase
-        .from("appearances")
+        .from("caps")
         .delete()
         .in(
           "id",
-          appearances.map((appearance) => appearance.id),
+          caps.map((cap) => cap.id),
         );
 
       // Reset all match events.
@@ -157,7 +148,7 @@ function MatchPage() {
       });
 
       // Apply squad.
-      const appearanceData = Object.entries(squad.formation).map(
+      const capData = Object.entries(squad.formation).map(
         ([pos, player_id]) => ({
           user_id: session?.user?.id,
           match_id: Number(id),
@@ -167,21 +158,17 @@ function MatchPage() {
         }),
       );
       const { data, error } = await supabase
-        .from("appearances")
-        .insert(appearanceData).select(`
-        *,
-        players(name),
-        next:next_id(players(name), pos),
-        previous:appearances(players(name), injured, pos)
-      `);
+        .from("caps")
+        .insert(capData)
+        .select("*, players(name)");
       if (error) {
         console.error(error);
       } else {
-        assertType<Appearance[]>(data);
-        setAppearances(data);
+        assertType<Cap[]>(data);
+        setCaps(data);
       }
     },
-    [appearances, id, session?.user?.id, setAppearances, setMatch, supabase],
+    [caps, id, session?.user?.id, setCaps, setMatch, supabase],
   );
 
   const [squadName, setSquadName] = useState("");
@@ -192,9 +179,9 @@ function MatchPage() {
       }
 
       const startingFormation: Record<string, number> = {};
-      appearances.forEach((appearance) => {
-        if (appearance.start_minute === 0) {
-          startingFormation[appearance.pos] = appearance.player_id;
+      caps.forEach((cap) => {
+        if (cap.start_minute === 0) {
+          startingFormation[cap.pos] = cap.player_id;
         }
       });
 
@@ -222,7 +209,7 @@ function MatchPage() {
         });
       }
     },
-    [appearances, session?.user?.id, squadName, supabase, teamId],
+    [caps, session?.user?.id, squadName, supabase, teamId],
   );
 
   const [readonly, setReadonly] = useState(false);
@@ -277,9 +264,7 @@ function MatchPage() {
           <Group mb="md">
             <Menu>
               <Menu.Target>
-                <Button
-                  variant={appearances.length >= 11 ? "default" : "filled"}
-                >
+                <Button variant={caps.length >= 11 ? "default" : "filled"}>
                   Apply Squad
                 </Button>
               </Menu.Target>
@@ -291,7 +276,7 @@ function MatchPage() {
                 ))}
               </Menu.Dropdown>
             </Menu>
-            {appearances.length >= 11 && (
+            {caps.length >= 11 && (
               <>
                 <Menu>
                   <Menu.Target>
@@ -336,7 +321,7 @@ function MatchPage() {
             )}
           </Group>
         )}
-        <MatchLineup match={match} readonly={readonly} />
+        <MatchLineup readonly={readonly} />
       </Box>
 
       <Box my="lg">
@@ -348,7 +333,7 @@ function MatchPage() {
         </Title>
         <Divider my="xs" />
 
-        <MatchTimeline readonly={readonly} />
+        <MatchTimeline readonly={readonly} playerOptions={playerOptions} />
       </Box>
     </Stack>
   );

@@ -1,4 +1,4 @@
-import { Appearance, Booking } from "@/types";
+import { Cap, Booking } from "@/types";
 import {
   Button,
   ComboboxItem,
@@ -12,7 +12,7 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 
-type AppearanceOption = ComboboxItem & Appearance;
+type CapOption = ComboboxItem & Cap;
 
 export const BookingForm: React.FC<{
   record?: Booking;
@@ -26,9 +26,6 @@ export const BookingForm: React.FC<{
       player_name: record?.player_name ?? "",
       home: record?.home ?? true,
       red_card: record?.red_card ?? false,
-    },
-    onValuesChange: (values) => {
-      console.log(values);
     },
   });
   form.watch("home", () => {
@@ -54,15 +51,15 @@ export const BookingForm: React.FC<{
     onClose();
   }, [form, onClose, onSubmit]);
 
-  const { appearancesAtMinute } = useMatchState(form.values.minute);
-  const appearanceOptions = useMemo(
+  const { capsAtMinute } = useMatchState(form.values.minute);
+  const capOptions = useMemo(
     () =>
-      appearancesAtMinute.map((appearance) => ({
-        ...appearance,
-        value: appearance.players.name,
-        label: `${appearance.pos} · ${appearance.players.name}`,
+      capsAtMinute.map((cap) => ({
+        ...cap,
+        value: cap.players.name,
+        label: `${cap.pos} · ${cap.players.name}`,
       })),
-    [appearancesAtMinute],
+    [capsAtMinute],
   );
 
   const team = useAtomValue(teamAtom)!;
@@ -123,9 +120,9 @@ export const BookingForm: React.FC<{
             label="Player"
             placeholder="Select player"
             required
-            data={appearanceOptions}
+            data={capOptions}
             renderOption={({ option }) => {
-              assertType<AppearanceOption>(option);
+              assertType<CapOption>(option);
               return (
                 <Group>
                   <MText size="xs" fw="bold">

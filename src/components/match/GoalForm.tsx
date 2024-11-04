@@ -1,4 +1,4 @@
-import { Appearance, Goal } from "@/types";
+import { Cap, Goal } from "@/types";
 import {
   Button,
   Checkbox,
@@ -13,7 +13,7 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 
-type AppearanceOption = ComboboxItem & Appearance;
+type CapOption = ComboboxItem & Cap;
 
 export const GoalForm: React.FC<{
   record?: Goal;
@@ -29,9 +29,6 @@ export const GoalForm: React.FC<{
       home: record?.home ?? true,
       set_piece: record?.set_piece ?? null,
       own_goal: record?.own_goal ?? false,
-    },
-    onValuesChange: (values) => {
-      console.log(values);
     },
   });
   form.watch("home", () => {
@@ -75,22 +72,19 @@ export const GoalForm: React.FC<{
     onClose();
   }, [form, onClose, onSubmit]);
 
-  const { appearancesAtMinute } = useMatchState(form.values.minute);
-  const appearanceOptions = useMemo(
+  const { capsAtMinute } = useMatchState(form.values.minute);
+  const capOptions = useMemo(
     () =>
-      appearancesAtMinute.map((appearance) => ({
-        ...appearance,
-        value: appearance.players.name,
-        label: `${appearance.pos} · ${appearance.players.name}`,
+      capsAtMinute.map((cap) => ({
+        ...cap,
+        value: cap.players.name,
+        label: `${cap.pos} · ${cap.players.name}`,
       })),
-    [appearancesAtMinute],
+    [capsAtMinute],
   );
   const assistedByOptions = useMemo(
-    () =>
-      appearanceOptions.filter(
-        (appearance) => appearance.value !== form.values.player_name,
-      ),
-    [appearanceOptions, form.values.player_name],
+    () => capOptions.filter((cap) => cap.value !== form.values.player_name),
+    [capOptions, form.values.player_name],
   );
 
   const team = useAtomValue(teamAtom)!;
@@ -138,9 +132,9 @@ export const GoalForm: React.FC<{
               label="Player"
               placeholder="Select player"
               required
-              data={appearanceOptions}
+              data={capOptions}
               renderOption={({ option }) => {
-                assertType<AppearanceOption>(option);
+                assertType<CapOption>(option);
                 return (
                   <Group>
                     <MText size="xs" fw="bold">
@@ -158,7 +152,7 @@ export const GoalForm: React.FC<{
               placeholder="Select player"
               data={assistedByOptions}
               renderOption={({ option }) => {
-                assertType<AppearanceOption>(option);
+                assertType<CapOption>(option);
                 return (
                   <Group>
                     <MText size="xs" fw="bold">

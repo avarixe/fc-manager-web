@@ -61,10 +61,23 @@ export interface Match extends Tables<"matches"> {
     home: boolean;
     red_card: boolean;
   }[];
+  changes: {
+    minute: number;
+    out: {
+      name: string;
+      pos: string;
+    };
+    in: {
+      name: string;
+      pos: string;
+    };
+    injured: boolean;
+  }[];
 }
 
 export type Goal = Match["goals"][number];
 export type Booking = Match["bookings"][number];
+export type Change = Match["changes"][number];
 
 export interface Competition extends Tables<"competitions"> {
   stages: {
@@ -93,21 +106,8 @@ export interface Squad extends Tables<"squads"> {
   formation: Record<string, number>;
 }
 
-export interface Appearance extends Tables<"appearances"> {
+export interface Cap extends Tables<"caps"> {
   players: {
     name: string;
   };
-  next: {
-    pos: string;
-    players: {
-      name: string;
-    };
-  } | null;
-  previous: {
-    injured: boolean;
-    pos: string;
-    players: {
-      name: string;
-    };
-  }[];
 }

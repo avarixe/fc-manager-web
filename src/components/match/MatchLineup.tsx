@@ -1,4 +1,4 @@
-import { Appearance, Match } from "@/types";
+import { Cap } from "@/types";
 import {
   ActionIcon,
   Box,
@@ -9,41 +9,33 @@ import {
 } from "@mantine/core";
 import { orderBy } from "lodash-es";
 
-export const MatchLineup: React.FC<{ match: Match; readonly: boolean }> = ({
-  match,
-  readonly,
-}) => {
-  const appearances = useAtomValue(appearancesAtom);
-  const sortedAppearances = useMemo(() => {
+export const MatchLineup: React.FC<{ readonly: boolean }> = ({ readonly }) => {
+  const { getFirstCaps } = useCapHelpers();
+  const sortedCaps = useMemo(() => {
     return orderBy(
-      appearances.filter(
-        (app) => !app.next_id || app.next?.players?.name !== app.players.name,
-      ),
+      getFirstCaps(),
       ["pos_order", "start_minute"],
       ["asc", "asc"],
     );
-  }, [appearances]);
+  }, [getFirstCaps]);
 
   const team = useAtomValue(teamAtom)!;
+  const match = useAtomValue(matchAtom)!;
   return (
     <>
       <MText pl="xs" size="sm" className="opacity-60">
         Players
       </MText>
-      {sortedAppearances.map((appearance) => (
+      {sortedCaps.map((cap) => (
         <NavLink
-          key={appearance.id}
-          label={
-            <MatchLineupStats match={match} playerId={appearance.player_id!} />
-          }
+          key={cap.id}
+          label={<MatchLineupStats cap={cap} />}
           leftSection={
             <Box w={40} fw={700}>
-              {appearance.pos}
+              {cap.pos}
             </Box>
           }
-          rightSection={
-            <AppearanceRating appearance={appearance} readonly={readonly} />
-          }
+          rightSection={<CapRating cap={cap} readonly={readonly} />}
           classNames={{
             body: "overflow-visible",
           }}
@@ -73,30 +65,30 @@ export const MatchLineup: React.FC<{ match: Match; readonly: boolean }> = ({
         />
       )}
       {/* TODO: remove temporary data check UI */}
-      {sortedAppearances.map((appearance) => (
-        <div key={appearance.id}>
-          Appearance#{appearance.id} Player#{appearance.player_id} Start:
-          {appearance.start_minute} Stop:{appearance.stop_minute} #YellowCards:
-          {appearance.num_yellow_cards} #RedCards:{appearance.num_red_cards}{" "}
-          #Goals:{appearance.num_goals} #Assists:{appearance.num_assists}{" "}
-          #OwnGoals:{appearance.num_own_goals}
+      {sortedCaps.map((cap) => (
+        <div key={cap.id}>
+          Cap#{cap.id} Player#{cap.player_id} Start:
+          {cap.start_minute} Stop:{cap.stop_minute} #YellowCards:
+          {cap.num_yellow_cards} #RedCards:{cap.num_red_cards} #Goals:
+          {cap.num_goals} #Assists:{cap.num_assists} #OwnGoals:
+          {cap.num_own_goals}
         </div>
       ))}
     </>
   );
 };
 
-const AppearanceRating: React.FC<{
-  appearance: Appearance;
+const CapRating: React.FC<{
+  cap: Cap;
   readonly: boolean;
-}> = ({ appearance, readonly }) => {
+}> = ({ cap, readonly }) => {
   const [hoverValue, setHoverValue] = useState<number | null>(null);
   const onHover = useCallback((value: number) => {
     setHoverValue(value > 0 ? value : null);
   }, []);
 
   const color = useMemo(() => {
-    switch (hoverValue || appearance.rating) {
+    switch (hoverValue || cap.rating) {
       case 1:
         return "red";
       case 2:
@@ -108,37 +100,34 @@ const AppearanceRating: React.FC<{
       case 5:
         return "green";
     }
-  }, [appearance.rating, hoverValue]);
+  }, [cap.rating, hoverValue]);
 
   const supabase = useAtomValue(supabaseAtom);
-  const setAppearances = useSetAtom(appearancesAtom);
+  const setCaps = useSetAtom(capsAtom);
   const onChange = useCallback(
     async (value: number | null) => {
-      await supabase
-        .from("appearances")
-        .update({ rating: value })
-        .eq("id", appearance.id);
-      setAppearances((prev) => {
-        return prev.map((app) => {
-          if (app.player_id === appearance.player_id) {
-            return { ...app, rating: value };
+      await supabase.from("caps").update({ rating: value }).eq("id", cap.id);
+      setCaps((prev) => {
+        return prev.map((prevCap) => {
+          if (prevCap.player_id === cap.player_id) {
+            return { ...prevCap, rating: value };
           }
-          return app;
+          return prevCap;
         });
       });
     },
-    [supabase, appearance.id, appearance.player_id, setAppearances],
+    [supabase, cap.id, cap.player_id, setCaps],
   );
 
   return (
     <Group>
-      {appearance.rating && (
+      {!readonly && cap.rating && (
         <ActionIcon onClick={() => onChange(null)} variant="subtle" c="gray">
           <BaseIcon name="i-mdi:delete" />
         </ActionIcon>
       )}
       <Rating
-        value={appearance.rating ?? undefined}
+        value={cap.rating ?? undefined}
         onChange={onChange}
         onHover={onHover}
         readOnly={readonly}
@@ -149,10 +138,7 @@ const AppearanceRating: React.FC<{
   );
 };
 
-const MatchLineupStats: React.FC<{ match: Match; playerId: number }> = ({
-  match,
-  playerId,
-}) => {
+const MatchLineupStats: React.FC<{ cap: Cap }> = ({ cap }) => {
   const {
     playerName,
     startMinute,
@@ -164,16 +150,12 @@ const MatchLineupStats: React.FC<{ match: Match; playerId: number }> = ({
     numRedCards,
     subbedOut,
     injured,
-  } = useAppearanceStats(match, playerId);
-
-  console.log(
-    `${playerName} #redCards: ${numRedCards} #yellowCards: ${numYellowCards} #goals: ${numGoals} #assists: ${numAssists} #ownGoals: ${numOwnGoals} startMinute: ${startMinute} stopMinute: ${stopMinute} subbedOut: ${subbedOut} injured: ${injured}`,
-  );
+  } = useCapStats(cap.player_id);
 
   return (
     <Group gap="xs">
       <MText component="span">
-        {playerName} #{playerId}
+        {playerName} #{cap.player_id}
       </MText>
       {startMinute > 0 && (
         <Indicator

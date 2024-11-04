@@ -1,5 +1,4 @@
-import { Tables } from "@/database-generated.types";
-import { Squad } from "@/types";
+import { Player, Squad } from "@/types";
 import {
   ActionIcon,
   Box,
@@ -17,21 +16,7 @@ import { isNotEmpty, useForm } from "@mantine/form";
 import { modals } from "@mantine/modals";
 import { keyBy } from "lodash-es";
 
-type Player = Pick<
-  Tables<"players">,
-  | "id"
-  | "name"
-  | "nationality"
-  | "status"
-  | "birth_year"
-  | "pos"
-  | "sec_pos"
-  | "kit_no"
-  | "ovr"
-  | "value"
-  | "wage"
-  | "contract_ends_on"
->;
+type PlayerOption = Pick<Player, "id" | "name" | "status" | "pos">;
 
 export const Route = createLazyFileRoute("/teams/$teamId/squads/")({
   component: SquadsPage,
@@ -42,7 +27,7 @@ function SquadsPage() {
   const { team } = useTeam(teamId);
 
   const [squads, setSquads] = useState<Squad[]>([]);
-  const [players, setPlayers] = useState<Player[]>([]);
+  const [players, setPlayers] = useState<PlayerOption[]>([]);
   const supabase = useAtomValue(supabaseAtom);
   useEffect(() => {
     const fetchCompetitions = async () => {
@@ -61,11 +46,9 @@ function SquadsPage() {
     const fetchPlayers = async () => {
       const { data, error } = await supabase
         .from("players")
-        .select(
-          "id, name, nationality, status, birth_year, pos, sec_pos, kit_no, ovr, value, wage, contract_ends_on",
-        )
+        .select("id, name, status, pos")
         .eq("team_id", teamId)
-        .order("id");
+        .order("pos_order");
       if (error) {
         console.error(error);
       } else {
@@ -101,10 +84,10 @@ function SquadsPage() {
   );
 }
 
-const NewSquadSection: React.FC<{ players: Player[]; teamId: string }> = ({
-  players,
-  teamId,
-}) => {
+const NewSquadSection: React.FC<{
+  players: PlayerOption[];
+  teamId: string;
+}> = ({ players, teamId }) => {
   const [squads, setSquads] = useState<number[]>([]);
   const onClickNew = async () => {
     setSquads((prev) => [...prev, prev.length + 1]);
@@ -136,7 +119,7 @@ const NewSquadSection: React.FC<{ players: Player[]; teamId: string }> = ({
 const SquadCard: React.FC<
   CardProps & {
     squad?: Squad;
-    players: Player[];
+    players: PlayerOption[];
     teamId: string;
     onCancel?: () => void;
   }

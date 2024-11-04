@@ -1,4 +1,5 @@
 import { Tables, TablesInsert } from "@/database-generated.types";
+import { Change } from "@/types";
 import {
   Button,
   Divider,
@@ -34,7 +35,7 @@ function ImportTeamPage() {
   const competitionProgress = useProgress();
   const squadProgress = useProgress();
   const matchProgress = useProgress();
-  const appearanceProgress = useProgress();
+  const capProgress = useProgress();
   const optionProgress = useProgress();
 
   const idMap = useRef<
@@ -45,75 +46,7 @@ function ImportTeamPage() {
     cap: {},
   });
 
-  const importCapIds = useRef<(string | null)[]>([null]);
-  const capStats = useRef<
-    Record<string, Record<string, Tables<"appearances">>>
-  >({});
-
-  const importReadyCaps = useCallback(
-    async (caps: Match["caps"]) => {
-      const readyCaps = [];
-      const notReadyCaps = [];
-      for (const cap of caps) {
-        if (importCapIds.current.includes(cap.nextId)) {
-          readyCaps.push(cap);
-        } else {
-          notReadyCaps.push(cap);
-        }
-      }
-
-      const data: TablesInsert<"appearances">[] = readyCaps.map((cap) => ({
-        import_id: Number(cap.id),
-        user_id: session?.user.id,
-        player_id: idMap.current.player[cap.playerId],
-        match_id: idMap.current.match[cap.matchId],
-        next_id: cap.nextId ? idMap.current.cap[cap.nextId] : null,
-        pos: cap.pos,
-        start_minute: cap.start,
-        stop_minute: cap.stop,
-        rating: cap.rating,
-        injured: cap.injured,
-        ovr: cap.ovr,
-        num_goals:
-          capStats.current[cap.playerId]?.[cap.matchId]?.num_goals ?? 0,
-        num_assists:
-          capStats.current[cap.playerId]?.[cap.matchId]?.num_assists ?? 0,
-        num_yellow_cards:
-          capStats.current[cap.playerId]?.[cap.matchId]?.num_yellow_cards ?? 0,
-        num_red_cards:
-          capStats.current[cap.playerId]?.[cap.matchId]?.num_red_cards ?? 0,
-        clean_sheet:
-          capStats.current[cap.playerId]?.[cap.matchId]?.clean_sheet ?? false,
-        num_own_goals:
-          capStats.current[cap.playerId]?.[cap.matchId]?.num_own_goals ?? 0,
-      }));
-      const { error } = await supabase.from("appearances").insert(data);
-      if (error) {
-        console.error(`Could not create caps! Error: ${error.message}`);
-        return;
-      }
-
-      importCapIds.current.push(...readyCaps.map((cap) => cap.id));
-      appearanceProgress.increment(data.length);
-
-      if (!notReadyCaps.length) return;
-
-      // Update Cap id mapping
-      const capIds = await supabase
-        .from("appearances")
-        .select("id, import_id")
-        .in(
-          "import_id",
-          notReadyCaps.map((cap) => cap.nextId),
-        );
-      for (const cap of capIds.data ?? []) {
-        idMap.current.cap[cap.import_id!] = cap.id;
-      }
-
-      await importReadyCaps(notReadyCaps);
-    },
-    [appearanceProgress, session?.user.id, supabase],
-  );
+  const capStats = useRef<Record<string, Record<string, Tables<"caps">>>>({});
 
   const onClick = useCallback(async () => {
     if (!file) return;
@@ -166,7 +99,7 @@ function ImportTeamPage() {
     competitionProgress.setTotal(competitions.length);
     squadProgress.setTotal(squads.length);
     matchProgress.setTotal(matches.length);
-    appearanceProgress.setTotal(caps.length);
+    capProgress.setTotal(caps.length);
     optionProgress.setTotal(teamOptions.size);
 
     // Create Team
@@ -359,41 +292,63 @@ function ImportTeamPage() {
     competitionProgress.increment(competitionInsertData.length);
 
     // Create Matches
-    const matchInsertData: TablesInsert<"matches">[] = matches.map((match) => ({
-      team_id: teamId,
-      user_id: userId,
-      import_id: Number(match.id),
-      home_team: match.home,
-      away_team: match.away,
-      season: match.season,
-      competition: match.competition,
-      stage: match.stage,
-      played_on: match.playedOn,
-      home_score: match.homeScore,
-      away_score: match.awayScore,
-      home_xg: match.homeXg,
-      away_xg: match.awayXg,
-      home_possession: match.homePossession,
-      away_possession: match.awayPossession,
-      home_penalty_score: match.penaltyShootout?.homeScore,
-      away_penalty_score: match.penaltyShootout?.awayScore,
-      extra_time: match.extraTime,
-      friendly: false,
-      goals: match.goals.map((goal) => ({
-        minute: goal.minute,
-        player_name: goal.playerName,
-        assisted_by: goal.assistedBy,
-        home: goal.home,
-        set_piece: goal.setPiece,
-        own_goal: goal.ownGoal,
-      })),
-      bookings: match.bookings.map((booking) => ({
-        minute: booking.minute,
-        player_name: booking.playerName,
-        home: booking.home,
-        red_card: booking.redCard,
-      })),
-    }));
+    const matchInsertData: TablesInsert<"matches">[] = matches.map((match) => {
+      const changes: Change[] = [];
+      for (const cap of match.caps) {
+        if (cap.start > 0) {
+          const previous = match.caps.find((cap2) => cap2.nextId === cap.id)!;
+          changes.push({
+            minute: cap.start,
+            injured: previous.injured,
+            out: {
+              name: previous.player.name,
+              pos: previous.pos,
+            },
+            in: {
+              name: cap.player.name,
+              pos: cap.pos,
+            },
+          });
+        }
+      }
+
+      return {
+        team_id: teamId,
+        user_id: userId,
+        import_id: Number(match.id),
+        home_team: match.home,
+        away_team: match.away,
+        season: match.season,
+        competition: match.competition,
+        stage: match.stage,
+        played_on: match.playedOn,
+        home_score: match.homeScore,
+        away_score: match.awayScore,
+        home_xg: match.homeXg,
+        away_xg: match.awayXg,
+        home_possession: match.homePossession,
+        away_possession: match.awayPossession,
+        home_penalty_score: match.penaltyShootout?.homeScore,
+        away_penalty_score: match.penaltyShootout?.awayScore,
+        extra_time: match.extraTime,
+        friendly: false,
+        goals: match.goals.map((goal) => ({
+          minute: goal.minute,
+          player_name: goal.playerName,
+          assisted_by: goal.assistedBy,
+          home: goal.home,
+          set_piece: goal.setPiece,
+          own_goal: goal.ownGoal,
+        })),
+        bookings: match.bookings.map((booking) => ({
+          minute: booking.minute,
+          player_name: booking.playerName,
+          home: booking.home,
+          red_card: booking.redCard,
+        })),
+        changes,
+      };
+    });
     const { error: matchInsertError } = await supabase
       .from("matches")
       .insert(matchInsertData);
@@ -405,7 +360,7 @@ function ImportTeamPage() {
     }
     matchProgress.increment(matchInsertData.length);
 
-    // Collate Appearance statistics
+    // Collate Cap statistics
     let numGoals = 0;
     for (const match of matches) {
       for (const goal of match.goals) {
@@ -469,8 +424,35 @@ function ImportTeamPage() {
       idMap.current.match[match.import_id!] = match.id;
     }
 
-    // Create Appearances
-    await importReadyCaps(caps);
+    // Create Cap
+    const capData: TablesInsert<"caps">[] = caps.map((cap) => ({
+      import_id: Number(cap.id),
+      user_id: session?.user.id,
+      player_id: idMap.current.player[cap.playerId],
+      match_id: idMap.current.match[cap.matchId],
+      pos: cap.pos,
+      start_minute: cap.start,
+      stop_minute: cap.stop,
+      rating: cap.rating,
+      ovr: cap.ovr,
+      num_goals: capStats.current[cap.playerId]?.[cap.matchId]?.num_goals ?? 0,
+      num_assists:
+        capStats.current[cap.playerId]?.[cap.matchId]?.num_assists ?? 0,
+      num_yellow_cards:
+        capStats.current[cap.playerId]?.[cap.matchId]?.num_yellow_cards ?? 0,
+      num_red_cards:
+        capStats.current[cap.playerId]?.[cap.matchId]?.num_red_cards ?? 0,
+      clean_sheet:
+        capStats.current[cap.playerId]?.[cap.matchId]?.clean_sheet ?? false,
+      num_own_goals:
+        capStats.current[cap.playerId]?.[cap.matchId]?.num_own_goals ?? 0,
+    }));
+    const { error } = await supabase.from("caps").insert(capData);
+    if (error) {
+      console.error(`Could not create caps! Error: ${error.message}`);
+      return;
+    }
+    capProgress.increment(capData.length);
   }, [
     file,
     teamProgress,
@@ -478,11 +460,10 @@ function ImportTeamPage() {
     competitionProgress,
     squadProgress,
     matchProgress,
-    appearanceProgress,
+    capProgress,
     optionProgress,
     session?.user.id,
     supabase,
-    importReadyCaps,
   ]);
 
   return (
@@ -519,11 +500,7 @@ function ImportTeamPage() {
       <ImportProgress label="Players" color="pink" {...playerProgress} />
       <ImportProgress label="Squads" color="indigo" {...squadProgress} />
       <ImportProgress label="Matches" color="lime" {...matchProgress} />
-      <ImportProgress
-        label="Performances"
-        color="grape"
-        {...appearanceProgress}
-      />
+      <ImportProgress label="Performances" color="grape" {...capProgress} />
     </Stack>
   );
 }
@@ -635,6 +612,9 @@ interface Match {
     ovr: number;
     rating: number;
     injured: boolean;
+    player: {
+      name: string;
+    };
   }[];
   goals: {
     home: boolean;

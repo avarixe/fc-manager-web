@@ -3,73 +3,65 @@ import { omit } from "lodash-es";
 
 export const useMatchCallbacks = () => {
   const team = useAtomValue(teamAtom)!;
-  const [appearances, setAppearances] = useAtom(appearancesAtom);
+  const [caps, setCaps] = useAtom(capsAtom);
   const [match, setMatch] = useAtom(matchAtom);
   assertType<Match>(match);
 
   const supabase = useAtomValue(supabaseAtom);
+  const { getFirstCaps } = useCapHelpers();
   const resolvePlayerStats = useCallback(
     async (updatedMatch?: Match) => {
       updatedMatch = updatedMatch ?? match;
 
-      const newAppearances = await Promise.all(
-        appearances.map(async (appearance) => {
-          if (
-            appearance.previous?.[0]?.players?.name === appearance.players.name
-          ) {
-            // Only calculate stats for the first appearance of a player
-            return appearance;
+      const firstCaps = getFirstCaps();
+      const newCaps = await Promise.all(
+        caps.map(async (cap) => {
+          if (firstCaps.every((firstCap) => firstCap.id !== cap.id)) {
+            // Only calculate stats for the first cap of a player
+            return cap;
           }
 
-          const newAppearance = { ...appearance };
-          newAppearance.num_yellow_cards = 0;
-          newAppearance.num_red_cards = 0;
-          newAppearance.num_goals = 0;
-          newAppearance.num_assists = 0;
-          newAppearance.num_own_goals = 0;
-          newAppearance.clean_sheet =
+          const newCap = { ...cap };
+          newCap.num_yellow_cards = 0;
+          newCap.num_red_cards = 0;
+          newCap.num_goals = 0;
+          newCap.num_assists = 0;
+          newCap.num_own_goals = 0;
+          newCap.clean_sheet =
             team.name === updatedMatch.home_team
               ? updatedMatch.away_score === 0
               : updatedMatch.home_score === 0;
 
           for (const booking of updatedMatch.bookings) {
-            if (booking.player_name === appearance.players.name) {
-              newAppearance[
-                booking.red_card ? "num_red_cards" : "num_yellow_cards"
-              ] += 1;
+            if (booking.player_name === cap.players.name) {
+              newCap[booking.red_card ? "num_red_cards" : "num_yellow_cards"] +=
+                1;
             }
           }
 
           for (const goal of updatedMatch.goals) {
-            switch (appearance.players.name) {
+            switch (cap.players.name) {
               case goal.player_name:
-                newAppearance[goal.own_goal ? "num_own_goals" : "num_goals"] +=
-                  1;
+                newCap[goal.own_goal ? "num_own_goals" : "num_goals"] += 1;
                 break;
               case goal.assisted_by:
-                newAppearance.num_assists += 1;
+                newCap.num_assists += 1;
             }
           }
 
           await supabase
-            .from("appearances")
+            .from("caps")
             .update(
-              omit(newAppearance, [
-                "id",
-                "players",
-                "previous",
-                "next",
-                "pos_order",
-              ]),
+              omit(newCap, ["id", "players", "previous", "next", "pos_order"]),
             )
-            .eq("id", newAppearance.id);
+            .eq("id", newCap.id);
 
-          return newAppearance;
+          return newCap;
         }),
       );
-      setAppearances(newAppearances);
+      setCaps(newCaps);
     },
-    [appearances, match, setAppearances, supabase, team.name],
+    [caps, getFirstCaps, match, setCaps, supabase, team.name],
   );
 
   const resolveMatchScores = useCallback(

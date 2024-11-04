@@ -1,4 +1,4 @@
-import { Appearance, Booking, Goal, Match } from "@/types";
+import { Cap, Booking, Goal, Match, Player, Change } from "@/types";
 import { Box, Button, Group, Switch, ThemeIcon, Timeline } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
@@ -7,7 +7,7 @@ import { groupBy, orderBy } from "lodash-es";
 enum MatchEventType {
   Goal = "Goal",
   Booking = "Booking",
-  Substitution = "Substitution",
+  Change = "Change",
 }
 
 type MatchEvent = {
@@ -16,30 +16,27 @@ type MatchEvent = {
   home: boolean;
   priority: number;
   index: number;
-} & (Goal | Booking | { substitutions: Appearance[] });
+} & (Goal | Booking | { changes: Change[] });
+
+type PlayerOption = Pick<Player, "id" | "name" | "status" | "pos" | "ovr">;
 
 export const MatchTimeline: React.FC<{
   readonly: boolean;
-}> = ({ readonly }) => {
-  const [appearances, setAppearances] = useAtom(appearancesAtom);
-  const substitutions = useMemo(
-    () => appearances.filter((app) => app.start_minute > 0),
-    [appearances],
-  );
-
+  playerOptions: PlayerOption[];
+}> = ({ readonly, playerOptions }) => {
   const team = useAtomValue(teamAtom)!;
   const [match, setMatch] = useAtom(matchAtom);
   assertType<Match>(match);
   const items: MatchEvent[] = useMemo(() => {
-    const subsByMinute = Object.entries(
-      groupBy(substitutions, "start_minute"),
-    ).map(([minute, subs]) => ({
-      type: MatchEventType.Substitution,
+    const changesByMinute = Object.entries(
+      groupBy(match.changes, "minute"),
+    ).map(([minute, changes]) => ({
+      type: MatchEventType.Change,
       minute: Number(minute),
       home: team.name === match.home_team,
       priority: 1,
       index: 0,
-      substitutions: subs,
+      changes,
     }));
 
     return orderBy(
@@ -56,12 +53,12 @@ export const MatchTimeline: React.FC<{
           index,
           ...booking,
         })),
-        ...subsByMinute,
+        ...changesByMinute,
       ],
       ["minute", "priority"],
       ["asc", "asc"],
     );
-  }, [substitutions, match.goals, match.bookings, match.home_team, team.name]);
+  }, [match.changes, match.goals, match.bookings, match.home_team, team.name]);
 
   const { createBooking, updateBooking, removeBooking } = useManageBookings();
   const { createGoal, updateGoal, removeGoal } = useManageGoals();
@@ -89,9 +86,9 @@ export const MatchTimeline: React.FC<{
               onRemove={() => removeBooking(item.index)}
             />
           );
-        case MatchEventType.Substitution:
-          assertType<{ substitutions: Appearance[] }>(item);
-          return <SubstitutionEvent substitutions={item.substitutions} />;
+        case MatchEventType.Change:
+          assertType<{ changes: Change[] }>(item);
+          return <ChangeEvent changes={item.changes} />;
       }
     },
     [readonly, removeBooking, removeGoal, updateBooking, updateGoal],
@@ -126,32 +123,35 @@ export const MatchTimeline: React.FC<{
     [match, setMatch, supabase],
   );
 
+  const [caps, setCaps] = useAtom(capsAtom);
+  const { getUnsubbedCaps } = useCapHelpers();
   const onChangeExtraTime = useCallback(
     async (value: boolean) => {
       await updateMatch({ extra_time: value });
 
-      const newAppearances: Appearance[] = [];
+      const unsubbedCaps = getUnsubbedCaps();
+      const newCaps: Cap[] = [];
       await Promise.all(
-        appearances.map(async (appearance) => {
-          if (appearance.next_id) {
-            newAppearances.push(appearance);
-          } else {
+        caps.map(async (cap) => {
+          if (unsubbedCaps.some((unsubbedCap) => unsubbedCap.id === cap.id)) {
             const changes = { stop_minute: value ? 120 : 90 };
             const { error } = await supabase
-              .from("appearances")
+              .from("caps")
               .update(changes)
-              .eq("id", appearance.id);
+              .eq("id", cap.id);
             if (error) {
               console.error(error);
             } else {
-              newAppearances.push({ ...appearance, ...changes });
+              newCaps.push({ ...cap, ...changes });
             }
+          } else {
+            newCaps.push(cap);
           }
         }),
       );
-      setAppearances(newAppearances);
+      setCaps(newCaps);
     },
-    [appearances, setAppearances, supabase, updateMatch],
+    [caps, getUnsubbedCaps, setCaps, supabase, updateMatch],
   );
 
   return (
@@ -200,6 +200,7 @@ export const MatchTimeline: React.FC<{
               opened={newSubstitutionOpened}
               onClose={closeNewSubstitution}
               // onSubmit={createSubstitution}
+              playerOptions={playerOptions}
             />
           </Group>
         </Timeline.Item>
@@ -359,29 +360,28 @@ const BookingEvent: React.FC<{
   );
 };
 
-const SubstitutionEvent: React.FC<{
-  substitutions: Appearance[];
-}> = ({ substitutions }) => {
+const ChangeEvent: React.FC<{
+  changes: Change[];
+}> = ({ changes }) => {
   return (
     <div>
-      {substitutions.map((sub) => {
-        const previous = sub.previous[0];
+      {changes.map((change, i) => {
         return (
-          <div key={sub.id} className="flex items-center flex-gap-1">
+          <div key={i} className="flex items-center flex-gap-1">
             <Box
               className={
-                previous.injured ? "i-mdi:ambulance" : "i-mdi:arrow-left-bottom"
+                change.injured ? "i-mdi:ambulance" : "i-mdi:arrow-left-bottom"
               }
-              c={previous.injured ? "pink" : "red"}
+              c={change.injured ? "pink" : "red"}
             />
-            {previous.players.name}
+            {change.out.name}
             <MText component="span" fw="bold">
-              {previous.pos}
+              {change.out.pos}
             </MText>
             <Box className="i-mdi:arrow-right-bottom" c="green" />
-            {sub.players.name}
+            {change.in.name}
             <MText component="span" fw="bold">
-              {sub.pos}
+              {change.in.pos}
             </MText>
           </div>
         );
