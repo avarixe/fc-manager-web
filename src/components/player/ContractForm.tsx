@@ -80,6 +80,7 @@ export const ContractForm: React.FC<{
       title={`${record ? "Edit" : "New"} Contract`}
       centered
       closeOnClickOutside={false}
+      trapFocus
     >
       <LoadingOverlay
         visible={loading}

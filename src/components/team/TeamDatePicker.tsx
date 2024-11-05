@@ -55,7 +55,7 @@ export const TeamDatePicker: React.FC<{ team: Tables<"teams"> }> = ({
   );
 
   return (
-    <Popover opened={opened} onChange={setOpened}>
+    <Popover opened={opened} onChange={setOpened} trapFocus withArrow>
       <Popover.Target>
         <NavLink
           onClick={() => setOpened(!opened)}

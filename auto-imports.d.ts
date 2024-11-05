@@ -10,6 +10,8 @@ declare global {
   const AssistIcon: typeof import('./src/components/base/CommonIcons')['AssistIcon']
   const BaseIcon: typeof import('./src/components/base/CommonIcons')['BaseIcon']
   const BookingForm: typeof import('./src/components/match/BookingForm')['BookingForm']
+  const CapEditor: typeof import('./src/components/match/CapEditor')['CapEditor']
+  const CapForm: typeof import('./src/components/match/CapForm')['CapForm']
   const ChangeForm: typeof import('./src/components/match/ChangeForm')['ChangeForm']
   const CompetitionForm: typeof import('./src/components/competition/CompetitionForm')['CompetitionForm']
   const CompetitionList: typeof import('./src/components/competition/CompetitionList')['CompetitionList']

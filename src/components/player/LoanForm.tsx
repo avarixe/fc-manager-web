@@ -56,6 +56,7 @@ export const LoanForm: React.FC<{
       title={`${record ? "Edit" : "New"} Loan`}
       centered
       closeOnClickOutside={false}
+      trapFocus
     >
       <LoadingOverlay
         visible={loading}

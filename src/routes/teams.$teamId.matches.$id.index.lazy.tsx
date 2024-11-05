@@ -14,6 +14,7 @@ import {
   Title,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { useDisclosure } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
 
 type PlayerOption = Pick<Player, "id" | "name" | "status" | "pos" | "ovr">;
@@ -213,6 +214,9 @@ function MatchPage() {
     [caps, session?.user?.id, squadName, supabase, teamId],
   );
 
+  const [newCapOpened, { open: openNewCap, close: closeNewCap }] =
+    useDisclosure();
+
   const [readonly, setReadonly] = useState(false);
 
   if (!team || !match) {
@@ -277,7 +281,18 @@ function MatchPage() {
                 ))}
               </Menu.Dropdown>
             </Menu>
-            {caps.length >= 11 && (
+            {caps.length < 11 ? (
+              <>
+                <Button onClick={openNewCap} variant="default">
+                  Add Player
+                </Button>
+                <CapForm
+                  opened={newCapOpened}
+                  onClose={closeNewCap}
+                  playerOptions={playerOptions}
+                />
+              </>
+            ) : (
               <>
                 <Menu>
                   <Menu.Target>
@@ -322,7 +337,7 @@ function MatchPage() {
             )}
           </Group>
         )}
-        <MatchLineup readonly={readonly} />
+        <MatchLineup readonly={readonly} playerOptions={playerOptions} />
       </Box>
 
       <Box my="lg">

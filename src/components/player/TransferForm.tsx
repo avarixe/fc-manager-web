@@ -53,6 +53,7 @@ export const TransferForm: React.FC<{
       title={`${record ? "Edit" : "New"} Transfer`}
       centered
       closeOnClickOutside={false}
+      trapFocus
     >
       <LoadingOverlay
         visible={loading}

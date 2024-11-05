@@ -385,6 +385,7 @@ const AddStageModal: React.FC<{
       title="Add Stage"
       centered
       closeOnClickOutside={false}
+      trapFocus
     >
       <LoadingOverlay
         visible={loading}

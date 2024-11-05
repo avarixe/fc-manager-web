@@ -1,4 +1,4 @@
-import { Cap } from "@/types";
+import { Cap, Player } from "@/types";
 import {
   ActionIcon,
   Box,
@@ -9,7 +9,12 @@ import {
 } from "@mantine/core";
 import { orderBy } from "lodash-es";
 
-export const MatchLineup: React.FC<{ readonly: boolean }> = ({ readonly }) => {
+type PlayerOption = Pick<Player, "id" | "name" | "status" | "pos" | "ovr">;
+
+export const MatchLineup: React.FC<{
+  readonly: boolean;
+  playerOptions: PlayerOption[];
+}> = ({ readonly, playerOptions }) => {
   const { getFirstCaps } = useCapHelpers();
   const sortedCaps = useMemo(() => {
     return orderBy(
@@ -27,18 +32,25 @@ export const MatchLineup: React.FC<{ readonly: boolean }> = ({ readonly }) => {
         Players
       </MText>
       {sortedCaps.map((cap) => (
-        <NavLink
+        <CapEditor
           key={cap.id}
-          label={<MatchLineupStats cap={cap} />}
-          leftSection={
-            <Box w={40} fw={700}>
-              {cap.pos}
-            </Box>
+          cap={cap}
+          readonly={readonly}
+          playerOptions={playerOptions}
+          target={
+            <NavLink
+              label={<MatchLineupStats cap={cap} />}
+              leftSection={
+                <Box w={40} fw={700}>
+                  {cap.pos}
+                </Box>
+              }
+              rightSection={<CapRating cap={cap} readonly={readonly} />}
+              classNames={{
+                body: "overflow-visible",
+              }}
+            />
           }
-          rightSection={<CapRating cap={cap} readonly={readonly} />}
-          classNames={{
-            body: "overflow-visible",
-          }}
         />
       ))}
       <MText pl="xs" size="sm" mt="xs" className="opacity-60">
@@ -64,16 +76,6 @@ export const MatchLineup: React.FC<{ readonly: boolean }> = ({ readonly }) => {
           }
         />
       )}
-      {/* TODO: remove temporary data check UI */}
-      {sortedCaps.map((cap) => (
-        <div key={cap.id}>
-          Cap#{cap.id} Player#{cap.player_id} Start:
-          {cap.start_minute} Stop:{cap.stop_minute} #YellowCards:
-          {cap.num_yellow_cards} #RedCards:{cap.num_red_cards} #Goals:
-          {cap.num_goals} #Assists:{cap.num_assists} #OwnGoals:
-          {cap.num_own_goals}
-        </div>
-      ))}
     </>
   );
 };
@@ -119,10 +121,22 @@ const CapRating: React.FC<{
     [supabase, cap.id, cap.player_id, setCaps],
   );
 
+  const stopPropagation = useCallback((event: React.MouseEvent<unknown>) => {
+    event.stopPropagation();
+  }, []);
+
+  const clearRating = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement>) => {
+      stopPropagation(event);
+      onChange(null);
+    },
+    [onChange, stopPropagation],
+  );
+
   return (
     <Group>
       {!readonly && cap.rating && (
-        <ActionIcon onClick={() => onChange(null)} variant="subtle" c="gray">
+        <ActionIcon onClick={clearRating} variant="subtle" c="gray">
           <BaseIcon name="i-mdi:delete" />
         </ActionIcon>
       )}
@@ -130,6 +144,7 @@ const CapRating: React.FC<{
         value={cap.rating ?? undefined}
         onChange={onChange}
         onHover={onHover}
+        onClick={stopPropagation}
         readOnly={readonly}
         emptySymbol={<BaseIcon name="i-mdi:star-four-points" />}
         fullSymbol={<BaseIcon name="i-mdi:star-four-points" c={color} />}
@@ -154,9 +169,7 @@ const MatchLineupStats: React.FC<{ cap: Cap }> = ({ cap }) => {
 
   return (
     <Group gap="xs">
-      <MText component="span">
-        {playerName} #{cap.player_id}
-      </MText>
+      <MText component="span">{playerName}</MText>
       {startMinute > 0 && (
         <Indicator
           label={startMinute}

@@ -100,6 +100,7 @@ export const GoalForm: React.FC<{
       title={`${record ? "Edit" : "New"} Goal`}
       centered
       closeOnClickOutside={false}
+      trapFocus
     >
       <LoadingOverlay
         visible={loading}

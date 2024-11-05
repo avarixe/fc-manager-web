@@ -47,6 +47,7 @@ export const PenaltyShootoutForm: React.FC<{
       title="Penalty Shootout"
       centered
       closeOnClickOutside={false}
+      trapFocus
     >
       <LoadingOverlay
         visible={loading}

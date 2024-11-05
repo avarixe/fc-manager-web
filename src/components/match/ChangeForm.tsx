@@ -15,19 +15,6 @@ type CapOption = ComboboxItem & Cap;
 type PlayerOption = Pick<Player, "id" | "name" | "status" | "pos" | "ovr">;
 type ReplacementOption = ComboboxItem & PlayerOption;
 
-interface ChangeAttributes {
-  minute: number;
-  injured: boolean;
-  out: {
-    name: string;
-    pos: string;
-  };
-  in: {
-    name: string;
-    pos: string;
-  };
-}
-
 export const ChangeForm: React.FC<{
   record?: Change;
   opened: boolean;
@@ -35,7 +22,7 @@ export const ChangeForm: React.FC<{
   playerOptions: PlayerOption[];
   onSubmit: (change: Change) => Promise<void>;
 }> = ({ record, opened, onClose, onSubmit, playerOptions }) => {
-  const form = useForm<ChangeAttributes>({
+  const form = useForm({
     initialValues: {
       minute: record?.minute ?? 1,
       injured: record?.injured ?? false,
@@ -57,9 +44,6 @@ export const ChangeForm: React.FC<{
         name: isNotEmpty("Replaced By"),
         pos: isNotEmpty("Position"),
       },
-    },
-    onValuesChange: (values) => {
-      console.log(values);
     },
   });
   form.watch("out.name", ({ value }) => {
@@ -118,9 +102,10 @@ export const ChangeForm: React.FC<{
     <Modal
       opened={opened}
       onClose={onClose}
-      title="New Formation Change"
+      title={`${record ? "Edit" : "New"} Formation Change`}
       centered
       closeOnClickOutside={false}
+      trapFocus
     >
       <LoadingOverlay
         visible={loading}

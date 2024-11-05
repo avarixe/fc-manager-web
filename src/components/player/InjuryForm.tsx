@@ -71,6 +71,7 @@ export const InjuryForm: React.FC<{
       title={`${record ? "Edit" : "New"} Injury`}
       centered
       closeOnClickOutside={false}
+      trapFocus
     >
       <LoadingOverlay
         visible={loading}

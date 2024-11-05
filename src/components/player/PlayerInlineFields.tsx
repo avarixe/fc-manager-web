@@ -31,7 +31,7 @@ export const PlayerInlineField = <T,>({
   );
 
   return (
-    <Popover onChange={onChangePopover}>
+    <Popover onChange={onChangePopover} trapFocus withArrow>
       <Popover.Target>
         <Indicator
           label={<Box className="i-mdi:circle-edit-outline" />}

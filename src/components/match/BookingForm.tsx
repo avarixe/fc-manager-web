@@ -75,6 +75,7 @@ export const BookingForm: React.FC<{
       title={`${record ? "Edit" : "New"} Booking`}
       centered
       closeOnClickOutside={false}
+      trapFocus
     >
       <LoadingOverlay
         visible={loading}
