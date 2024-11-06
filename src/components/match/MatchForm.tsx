@@ -121,12 +121,13 @@ export function MatchForm({
         required
         mb="xs"
       />
-      {stageOptions.length > 0 && (
+      {form.values.competition && (
         <Autocomplete
           {...form.getInputProps("stage")}
           data={stageOptions}
           label="Stage"
           mb="xs"
+          autoCapitalize="words"
         />
       )}
       <Group grow>
