@@ -239,11 +239,20 @@ function MatchPage() {
         checked={readonly}
         onChange={(event) => setReadonly(event.currentTarget.checked)}
       />
-      {!readonly && (
-        <Group>
+      <Group>
+        {!readonly && (
           <Button component={Link} to={`/teams/${team.id}/matches/${id}/edit`}>
             Edit
           </Button>
+        )}
+        <Button
+          component={Link}
+          to={`/teams/${team.id}/matches/new`}
+          variant="default"
+        >
+          New Match
+        </Button>
+        {!readonly && (
           <Button
             onClick={onClickDelete}
             variant="outline"
@@ -252,8 +261,8 @@ function MatchPage() {
           >
             Delete
           </Button>
-        </Group>
-      )}
+        )}
+      </Group>
       <MatchInfo readonly={readonly} />
 
       <Box my="lg">

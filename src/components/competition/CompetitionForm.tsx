@@ -1,4 +1,4 @@
-import { Button, TextInput } from "@mantine/core";
+import { Autocomplete, Button, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { Tables } from "@/database-generated.types";
 
@@ -44,6 +44,23 @@ export function CompetitionForm({
     [form, navigate, record, supabase, team.id],
   );
 
+  const [competitions, setCompetitions] = useState<string[]>([]);
+  useEffect(() => {
+    const fetchCompetitions = async () => {
+      const { data } = await supabase
+        .from("competitions")
+        .select("name")
+        .eq("team_id", team.id)
+        .order("name");
+      if (data) {
+        setCompetitions([
+          ...new Set(data.map((competition) => competition.name)),
+        ]);
+      }
+    };
+    fetchCompetitions();
+  }, [form.values.season, supabase, team.id]);
+
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
       <TextInput
@@ -52,11 +69,13 @@ export function CompetitionForm({
         disabled
         mb="xs"
       />
-      <TextInput
+      <Autocomplete
+        {...form.getInputProps("name")}
+        data={competitions}
         label="Name"
         required
+        autoCapitalize="words"
         mb="xs"
-        {...form.getInputProps("name")}
       />
       {record && (
         <TeamAutocomplete

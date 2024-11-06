@@ -187,7 +187,7 @@ function PlayerPage() {
               setPlayer={(changes) => updatePlayer(changes)}
             />
           </Title>
-          <Title order={6}>OVR</Title>
+          <Title order={6}>Overall Rating</Title>
         </Box>
         <Box ta="center">
           <Title>
@@ -196,7 +196,7 @@ function PlayerPage() {
               setPlayer={(changes) => updatePlayer(changes)}
             />
           </Title>
-          <Title order={6}>Value</Title>
+          <Title order={6}>Market Value</Title>
         </Box>
       </Group>
 
@@ -290,8 +290,8 @@ const PlayerHistoryChart: React.FC<{ player: Player }> = ({ player }) => {
       data={data}
       dataKey="date"
       withRightYAxis
-      yAxisLabel="OVR"
-      rightYAxisLabel="Value"
+      yAxisLabel="Overall Rating"
+      rightYAxisLabel="Market Value"
       valueFormatter={(value) => new Intl.NumberFormat("en-US").format(value)}
       series={[
         { name: "ovr", color: "pink.6" },
@@ -333,7 +333,9 @@ const PlayerHistoryChartTooltip: React.FC<
         {getFilteredChartTooltipPayload(payload).map((item) => (
           <Group key={item.name}>
             <ColorSwatch color={item.color} size={10} />
-            <MText size="sm">{item.name === "ovr" ? "OVR" : "Value"}</MText>
+            <MText size="sm">
+              {item.name === "ovr" ? "Overall Rating" : "Market Value"}
+            </MText>
             <MText size="sm" ml="auto">
               {item.name === "ovr" ? (
                 item.value

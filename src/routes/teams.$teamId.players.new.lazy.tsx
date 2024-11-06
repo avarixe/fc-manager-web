@@ -97,6 +97,7 @@ const PlayerForm: React.FC<{ team: Tables<"teams"> }> = ({ team }) => {
         label="Name"
         required
         mb="xs"
+        autoCapitalize="words"
       />
       <Group grow>
         <Select
@@ -142,7 +143,7 @@ const PlayerForm: React.FC<{ team: Tables<"teams"> }> = ({ team }) => {
       <Group grow>
         <NumberInput
           {...form.getInputProps("ovr")}
-          label="OVR Rating"
+          label="Overall Rating"
           required
           mb="xs"
           min={0}
@@ -150,7 +151,7 @@ const PlayerForm: React.FC<{ team: Tables<"teams"> }> = ({ team }) => {
         />
         <NumberInput
           {...form.getInputProps("value")}
-          label="Value"
+          label="Market Value"
           required
           leftSection={team.currency}
           thousandSeparator

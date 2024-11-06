@@ -135,7 +135,7 @@ export const PlayerOvr: React.FC<{
       input={
         <NumberInput
           {...field.getInputProps()}
-          label="OVR Rating"
+          label="Overall Rating"
           required
           autoFocus
           size="xs"
