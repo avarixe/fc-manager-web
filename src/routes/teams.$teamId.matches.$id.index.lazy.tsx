@@ -389,11 +389,11 @@ const MatchInfo: React.FC<{
   });
 
   useEffect(() => {
-    if (readonly) {
+    if (readonly && match.id) {
       form.reset();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [readonly]);
+  }, [readonly, match.id]);
 
   const supabase = useAtomValue(supabaseAtom);
   const onClick = useCallback(async () => {
