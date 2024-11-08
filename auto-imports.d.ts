@@ -29,6 +29,7 @@ declare global {
   const LoanIcon: typeof import('./src/components/base/CommonIcons')['LoanIcon']
   const MText: typeof import('@mantine/core')['Text']
   const MatchForm: typeof import('./src/components/match/MatchForm')['MatchForm']
+  const MatchFormationForm: typeof import('./src/components/match/MatchFormationForm')['MatchFormationForm']
   const MatchLineup: typeof import('./src/components/match/MatchLineup')['MatchLineup']
   const MatchTimeline: typeof import('./src/components/match/MatchTimeline')['MatchTimeline']
   const PenaltyShootoutForm: typeof import('./src/components/match/PenaltyShootoutForm')['PenaltyShootoutForm']

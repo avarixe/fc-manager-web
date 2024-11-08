@@ -216,8 +216,15 @@ function MatchPage() {
 
   const [newCapOpened, { open: openNewCap, close: closeNewCap }] =
     useDisclosure();
+  const [
+    formationFormOpened,
+    { open: openFormationForm, close: closeFormationForm },
+  ] = useDisclosure();
 
   const [readonly, setReadonly] = useState(false);
+  useEffect(() => {
+    setReadonly(match?.played_on !== team?.currently_on);
+  }, [match?.played_on, team?.currently_on]);
 
   if (!team || !match) {
     return null;
@@ -337,11 +344,15 @@ function MatchPage() {
                   </Menu.Dropdown>
                 </Menu>
                 <Button
-                  onClick={() => alert("TODO")}
+                  onClick={openFormationForm}
                   leftSection={<div className="i-mdi:vector-polygon" />}
                 >
                   Edit Formation
                 </Button>
+                <MatchFormationForm
+                  opened={formationFormOpened}
+                  onClose={closeFormationForm}
+                />
               </>
             )}
           </Group>
@@ -389,11 +400,27 @@ const MatchInfo: React.FC<{
   });
 
   useEffect(() => {
-    if (readonly && match.id) {
+    if (readonly) {
       form.reset();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [readonly, match.id]);
+  }, [readonly]);
+
+  useEffect(() => {
+    form.setValues({
+      home_xg: match.home_xg ?? 0,
+      away_xg: match.away_xg ?? 0,
+      home_possession: match.home_possession ?? 50,
+      away_possession: match.away_possession ?? 50,
+    });
+    form.resetDirty();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    match.away_possession,
+    match.away_xg,
+    match.home_possession,
+    match.home_xg,
+  ]);
 
   const supabase = useAtomValue(supabaseAtom);
   const onClick = useCallback(async () => {

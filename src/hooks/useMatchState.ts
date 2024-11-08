@@ -4,7 +4,7 @@ export default (minute: number) => {
   const capsAtMinute = useMemo(
     () =>
       sortedCaps.filter(
-        (cap) => cap.start_minute <= minute && minute <= cap.stop_minute,
+        (cap) => cap.start_minute <= minute && minute < cap.stop_minute,
       ),
     [minute, sortedCaps],
   );
