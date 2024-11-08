@@ -466,6 +466,7 @@ const StageItem: React.FC<{
   }, [stage.fixtures, stage.table]);
 
   const [loading, setLoading] = useState(false);
+  const { saveTeamOptions } = useManageOptions();
   const onClickSave = async () => {
     if (field.error) {
       return;
@@ -479,6 +480,15 @@ const StageItem: React.FC<{
         table,
         fixtures,
       });
+      saveTeamOptions([
+        ...table.filter((row) => row.team?.length).map((row) => row.team),
+        ...fixtures
+          .filter((fixture) => fixture.home_team?.length)
+          .map((fixture) => fixture.home_team),
+        ...fixtures
+          .filter((fixture) => fixture.away_team?.length)
+          .map((fixture) => fixture.away_team),
+      ]);
     } finally {
       setIsEditing(false);
       setLoading(false);

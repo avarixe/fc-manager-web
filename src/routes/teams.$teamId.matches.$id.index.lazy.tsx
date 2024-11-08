@@ -82,6 +82,39 @@ function MatchPage() {
     fetchPlayerOvr();
   }, [id, setCaps, setMatch, supabase, teamId]);
 
+  const [prevId, setPrevId] = useState<number>();
+  const [nextId, setNextId] = useState<number>();
+  useEffect(() => {
+    const fetchPrevMatch = async () => {
+      const { data: prev } = await supabase
+        .from("matches")
+        .select("id")
+        .eq("team_id", teamId)
+        .lt("played_on", match?.played_on)
+        .order("played_on", { ascending: false })
+        .limit(1)
+        .single();
+      setPrevId(prev?.id);
+    };
+
+    const fetchNextMatch = async () => {
+      const { data: next } = await supabase
+        .from("matches")
+        .select("id")
+        .eq("team_id", teamId)
+        .gt("played_on", match?.played_on)
+        .order("played_on")
+        .limit(1)
+        .single();
+      setNextId(next?.id);
+    };
+
+    if (match?.played_on) {
+      fetchPrevMatch();
+      fetchNextMatch();
+    }
+  }, [match?.played_on, supabase, teamId]);
+
   const setAppLoading = useSetAtom(appLoadingAtom);
   const navigate = useNavigate();
   const onClickDelete = useCallback(() => {
@@ -252,13 +285,32 @@ function MatchPage() {
             Edit
           </Button>
         )}
-        <Button
-          component={Link}
-          to={`/teams/${team.id}/matches/new`}
-          variant="default"
-        >
-          New Match
-        </Button>
+        {prevId && (
+          <Button
+            component={Link}
+            to={`/teams/${team.id}/matches/${prevId}`}
+            variant="default"
+          >
+            Prev Match
+          </Button>
+        )}
+        {nextId ? (
+          <Button
+            component={Link}
+            to={`/teams/${team.id}/matches/${nextId}`}
+            variant="default"
+          >
+            Next Match
+          </Button>
+        ) : (
+          <Button
+            component={Link}
+            to={`/teams/${team.id}/matches/new`}
+            variant="default"
+          >
+            New Match
+          </Button>
+        )}
         {!readonly && (
           <Button
             onClick={onClickDelete}

@@ -38,6 +38,7 @@ export const LoanForm: React.FC<{
   }, [opened]);
 
   const [loading, setLoading] = useState(false);
+  const { saveTeamOptions } = useManageOptions();
   const handleSubmit = useCallback(async () => {
     if (!form.isValid()) {
       return;
@@ -45,9 +46,10 @@ export const LoanForm: React.FC<{
 
     setLoading(true);
     await onSubmit(form.values);
+    saveTeamOptions([form.values.origin, form.values.destination]);
     setLoading(false);
     onClose();
-  }, [form, onSubmit, onClose]);
+  }, [form, onSubmit, saveTeamOptions, onClose]);
 
   return (
     <Modal

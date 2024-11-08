@@ -71,6 +71,7 @@ export const TeamDatePicker: React.FC<{ team: Tables<"teams"> }> = ({
             selected: dayjs(date).isSame(team.currently_on, "string"),
             onClick: () => onClick(date),
           })}
+          firstDayOfWeek={0}
         />
       </Popover.Dropdown>
     </Popover>

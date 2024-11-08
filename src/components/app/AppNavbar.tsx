@@ -4,7 +4,7 @@ export const AppNavbar = () => {
   const team = useAtomValue(teamAtom);
 
   return (
-    <AppShell.Navbar p="md">
+    <AppShell.Navbar p="md" zIndex={1000}>
       <NavLink
         component={Link}
         label="Home"
