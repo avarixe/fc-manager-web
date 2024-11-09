@@ -25,6 +25,7 @@ export const ChangeForm: React.FC<{
   const form = useForm({
     initialValues: {
       minute: record?.minute ?? 1,
+      stoppage_time: record?.stoppage_time,
       injured: record?.injured ?? false,
       out: {
         name: record?.out?.name ?? "",
@@ -45,6 +46,9 @@ export const ChangeForm: React.FC<{
         pos: isNotEmpty("Position"),
       },
     },
+  });
+  form.watch("minute", () => {
+    form.setFieldValue("stoppage_time", undefined);
   });
   form.watch("out.name", ({ value }) => {
     const playerCap = capsAtMinute.find((cap) => cap.players.name === value);
@@ -112,15 +116,24 @@ export const ChangeForm: React.FC<{
         overlayProps={{ radius: "sm", blur: 2 }}
       />
       <form onSubmit={form.onSubmit(handleSubmit)}>
-        <NumberInput
-          {...form.getInputProps("minute")}
-          label="Minute"
-          suffix="'"
-          required
-          min={1}
-          max={match.extra_time ? 120 : 90}
-          mb="xs"
-        />
+        <Group grow mb="xs">
+          <NumberInput
+            {...form.getInputProps("minute")}
+            label="Minute"
+            suffix="'"
+            required
+            min={1}
+            max={match.extra_time ? 120 : 90}
+          />
+          {[45, 90, 105, 120].includes(form.values.minute) && (
+            <NumberInput
+              {...form.getInputProps("stoppage_time")}
+              label="Stoppage Time"
+              prefix="+"
+              min={0}
+            />
+          )}
+        </Group>
         <Select
           {...form.getInputProps("out.name")}
           label="Player"

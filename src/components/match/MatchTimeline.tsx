@@ -21,6 +21,7 @@ enum MatchEventType {
 type MatchEvent = {
   type: MatchEventType;
   minute: number;
+  stoppage_time?: number;
   home: boolean;
   priority: number;
   index: number;
@@ -41,10 +42,14 @@ export const MatchTimeline: React.FC<{
       index,
     }));
     const changesByMinute = Object.entries(
-      groupBy(indexedChanges, "minute"),
-    ).map(([minute, changes]) => ({
+      groupBy(indexedChanges, (change) => [
+        change.minute,
+        change.stoppage_time,
+      ]),
+    ).map(([[minute, stoppageTime], changes]) => ({
       type: MatchEventType.Change,
       minute: Number(minute),
+      stoppageTime: Number(stoppageTime),
       home: team.name === match.home_team,
       priority: 1,
       index: 0,
@@ -67,10 +72,12 @@ export const MatchTimeline: React.FC<{
         })),
         ...changesByMinute,
       ],
-      ["minute", "priority"],
-      ["asc", "asc"],
+      ["minute", "stoppage_time", "priority"],
+      ["asc", "asc", "asc"],
     );
   }, [match.changes, match.goals, match.bookings, match.home_team, team.name]);
+
+  console.log(items);
 
   const { createGoal, updateGoal, removeGoal } = useManageGoals();
   const { createBooking, updateBooking, removeBooking } = useManageBookings();
@@ -248,7 +255,10 @@ export const MatchTimeline: React.FC<{
               radius="xl"
               color={item.home ? "cyan" : "teal"}
             >
-              <MText size="xs">{item.minute}'</MText>
+              <Box ta="center" fz={12} size="xs">
+                {item.minute}'
+                {item.stoppage_time ? <Box>+{item.stoppage_time}</Box> : null}
+              </Box>
             </ThemeIcon>
           }
         >

@@ -24,6 +24,7 @@ export const GoalForm: React.FC<{
   const form = useForm<Goal>({
     initialValues: {
       minute: record?.minute ?? 1,
+      stoppage_time: record?.stoppage_time,
       player_name: record?.player_name ?? "",
       assisted_by: record?.assisted_by ?? null,
       home: record?.home ?? true,
@@ -34,6 +35,9 @@ export const GoalForm: React.FC<{
   form.watch("home", () => {
     form.setFieldValue("player_name", "");
     form.setFieldValue("assisted_by", null);
+  });
+  form.watch("minute", () => {
+    form.setFieldValue("stoppage_time", undefined);
   });
   form.watch("player_name", ({ value }) => {
     if (value === form.values.assisted_by) {
@@ -117,15 +121,24 @@ export const GoalForm: React.FC<{
           ]}
           mb="xs"
         />
-        <NumberInput
-          {...form.getInputProps("minute")}
-          label="Minute"
-          suffix="'"
-          required
-          min={1}
-          max={match.extra_time ? 120 : 90}
-          mb="xs"
-        />
+        <Group grow mb="xs">
+          <NumberInput
+            {...form.getInputProps("minute")}
+            label="Minute"
+            suffix="'"
+            required
+            min={1}
+            max={match.extra_time ? 120 : 90}
+          />
+          {[45, 90, 105, 120].includes(form.values.minute) && (
+            <NumberInput
+              {...form.getInputProps("stoppage_time")}
+              label="Stoppage Time"
+              prefix="+"
+              min={0}
+            />
+          )}
+        </Group>
         {isUserGoal ? (
           <>
             <Select

@@ -49,6 +49,7 @@ export type PlayerEvent = Contract | Injury | Loan | Transfer;
 export interface Match extends Tables<"matches"> {
   goals: {
     minute: number;
+    stoppage_time?: number;
     player_name: string;
     assisted_by: string | null;
     home: boolean;
@@ -57,12 +58,14 @@ export interface Match extends Tables<"matches"> {
   }[];
   bookings: {
     minute: number;
+    stoppage_time?: number;
     player_name: string;
     home: boolean;
     red_card: boolean;
   }[];
   changes: {
     minute: number;
+    stoppage_time?: number;
     out: {
       name: string;
       pos: string;

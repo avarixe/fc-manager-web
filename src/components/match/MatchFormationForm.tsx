@@ -13,6 +13,7 @@ import { keyBy } from "lodash-es";
 
 interface FormationChange {
   minute: number;
+  stoppage_time?: number;
   formation: Record<string, number>;
 }
 
@@ -30,6 +31,7 @@ export const MatchFormationForm: React.FC<{
   const form = useForm<FormationChange>({
     initialValues: {
       minute: 1,
+      stoppage_time: undefined,
       formation: {},
     },
     validate: {
@@ -40,6 +42,9 @@ export const MatchFormationForm: React.FC<{
       },
     },
     validateInputOnChange: true,
+  });
+  form.watch("minute", () => {
+    form.setFieldValue("stoppage_time", undefined);
   });
 
   const [players, setPlayers] = useState<PlayerOption[]>([]);
@@ -105,6 +110,7 @@ export const MatchFormationForm: React.FC<{
         const oldItem = oldItems[oldItemIndex];
         changes.push({
           minute: form.values.minute,
+          stoppage_time: form.values.stoppage_time,
           injured: false,
           out: {
             pos: oldItem.pos,
@@ -128,6 +134,7 @@ export const MatchFormationForm: React.FC<{
         const oldItem = oldItems[oldItemIndex];
         changes.push({
           minute: form.values.minute,
+          stoppage_time: form.values.stoppage_time,
           injured: false,
           out: {
             pos: oldItem.pos,
@@ -149,6 +156,7 @@ export const MatchFormationForm: React.FC<{
       const oldItem = oldItems[i];
       changes.push({
         minute: form.values.minute,
+        stoppage_time: form.values.stoppage_time,
         injured: false,
         out: {
           pos: oldItem.pos,
@@ -277,6 +285,14 @@ export const MatchFormationForm: React.FC<{
             min={1}
             max={match!.extra_time ? 120 : 90}
           />
+          {[45, 90, 105, 120].includes(form.values.minute) && (
+            <NumberInput
+              {...form.getInputProps("stoppage_time")}
+              label="Stoppage Time"
+              prefix="+"
+              min={0}
+            />
+          )}
         </Group>
         <FormationGrid
           cells={form.values.formation}

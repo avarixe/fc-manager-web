@@ -23,6 +23,7 @@ export const BookingForm: React.FC<{
   const form = useForm<Booking>({
     initialValues: {
       minute: record?.minute ?? 1,
+      stoppage_time: record?.stoppage_time,
       player_name: record?.player_name ?? "",
       home: record?.home ?? true,
       red_card: record?.red_card ?? false,
@@ -30,6 +31,9 @@ export const BookingForm: React.FC<{
   });
   form.watch("home", () => {
     form.setFieldValue("player_name", "");
+  });
+  form.watch("minute", () => {
+    form.setFieldValue("stoppage_time", undefined);
   });
 
   useEffect(() => {
@@ -76,13 +80,14 @@ export const BookingForm: React.FC<{
       centered
       closeOnClickOutside={false}
       trapFocus
+      size="md"
     >
       <LoadingOverlay
         visible={loading}
         overlayProps={{ radius: "sm", blur: 2 }}
       />
       <form onSubmit={form.onSubmit(handleSubmit)}>
-        <Group>
+        <Group mb="xs">
           <SegmentedControl
             value={form.values.home ? "true" : "false"}
             onChange={(value) => form.setFieldValue("home", value === "true")}
@@ -91,30 +96,36 @@ export const BookingForm: React.FC<{
               { value: "true", label: match.home_team },
               { value: "false", label: match.away_team },
             ]}
-            mb="xs"
           />
           <SegmentedControl
             value={form.values.red_card ? "true" : "false"}
             onChange={(value) =>
               form.setFieldValue("red_card", value === "true")
             }
-            color={form.values.red_card ? "red" : "yellow"}
             data={[
-              { value: "false", label: "Yellow Card" },
-              { value: "true", label: "Red Card" },
+              { value: "false", label: <YellowCardIcon /> },
+              { value: "true", label: <RedCardIcon /> },
             ]}
-            mb="xs"
           />
         </Group>
-        <NumberInput
-          {...form.getInputProps("minute")}
-          label="Minute"
-          suffix="'"
-          required
-          min={1}
-          max={match.extra_time ? 120 : 90}
-          mb="xs"
-        />
+        <Group grow mb="xs">
+          <NumberInput
+            {...form.getInputProps("minute")}
+            label="Minute"
+            suffix="'"
+            required
+            min={1}
+            max={match.extra_time ? 120 : 90}
+          />
+          {[45, 90, 105, 120].includes(form.values.minute) && (
+            <NumberInput
+              {...form.getInputProps("stoppage_time")}
+              label="Stoppage Time"
+              prefix="+"
+              min={0}
+            />
+          )}
+        </Group>
         {isUserGoal ? (
           <Select
             {...form.getInputProps("player_name")}
