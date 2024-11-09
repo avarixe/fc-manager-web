@@ -176,6 +176,7 @@ const MatchLineupStats: React.FC<{ cap: Cap }> = ({ cap }) => {
           color="transparent"
           inline
           position="bottom-end"
+          zIndex={1}
         >
           <SubInIcon />
         </Indicator>
@@ -186,6 +187,7 @@ const MatchLineupStats: React.FC<{ cap: Cap }> = ({ cap }) => {
           color="transparent"
           inline
           position="bottom-end"
+          zIndex={1}
         >
           <GoalIcon />
         </Indicator>
@@ -196,6 +198,7 @@ const MatchLineupStats: React.FC<{ cap: Cap }> = ({ cap }) => {
           color="transparent"
           inline
           position="bottom-end"
+          zIndex={1}
         >
           <GoalIcon c="red.9" />
         </Indicator>
@@ -206,6 +209,7 @@ const MatchLineupStats: React.FC<{ cap: Cap }> = ({ cap }) => {
           color="transparent"
           inline
           position="bottom-end"
+          zIndex={1}
         >
           <AssistIcon />
         </Indicator>
@@ -218,6 +222,7 @@ const MatchLineupStats: React.FC<{ cap: Cap }> = ({ cap }) => {
           color="transparent"
           inline
           position="bottom-end"
+          zIndex={1}
         >
           {injured ? <InjuryIcon /> : <SubOutIcon />}
         </Indicator>

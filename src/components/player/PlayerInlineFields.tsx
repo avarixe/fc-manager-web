@@ -39,6 +39,7 @@ export const PlayerInlineField = <T,>({
           inline
           position="top-end"
           className="cursor-pointer"
+          zIndex={1}
         >
           <Box display="inline-block" px="xs">
             {target}
