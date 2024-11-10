@@ -175,10 +175,12 @@ export const MatchFormationForm: React.FC<{
     resolveFormationChanges({ ...match!, changes });
 
     setLoading(false);
+    onClose();
   }, [
     capsAtMinute,
     form,
     match,
+    onClose,
     playersById,
     resolveFormationChanges,
     setMatch,

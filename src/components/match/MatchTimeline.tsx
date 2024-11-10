@@ -42,19 +42,22 @@ export const MatchTimeline: React.FC<{
       index,
     }));
     const changesByMinute = Object.entries(
-      groupBy(indexedChanges, (change) => [
-        change.minute,
-        change.stoppage_time,
-      ]),
-    ).map(([[minute, stoppageTime], changes]) => ({
-      type: MatchEventType.Change,
-      minute: Number(minute),
-      stoppageTime: Number(stoppageTime),
-      home: team.name === match.home_team,
-      priority: 1,
-      index: 0,
-      changes,
-    }));
+      groupBy(
+        indexedChanges,
+        (change) => `${change.minute}+${change.stoppage_time ?? ""}`,
+      ),
+    ).map(([key, changes]) => {
+      const [minute, stoppageTime] = key.split("+");
+      return {
+        type: MatchEventType.Change,
+        minute: Number(minute),
+        stoppageTime: Number(stoppageTime),
+        home: team.name === match.home_team,
+        priority: 1,
+        index: 0,
+        changes,
+      };
+    });
 
     return orderBy(
       [
@@ -76,8 +79,6 @@ export const MatchTimeline: React.FC<{
       ["asc", "asc", "asc"],
     );
   }, [match.changes, match.goals, match.bookings, match.home_team, team.name]);
-
-  console.log(items);
 
   const { createGoal, updateGoal, removeGoal } = useManageGoals();
   const { createBooking, updateBooking, removeBooking } = useManageBookings();
