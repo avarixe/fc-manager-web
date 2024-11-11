@@ -98,7 +98,7 @@ export const MatchFormationForm: React.FC<{
       }
     }
 
-    const changes: Change[] = [];
+    const changes: Change[] = match!.changes;
 
     // Match by player id to prioritize position changes
     for (let i = newItems.length - 1; i >= 0; i--) {

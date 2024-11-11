@@ -114,6 +114,20 @@ export const LoanForm: React.FC<{
           required
           mb="xs"
         />
+        <TeamAutocomplete
+          {...form.getInputProps("origin")}
+          label="Origin"
+          required
+          disabled={direction === "out"}
+          mb="xs"
+        />
+        <TeamAutocomplete
+          {...form.getInputProps("destination")}
+          label="Destination"
+          required
+          disabled={direction === "in"}
+          mb="xs"
+        />
         <NumberInput
           {...form.getInputProps("wage_percentage")}
           label="Wage Percentage"

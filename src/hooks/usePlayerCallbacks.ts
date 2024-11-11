@@ -23,6 +23,7 @@ export const usePlayerCallbacks = () => {
     [supabase],
   );
 
+  const team = useAtomValue(teamAtom)!;
   const updatePlayerStatus = useCallback(
     async (
       player: Pick<
@@ -55,6 +56,7 @@ export const usePlayerCallbacks = () => {
             return await savePlayerStatus(player, { status: "Injured" });
           } else if (
             lastLoan &&
+            lastLoan.origin === team.name &&
             lastLoan.started_on <= currentDate &&
             currentDate < lastLoan.ended_on
           ) {
@@ -78,7 +80,7 @@ export const usePlayerCallbacks = () => {
         });
       }
     },
-    [savePlayerStatus],
+    [savePlayerStatus, team.name],
   );
 
   return {
