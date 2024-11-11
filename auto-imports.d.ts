@@ -20,6 +20,7 @@ declare global {
   const DataTable: typeof import('./src/components/base/DataTable')['DataTable']
   const DatePickerInput: typeof import('./src/components/base/DatePickerInput')['DatePickerInput']
   const FormationGrid: typeof import('./src/components/formation/FormationGrid')['FormationGrid']
+  const FormationOvr: typeof import('./src/components/formation/FormationOvr')['FormationOvr']
   const GoalForm: typeof import('./src/components/match/GoalForm')['GoalForm']
   const GoalIcon: typeof import('./src/components/base/CommonIcons')['GoalIcon']
   const InjuryForm: typeof import('./src/components/player/InjuryForm')['InjuryForm']
@@ -31,6 +32,7 @@ declare global {
   const MatchForm: typeof import('./src/components/match/MatchForm')['MatchForm']
   const MatchFormationForm: typeof import('./src/components/match/MatchFormationForm')['MatchFormationForm']
   const MatchLineup: typeof import('./src/components/match/MatchLineup')['MatchLineup']
+  const MatchPosType: typeof import('./src/constants/index')['MatchPosType']
   const MatchTimeline: typeof import('./src/components/match/MatchTimeline')['MatchTimeline']
   const PenaltyShootoutForm: typeof import('./src/components/match/PenaltyShootoutForm')['PenaltyShootoutForm']
   const PlayerEventKey: typeof import('./src/constants/index')['PlayerEventKey']
@@ -72,6 +74,7 @@ declare global {
   const matchPositionTypes: typeof import('./src/constants/index')['matchPositionTypes']
   const matchPositions: typeof import('./src/constants/index')['matchPositions']
   const matchScore: typeof import('./src/utils/match')['matchScore']
+  const matchScoreColor: typeof import('./src/utils/match')['matchScoreColor']
   const memo: typeof import('react')['memo']
   const positions: typeof import('./src/constants/index')['positions']
   const sessionAtom: typeof import('./src/atoms/index')['sessionAtom']
@@ -119,6 +122,6 @@ declare global {
   export type { StateSetter } from 'src/hooks'
   import('src/hooks')
   // @ts-ignore
-  export type { PlayerEventKey, PlayerEventType } from './src/constants/index'
+  export type { MatchPosType, PlayerEventKey, PlayerEventType } from './src/constants/index'
   import('./src/constants/index')
 }

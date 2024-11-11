@@ -88,32 +88,13 @@ function MatchesPage() {
         header: "Match",
         cell: ({ row }) => {
           const match = row.original;
-          let scoreColor: string | undefined;
-          if (match.home_score === match.away_score) {
-            scoreColor = "yellow";
-          } else if (team?.name === match.home_team) {
-            if (match.home_score > match.away_score) {
-              scoreColor = "green";
-            } else if (match.home_score < match.away_score) {
-              scoreColor = "red";
-            } else {
-              scoreColor = "yellow";
-            }
-          } else if (team?.name === match.away_team) {
-            if (match.home_score < match.away_score) {
-              scoreColor = "green";
-            } else if (match.home_score > match.away_score) {
-              scoreColor = "red";
-            } else {
-              scoreColor = "yellow";
-            }
-          }
+          const color = matchScoreColor(match, team?.name);
           return (
             <>
               <div>
                 {match.home_team} v {match.away_team}
               </div>
-              <Box c={scoreColor}>{matchScore(match)}</Box>
+              <Box c={color}>{matchScore(match)}</Box>
             </>
           );
         },

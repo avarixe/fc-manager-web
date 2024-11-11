@@ -16,7 +16,7 @@ import { isNotEmpty, useForm } from "@mantine/form";
 import { modals } from "@mantine/modals";
 import { keyBy } from "lodash-es";
 
-type PlayerOption = Pick<Player, "id" | "name" | "status" | "pos">;
+type PlayerOption = Pick<Player, "id" | "name" | "status" | "pos" | "ovr">;
 
 export const Route = createLazyFileRoute("/teams/$teamId/squads/")({
   component: SquadsPage,
@@ -46,7 +46,7 @@ function SquadsPage() {
     const fetchPlayers = async () => {
       const { data, error } = await supabase
         .from("players")
-        .select("id, name, status, pos")
+        .select("id, name, status, pos, ovr")
         .eq("team_id", teamId)
         .order("pos_order");
       if (error) {
@@ -263,6 +263,19 @@ const SquadCard: React.FC<
     [assigningPlayerId, form, isEditing],
   );
 
+  const formationOvrData = useMemo(
+    () =>
+      Object.entries(form.values.formation).map(([pos, playerId]) => {
+        const player = playersById[playerId];
+        return {
+          type: matchPositionTypes[pos],
+          value: player?.ovr || 0,
+          weight: player ? 1 : 0,
+        };
+      }),
+    [form.values.formation, playersById],
+  );
+
   return (
     <Card pos="relative" className={deleted ? "hidden" : ""} {...rest}>
       <LoadingOverlay
@@ -299,6 +312,7 @@ const SquadCard: React.FC<
           </>
         )}
       </Group>
+      <FormationOvr data={formationOvrData} />
       {isEditing && (
         <Group mb="md">
           <Select

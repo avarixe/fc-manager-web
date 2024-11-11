@@ -259,6 +259,17 @@ function MatchPage() {
     setReadonly(match?.played_on !== team?.currently_on);
   }, [match?.played_on, team?.currently_on]);
 
+  const formationOvrData = useMemo(
+    () =>
+      caps.map((cap) => ({
+        type: matchPositionTypes[cap.pos],
+        value: cap.ovr,
+        weight: cap.stop_minute - cap.start_minute,
+      })),
+    [caps],
+  );
+  console.log(formationOvrData);
+
   if (!team || !match) {
     return null;
   }
@@ -409,6 +420,7 @@ function MatchPage() {
             )}
           </Group>
         )}
+        <FormationOvr data={formationOvrData} />
         <MatchLineup readonly={readonly} playerOptions={playerOptions} />
       </Box>
 
@@ -493,25 +505,33 @@ const MatchInfo: React.FC<{
     }
   }, [form, match.id, setMatch, supabase]);
 
+  const team = useAtomValue(teamAtom);
+  const scoreColor = useMemo(
+    () => matchScoreColor(match, team?.name),
+    [match, team?.name],
+  );
+
   return (
     <Table withRowBorders={false}>
       <Table.Tbody>
         <Table.Tr>
-          <Table.Td w="40%" ta="end">
+          <Table.Td w="40%" ta="end" fz="xl" fw={1000} c="cyan">
             {match.home_team}
           </Table.Td>
           <Table.Td w="20%" ta="center">
             Team
           </Table.Td>
-          <Table.Td w="40%">{match.away_team}</Table.Td>
+          <Table.Td w="40%" fz="xl" fw={1000} c="teal">
+            {match.away_team}
+          </Table.Td>
         </Table.Tr>
         <Table.Tr>
-          <Table.Td ta="end">
+          <Table.Td ta="end" fz="xl" fw={1000} c={scoreColor}>
             {match.home_score}{" "}
             {match.home_penalty_score ? `(${match.home_penalty_score})` : null}
           </Table.Td>
           <Table.Td ta="center">Score</Table.Td>
-          <Table.Td>
+          <Table.Td fz="xl" fw={1000} c={scoreColor}>
             {match.away_score}{" "}
             {match.away_penalty_score ? `(${match.away_penalty_score})` : null}
           </Table.Td>
