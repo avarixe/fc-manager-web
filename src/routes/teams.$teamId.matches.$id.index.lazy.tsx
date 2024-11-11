@@ -554,7 +554,6 @@ const MatchInfo: React.FC<{
                 variant={readonly ? "unstyled" : "default"}
                 hideControls
                 allowNegative={false}
-                allowDecimal={false}
                 readOnly={readonly}
                 classNames={{ input: "text-right" }}
               />
@@ -566,7 +565,6 @@ const MatchInfo: React.FC<{
                 variant={readonly ? "unstyled" : "default"}
                 hideControls
                 allowNegative={false}
-                allowDecimal={false}
                 readOnly={readonly}
               />
             </Table.Td>
