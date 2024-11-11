@@ -446,8 +446,8 @@ const MatchInfo: React.FC<{
   assertType<Match>(match);
   const form = useForm({
     initialValues: {
-      home_xg: match.home_xg ?? 0,
-      away_xg: match.away_xg ?? 0,
+      home_xg: match.home_xg,
+      away_xg: match.away_xg,
       home_possession: match.home_possession ?? 50,
       away_possession: match.away_possession ?? 50,
     },
@@ -462,6 +462,16 @@ const MatchInfo: React.FC<{
       form.setFieldValue("home_possession", 100 - value);
     }
   });
+  form.watch("home_xg", ({ value }) => {
+    if (typeof value === "string" && value === "") {
+      form.setFieldValue("home_xg", null);
+    }
+  });
+  form.watch("away_xg", ({ value }) => {
+    if (typeof value === "string" && value === "") {
+      form.setFieldValue("away_xg", null);
+    }
+  });
 
   useEffect(() => {
     if (readonly) {
@@ -472,8 +482,8 @@ const MatchInfo: React.FC<{
 
   useEffect(() => {
     form.setValues({
-      home_xg: match.home_xg ?? 0,
-      away_xg: match.away_xg ?? 0,
+      home_xg: match.home_xg,
+      away_xg: match.away_xg,
       home_possession: match.home_possession ?? 50,
       away_possession: match.away_possession ?? 50,
     });
@@ -536,26 +546,32 @@ const MatchInfo: React.FC<{
             {match.away_penalty_score ? `(${match.away_penalty_score})` : null}
           </Table.Td>
         </Table.Tr>
-        <Table.Tr>
-          <Table.Td ta="end">
-            <NumberInput
-              {...form.getInputProps("home_xg")}
-              variant={readonly ? "unstyled" : "default"}
-              hideControls
-              readOnly={readonly}
-              classNames={{ input: "text-right" }}
-            />
-          </Table.Td>
-          <Table.Td ta="center">Expected Goals</Table.Td>
-          <Table.Td>
-            <NumberInput
-              {...form.getInputProps("away_xg")}
-              variant={readonly ? "unstyled" : "default"}
-              hideControls
-              readOnly={readonly}
-            />
-          </Table.Td>
-        </Table.Tr>
+        {((match.home_xg !== null && match.away_xg !== null) || !readonly) && (
+          <Table.Tr>
+            <Table.Td ta="end">
+              <NumberInput
+                {...form.getInputProps("home_xg")}
+                variant={readonly ? "unstyled" : "default"}
+                hideControls
+                allowNegative={false}
+                allowDecimal={false}
+                readOnly={readonly}
+                classNames={{ input: "text-right" }}
+              />
+            </Table.Td>
+            <Table.Td ta="center">Expected Goals</Table.Td>
+            <Table.Td>
+              <NumberInput
+                {...form.getInputProps("away_xg")}
+                variant={readonly ? "unstyled" : "default"}
+                hideControls
+                allowNegative={false}
+                allowDecimal={false}
+                readOnly={readonly}
+              />
+            </Table.Td>
+          </Table.Tr>
+        )}
         <Table.Tr>
           <Table.Td ta="end">
             <NumberInput
@@ -563,6 +579,8 @@ const MatchInfo: React.FC<{
               suffix="%"
               variant={readonly ? "unstyled" : "default"}
               hideControls
+              allowNegative={false}
+              allowDecimal={false}
               readOnly={readonly}
               classNames={{ input: "text-right" }}
             />
@@ -574,6 +592,8 @@ const MatchInfo: React.FC<{
               suffix="%"
               variant={readonly ? "unstyled" : "default"}
               hideControls
+              allowNegative={false}
+              allowDecimal={false}
               readOnly={readonly}
             />
           </Table.Td>
