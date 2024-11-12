@@ -1,8 +1,13 @@
 import { Tables, TablesInsert } from "@/database-generated.types";
+import { Player } from "@/types";
 import {
+  ActionIcon,
   Autocomplete,
+  Box,
   Button,
+  Card,
   Checkbox,
+  Divider,
   Group,
   MultiSelect,
   NumberInput,
@@ -39,15 +44,13 @@ function NewPlayerPage() {
 const PlayerForm: React.FC<{ team: Tables<"teams"> }> = ({ team }) => {
   const { currentYear } = useTeamHelpers(team);
 
-  const session = useAtomValue(sessionAtom);
+  const session = useAtomValue(sessionAtom)!;
   const form = useForm<
-    Omit<
-      TablesInsert<"players">,
-      "history" | "contracts" | "injuries" | "loans" | "transfers"
-    >
+    Omit<TablesInsert<"players">, "history" | "injuries"> &
+      Pick<Player, "contracts" | "loans" | "transfers">
   >({
     initialValues: {
-      user_id: session?.user?.id,
+      user_id: session.user.id,
       team_id: team.id,
       name: "",
       nationality: "",
@@ -58,7 +61,17 @@ const PlayerForm: React.FC<{ team: Tables<"teams"> }> = ({ team }) => {
       birth_year: 0,
       youth: false,
       kit_no: null,
+      contracts: [],
+      loans: [],
+      transfers: [],
     },
+    onValuesChange: (values) => {
+      console.log(values);
+    },
+  });
+  form.watch("youth", () => {
+    form.setFieldValue("transfers", []);
+    form.setFieldValue("loans", []);
   });
 
   const supabase = useAtomValue(supabaseAtom);
@@ -75,10 +88,7 @@ const PlayerForm: React.FC<{ team: Tables<"teams"> }> = ({ team }) => {
               value: values.value,
             },
           },
-          contracts: [],
           injuries: [],
-          loans: [],
-          transfers: [],
         })
         .select();
       if (data) {
@@ -89,6 +99,80 @@ const PlayerForm: React.FC<{ team: Tables<"teams"> }> = ({ team }) => {
     },
     [form, navigate, supabase, team.currently_on, team.id],
   );
+
+  const addContract = useCallback(() => {
+    form.setFieldValue("contracts", [
+      {
+        signed_on: team.currently_on,
+        started_on: team.currently_on,
+        ended_on: "",
+        wage: 0,
+        signing_bonus: 0,
+        release_clause: 0,
+        performance_bonus: 0,
+        bonus_req: null,
+        bonus_req_type: null,
+        conclusion: null,
+      },
+    ]);
+  }, [form, team.currently_on]);
+
+  const [numSeasons, setNumSeasons] = useState(1);
+  const { currentSeason } = useTeamHelpers(team);
+  useEffect(() => {
+    if (!team.started_on || !form.values.contracts.length) {
+      return;
+    }
+
+    form.setFieldValue(
+      "contracts.0.ended_on",
+      dayjs(team.started_on)
+        .add(numSeasons + currentSeason, "year")
+        .format("YYYY-MM-DD"),
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [numSeasons, form.values.contracts.length, team.started_on]);
+
+  const removeContract = useCallback(() => {
+    form.setFieldValue("contracts", []);
+  }, [form]);
+
+  const addTransfer = useCallback(() => {
+    form.setFieldValue("transfers", [
+      {
+        signed_on: team.currently_on,
+        moved_on: team.currently_on,
+        origin: "",
+        destination: team.name,
+        fee: 0,
+        addon_clause: 0,
+      },
+    ]);
+  }, [form, team.currently_on, team.name]);
+
+  const removeTransfer = useCallback(() => {
+    form.setFieldValue("transfers", []);
+  }, [form]);
+
+  const { endOfCurrentSeason } = useTeamHelpers(team);
+  const addLoan = useCallback(() => {
+    form.setFieldValue("loans", [
+      {
+        signed_on: team.currently_on,
+        started_on: team.currently_on,
+        ended_on: endOfCurrentSeason,
+        origin: "",
+        destination: team.name,
+        wage_percentage: 50,
+        transfer_fee: null,
+        addon_clause: null,
+      },
+    ]);
+  }, [endOfCurrentSeason, form, team.currently_on, team.name]);
+
+  const removeLoan = useCallback(() => {
+    form.setFieldValue("loans", []);
+  }, [form]);
 
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
@@ -167,6 +251,235 @@ const PlayerForm: React.FC<{ team: Tables<"teams"> }> = ({ team }) => {
         />
       </Group>
       <Checkbox {...form.getInputProps("youth")} label="Youth Player" mt="md" />
+      <Divider my="md" />
+      {!form.values.youth &&
+        !form.values.transfers.length &&
+        !form.values.loans.length && (
+          <Group>
+            <Button onClick={addTransfer} variant="default">
+              Add Transfer
+            </Button>
+            <Button onClick={addLoan} variant="default">
+              Add Loan
+            </Button>
+          </Group>
+        )}
+
+      {/* Transfer section */}
+      {form.values.transfers.length > 0 && (
+        <Card withBorder bg="transparent" my="md">
+          <Group mb="xs">
+            <Box>Transfer</Box>
+            <ActionIcon
+              onClick={removeTransfer}
+              variant="subtle"
+              color="gray"
+              ml="auto"
+            >
+              <div className="i-mdi:close" />
+            </ActionIcon>
+          </Group>
+          <DatePickerInput
+            {...form.getInputProps("transfers.0.signed_on")}
+            label="Signed Date"
+            required
+            mb="xs"
+          />
+          <DatePickerInput
+            {...form.getInputProps("transfers.0.moved_on")}
+            label="Effective Date"
+            required
+            mb="xs"
+          />
+          <TeamAutocomplete
+            {...form.getInputProps("transfers.0.origin")}
+            label="Origin"
+            required
+            mb="xs"
+          />
+          <NumberInput
+            {...form.getInputProps("transfers.0.fee")}
+            label="Fee"
+            leftSection={team.currency}
+            thousandSeparator
+            required
+            min={0}
+            mb="xs"
+          />
+          <NumberInput
+            {...form.getInputProps("transfers.0.addon_clause")}
+            label="Add-On Clause"
+            suffix="%"
+            min={0}
+            mb="xs"
+          />
+        </Card>
+      )}
+
+      {/* Loan section */}
+      {form.values.loans.length > 0 && (
+        <Card withBorder bg="transparent" my="md">
+          <Group mb="xs">
+            <Box>Loan</Box>
+            <ActionIcon
+              onClick={removeLoan}
+              variant="subtle"
+              color="gray"
+              ml="auto"
+            >
+              <div className="i-mdi:close" />
+            </ActionIcon>
+          </Group>
+          <DatePickerInput
+            {...form.getInputProps("loans.0.signed_on")}
+            label="Signed Date"
+            required
+            mb="xs"
+          />
+          <DatePickerInput
+            {...form.getInputProps("loans.0.started_on")}
+            label="Effective Date"
+            required
+            mb="xs"
+          />
+          <DatePickerInput
+            {...form.getInputProps("loans.0.ended_on")}
+            label="Return Date"
+            required
+            mb="xs"
+          />
+          <TeamAutocomplete
+            {...form.getInputProps("loans.0.origin")}
+            label="Origin"
+            required
+            mb="xs"
+          />
+          <NumberInput
+            {...form.getInputProps("loans.0.wage_percentage")}
+            label="Wage Percentage"
+            suffix="%"
+            required
+            min={0}
+            mb="xs"
+          />
+          <NumberInput
+            {...form.getInputProps("loans.0.transfer_fee")}
+            label="Transfer Fee"
+            leftSection={team.currency}
+            thousandSeparator
+            min={0}
+            mb="xs"
+          />
+          <NumberInput
+            {...form.getInputProps("loans.0.addon_clause")}
+            label="Add-On Clause"
+            suffix="%"
+            min={0}
+            mb="xs"
+          />
+        </Card>
+      )}
+
+      {/* Contract section */}
+      {form.values.contracts.length > 0 ? (
+        <Card withBorder bg="transparent" my="md">
+          <Group mb="xs">
+            <Box>Contract</Box>
+            <ActionIcon
+              onClick={removeContract}
+              variant="subtle"
+              color="gray"
+              ml="auto"
+            >
+              <div className="i-mdi:close" />
+            </ActionIcon>
+          </Group>
+          <DatePickerInput
+            {...form.getInputProps("contracts.0.signed_on")}
+            label="Signed Date"
+            required
+            mb="xs"
+          />
+          <DatePickerInput
+            {...form.getInputProps("contracts.0.started_on")}
+            label="Effective Date"
+            required
+            mb="xs"
+          />
+          <NumberInput
+            value={numSeasons}
+            onChange={(value) => setNumSeasons(Number(value))}
+            label="Number of Seasons"
+            description={
+              form.values.contracts[0].ended_on
+                ? `Ends on ${formatDate(form.values.contracts[0].ended_on)}`
+                : null
+            }
+            required
+            min={1}
+            mb="xs"
+          />
+          <NumberInput
+            {...form.getInputProps("contracts.0.wage")}
+            label="Wage"
+            leftSection={team.currency}
+            thousandSeparator
+            required
+            min={0}
+            mb="xs"
+          />
+          <NumberInput
+            {...form.getInputProps("contracts.0.signing_bonus")}
+            label="Signing Bonus"
+            leftSection={team.currency}
+            thousandSeparator
+            required
+            min={0}
+            mb="xs"
+          />
+          <NumberInput
+            {...form.getInputProps("contracts.0.release_clause")}
+            label="Release Clause"
+            leftSection={team.currency}
+            thousandSeparator
+            min={0}
+            mb="xs"
+          />
+          <NumberInput
+            {...form.getInputProps("contracts.0.performance_bonus")}
+            label="Performance Bonus"
+            leftSection={team.currency}
+            thousandSeparator
+            min={0}
+            mb="xs"
+          />
+          {form.values.contracts[0].performance_bonus > 0 && (
+            <Group grow>
+              <NumberInput
+                {...form.getInputProps("contracts.0.bonus_req")}
+                label="Bonus Requirement"
+                required
+                min={0}
+                mb="xs"
+              />
+              <Select
+                {...form.getInputProps("contracts.0.bonus_req_type")}
+                label="Bonus Requirement Type"
+                required
+                data={["Appearances", "Goals", "Assists", "Clean Sheets"]}
+                mb="xs"
+              />
+            </Group>
+          )}
+        </Card>
+      ) : (
+        <Box mt="md">
+          <Button onClick={addContract} variant="default">
+            Add Contract
+          </Button>
+        </Box>
+      )}
+
       <Button mt="xl" type="submit">
         Save Player
       </Button>

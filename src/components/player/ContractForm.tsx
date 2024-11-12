@@ -59,7 +59,7 @@ export const ContractForm: React.FC<{
     );
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [form.values.started_on, numSeasons]);
+  }, [currentSeason, numSeasons, team.started_on, opened]);
 
   const [loading, setLoading] = useState(false);
   const handleSubmit = useCallback(async () => {
