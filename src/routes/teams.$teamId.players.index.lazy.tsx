@@ -153,7 +153,7 @@ function PlayersPage() {
               component={Link}
               to={`/teams/${teamId}/players/${info.row.original.id}`}
               variant="subtle"
-              size="xs"
+              size="compact-xs"
             >
               {value}
             </Button>

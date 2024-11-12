@@ -76,9 +76,6 @@ const PlayerForm: React.FC<{ team: Tables<"teams"> }> = ({ team }) => {
       loans: [],
       transfers: [],
     },
-    onValuesChange: (values) => {
-      console.log(values);
-    },
   });
   form.watch("youth", () => {
     form.setFieldValue("transfers", []);

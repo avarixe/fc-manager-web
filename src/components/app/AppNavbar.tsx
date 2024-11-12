@@ -11,6 +11,7 @@ import {
 
 export const AppNavbar = () => {
   const team = useAtomValue(teamAtom);
+  const { currentSeason } = useTeamHelpers(team);
 
   return (
     <AppShell.Navbar p="md">
@@ -98,6 +99,12 @@ export const AppNavbar = () => {
               leftSection={<BaseIcon name="i-mdi:plus-circle-outline" />}
             />
           </NavLink>
+          <NavLink
+            component={Link}
+            to={`/teams/${team.id}/seasons/${currentSeason}`}
+            label="Current Season"
+            leftSection={<div className="i-mdi:calendar-month" />}
+          />
           <NavLink
             component={Link}
             to={`/teams/${team.id}/squads`}

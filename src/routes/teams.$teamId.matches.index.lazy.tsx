@@ -91,9 +91,14 @@ function MatchesPage() {
           const color = matchScoreColor(match, team?.name);
           return (
             <>
-              <div>
+              <Button
+                component={Link}
+                to={`/teams/${teamId}/matches/${match.id}`}
+                variant="subtle"
+                size="compact-xs"
+              >
                 {match.home_team} v {match.away_team}
-              </div>
+              </Button>
               <Box c={color}>{matchScore(match)}</Box>
             </>
           );
@@ -118,24 +123,7 @@ function MatchesPage() {
           const value = info.getValue();
           return formatDate(value);
         },
-        meta: { sortable: true },
-      }),
-      columnHelper.accessor("id", {
-        header: "Link",
-        cell: (info) => {
-          const value = info.getValue();
-          return (
-            <Button
-              component={Link}
-              to={`/teams/${teamId}/matches/${value}`}
-              variant="filled"
-              fullWidth
-            >
-              <div className="i-mdi:play" />
-            </Button>
-          );
-        },
-        meta: { align: "center" },
+        meta: { align: "center", sortable: true },
       }),
     ],
     [columnHelper, team?.name, teamId],

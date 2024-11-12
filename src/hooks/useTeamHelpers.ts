@@ -35,12 +35,25 @@ export const useTeamHelpers = (team: Tables<"teams"> | null) => {
     [team?.currently_on],
   );
 
+  const startOfSeason = useCallback(
+    (season: number) => {
+      if (!team) {
+        return "";
+      }
+
+      return dayjs(team.started_on).add(season, "year").format("YYYY-MM-DD");
+    },
+    [team],
+  );
+
+  const endOfSeason = useCallback(
+    (season: number) => startOfSeason(season + 1),
+    [startOfSeason],
+  );
+
   const endOfCurrentSeason: string = useMemo(
-    () =>
-      dayjs(team?.started_on)
-        .add(currentSeason + 1, "year")
-        .format("YYYY-MM-DD"),
-    [currentSeason, team?.started_on],
+    () => endOfSeason(currentSeason),
+    [currentSeason, endOfSeason],
   );
 
   return {
@@ -48,6 +61,8 @@ export const useTeamHelpers = (team: Tables<"teams"> | null) => {
     seasonOn,
     currentSeason,
     currentYear,
+    startOfSeason,
+    endOfSeason,
     endOfCurrentSeason,
   };
 };
