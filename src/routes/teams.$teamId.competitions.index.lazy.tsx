@@ -39,6 +39,16 @@ function CompetitionsPage() {
     [competitions],
   );
 
+  const setBreadcrumbs = useSetAtom(breadcrumbsAtom);
+  useEffect(() => {
+    setBreadcrumbs([
+      { title: "Home", to: "/" },
+      { title: "Teams", to: "/teams" },
+      { title: team?.name ?? "", to: `/teams/${teamId}` },
+      { title: "Competitions", to: `/teams/${teamId}/competitions` },
+    ]);
+  }, [setBreadcrumbs, team?.name, teamId]);
+
   if (!team) {
     return null;
   }

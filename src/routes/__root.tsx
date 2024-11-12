@@ -63,7 +63,10 @@ function App() {
           ) : !session ? (
             <Login supabase={supabase} />
           ) : (
-            <Outlet />
+            <>
+              <AppBreadcrumbs />
+              <Outlet />
+            </>
           )}
           <LoadingOverlay
             visible={appLoading}
@@ -71,7 +74,7 @@ function App() {
           />
         </Container>
       </AppShell.Main>
-      <TanStackRouterDevtools />
+      {import.meta.env.DEV && <TanStackRouterDevtools />}
     </AppShell>
   );
 }

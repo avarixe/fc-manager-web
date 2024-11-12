@@ -114,3 +114,8 @@ export interface Cap extends Tables<"caps"> {
     name: string;
   };
 }
+
+export interface BreadcrumbItem {
+  title: string;
+  to: string;
+}

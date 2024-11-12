@@ -26,6 +26,17 @@ function NewPlayerPage() {
   const { teamId } = Route.useParams();
   const { team } = useTeam(teamId);
 
+  const setBreadcrumbs = useSetAtom(breadcrumbsAtom);
+  useEffect(() => {
+    setBreadcrumbs([
+      { title: "Home", to: "/" },
+      { title: "Teams", to: "/teams" },
+      { title: team?.name ?? "", to: `/teams/${teamId}` },
+      { title: "Players", to: `/teams/${teamId}/players` },
+      { title: "New Player", to: `/teams/${teamId}/players/new` },
+    ]);
+  }, [setBreadcrumbs, team?.name, teamId]);
+
   if (!team) {
     return null;
   }

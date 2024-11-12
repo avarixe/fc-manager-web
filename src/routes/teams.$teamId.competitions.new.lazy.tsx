@@ -8,6 +8,17 @@ function NewCompetitionPage() {
   const { teamId } = Route.useParams();
   const { team } = useTeam(teamId);
 
+  const setBreadcrumbs = useSetAtom(breadcrumbsAtom);
+  useEffect(() => {
+    setBreadcrumbs([
+      { title: "Home", to: "/" },
+      { title: "Teams", to: "/teams" },
+      { title: team?.name ?? "", to: `/teams/${teamId}` },
+      { title: "Competitions", to: `/teams/${teamId}/competitions` },
+      { title: "New Competition", to: `/teams/${teamId}/competitions/new` },
+    ]);
+  }, [setBreadcrumbs, team?.name, teamId]);
+
   if (!team) {
     return null;
   }

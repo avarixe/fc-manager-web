@@ -247,6 +247,16 @@ function PlayersPage() {
     [columnHelper, team, teamId, updatePlayer],
   );
 
+  const setBreadcrumbs = useSetAtom(breadcrumbsAtom);
+  useEffect(() => {
+    setBreadcrumbs([
+      { title: "Home", to: "/" },
+      { title: "Teams", to: "/teams" },
+      { title: team?.name ?? "", to: `/teams/${teamId}` },
+      { title: "Players", to: `/teams/${teamId}/players` },
+    ]);
+  }, [setBreadcrumbs, team?.name, teamId]);
+
   if (!team) {
     return null;
   }

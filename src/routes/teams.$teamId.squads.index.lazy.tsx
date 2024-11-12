@@ -60,6 +60,16 @@ function SquadsPage() {
     fetchPlayers();
   }, [supabase, teamId]);
 
+  const setBreadcrumbs = useSetAtom(breadcrumbsAtom);
+  useEffect(() => {
+    setBreadcrumbs([
+      { title: "Home", to: "/" },
+      { title: "Teams", to: "/teams" },
+      { title: team?.name ?? "", to: `/teams/${teamId}` },
+      { title: "Squads", to: `/teams/${teamId}/squads` },
+    ]);
+  }, [setBreadcrumbs, team?.name, teamId]);
+
   if (!team) {
     return null;
   }

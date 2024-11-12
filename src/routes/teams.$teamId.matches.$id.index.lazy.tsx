@@ -269,7 +269,27 @@ function MatchPage() {
       })),
     [caps],
   );
-  console.log(formationOvrData);
+
+  const setBreadcrumbs = useSetAtom(breadcrumbsAtom);
+  useEffect(() => {
+    setBreadcrumbs([
+      { title: "Home", to: "/" },
+      { title: "Teams", to: "/teams" },
+      { title: team?.name ?? "", to: `/teams/${teamId}` },
+      { title: "Matches", to: `/teams/${teamId}/matches` },
+      {
+        title: `${match?.home_team} v ${match?.away_team}`,
+        to: `/teams/${teamId}/matches/${id}`,
+      },
+    ]);
+  }, [
+    id,
+    match?.away_team,
+    match?.home_team,
+    setBreadcrumbs,
+    team?.name,
+    teamId,
+  ]);
 
   if (!team || !match) {
     return null;

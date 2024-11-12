@@ -55,6 +55,11 @@ function HomePage() {
     }, []);
   }, [teams]);
 
+  const setBreadcrumbs = useSetAtom(breadcrumbsAtom);
+  useEffect(() => {
+    setBreadcrumbs([]);
+  }, [setBreadcrumbs]);
+
   return (
     <Stack>
       <Title mb="xl">Welcome to FC Manager!</Title>

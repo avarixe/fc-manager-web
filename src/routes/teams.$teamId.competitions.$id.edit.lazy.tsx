@@ -33,6 +33,24 @@ function EditCompetitionPage() {
     fetchCompetition();
   }, [id, supabase, teamId]);
 
+  const setBreadcrumbs = useSetAtom(breadcrumbsAtom);
+  useEffect(() => {
+    setBreadcrumbs([
+      { title: "Home", to: "/" },
+      { title: "Teams", to: "/teams" },
+      { title: team?.name ?? "", to: `/teams/${teamId}` },
+      { title: "Competitions", to: `/teams/${teamId}/competitions` },
+      {
+        title: competition?.name ?? "",
+        to: `/teams/${teamId}/competitions/${id}`,
+      },
+      {
+        title: "Edit Competition",
+        to: `/teams/${teamId}/competitions/${id}/edit`,
+      },
+    ]);
+  }, [competition?.name, id, setBreadcrumbs, team?.name, teamId]);
+
   if (!team || !competition) {
     return null;
   }

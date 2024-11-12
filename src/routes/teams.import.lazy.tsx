@@ -468,6 +468,15 @@ function ImportTeamPage() {
     supabase,
   ]);
 
+  const setBreadcrumbs = useSetAtom(breadcrumbsAtom);
+  useEffect(() => {
+    setBreadcrumbs([
+      { title: "Home", to: "/" },
+      { title: "Teams", to: "/teams" },
+      { title: "Import Team", to: "/teams/import" },
+    ]);
+  }, [setBreadcrumbs]);
+
   return (
     <Stack>
       <Title fw="lighter" mb="xl">

@@ -112,6 +112,17 @@ function PlayerPage() {
     setPlayer((prev) => (prev ? { ...prev, ...changes } : null));
   }, []);
 
+  const setBreadcrumbs = useSetAtom(breadcrumbsAtom);
+  useEffect(() => {
+    setBreadcrumbs([
+      { title: "Home", to: "/" },
+      { title: "Teams", to: "/teams" },
+      { title: team?.name ?? "", to: `/teams/${teamId}` },
+      { title: "Players", to: `/teams/${teamId}/players` },
+      { title: player?.name ?? "", to: `/teams/${teamId}/players/${id}` },
+    ]);
+  }, [id, player?.name, setBreadcrumbs, team?.name, teamId]);
+
   if (!team || !player) {
     return null;
   }

@@ -43,6 +43,18 @@ function EditPlayerPage() {
     fetchPlayer();
   }, [id, supabase, teamId]);
 
+  const setBreadcrumbs = useSetAtom(breadcrumbsAtom);
+  useEffect(() => {
+    setBreadcrumbs([
+      { title: "Home", to: "/" },
+      { title: "Teams", to: "/teams" },
+      { title: team?.name ?? "", to: `/teams/${teamId}` },
+      { title: "Players", to: `/teams/${teamId}/players` },
+      { title: player?.name ?? "", to: `/teams/${teamId}/players/${id}` },
+      { title: "Edit Player", to: `/teams/${teamId}/players/${id}/edit` },
+    ]);
+  }, [id, player?.name, setBreadcrumbs, team?.name, teamId]);
+
   if (!team || !player) {
     return null;
   }

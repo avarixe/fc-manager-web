@@ -6,6 +6,7 @@
 // biome-ignore lint: disable
 export {}
 declare global {
+  const AppBreadcrumbs: typeof import('./src/components/app/AppBreadcrumbs')['AppBreadcrumbs']
   const AppNavbar: typeof import('./src/components/app/AppNavbar')['AppNavbar']
   const AssistIcon: typeof import('./src/components/base/CommonIcons')['AssistIcon']
   const BaseIcon: typeof import('./src/components/base/CommonIcons')['BaseIcon']
@@ -60,6 +61,7 @@ declare global {
   const assertDefined: typeof import('./src/utils/assert')['assertDefined']
   const assertType: typeof import('./src/utils/assert')['assertType']
   const atom: typeof import('jotai')['atom']
+  const breadcrumbsAtom: typeof import('./src/atoms/index')['breadcrumbsAtom']
   const capsAtom: typeof import('./src/atoms/index')['capsAtom']
   const countryCodes: typeof import('./src/constants/countryCodes')['countryCodes']
   const createColumnHelper: typeof import('@tanstack/react-table')['createColumnHelper']
