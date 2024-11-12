@@ -1,6 +1,6 @@
-import { Box } from "@mantine/core";
+import { BoxProps } from "@mantine/core";
 
-interface PlayerFlagProps extends React.HTMLAttributes<HTMLDivElement> {
+interface PlayerFlagProps extends BoxProps {
   status: string | null;
 }
 
@@ -35,5 +35,5 @@ export const PlayerStatus = ({ status, ...rest }: PlayerFlagProps) => {
     }
   }, [status]);
 
-  return <Box c={color} className={`${icon} w-auto`} {...rest} />;
+  return <BaseIcon c={color} name={icon} {...rest} />;
 };

@@ -131,6 +131,7 @@ export const BookingForm: React.FC<{
             {...form.getInputProps("player_name")}
             label="Player"
             placeholder="Select player"
+            searchable
             required
             data={capOptions}
             renderOption={({ option }) => {

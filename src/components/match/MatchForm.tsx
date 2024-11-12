@@ -119,6 +119,7 @@ export function MatchForm({
         label="Competition"
         data={competitions.map((competition) => competition.name)}
         required
+        searchable
         mb="xs"
       />
       {form.values.competition && (

@@ -268,6 +268,7 @@ export const MatchFormationForm: React.FC<{
             onChange={setAssigningPlayerId}
             label="Assign player"
             placeholder="Select player"
+            searchable
             clearable
             data={playerOptions}
             renderOption={({ option }) => (

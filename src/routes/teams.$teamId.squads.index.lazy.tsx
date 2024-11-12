@@ -214,8 +214,9 @@ const SquadCard: React.FC<
     return players
       .filter((player) => !!player.status && !inFormation.includes(player.id))
       .map((player) => ({
+        ...player,
         value: String(player.id),
-        label: player.name,
+        label: `${player.pos} · ${player.name}`,
       }));
   }, [form.values.formation, players]);
 
@@ -320,16 +321,20 @@ const SquadCard: React.FC<
             onChange={setAssigningPlayerId}
             label="Assign player"
             placeholder="Select player"
+            searchable
             clearable
             data={playerOptions}
-            renderOption={({ option }) => (
-              <Group>
-                <MText size="xs" fw="bold">
-                  {playersById[option.value]?.pos}
-                </MText>
-                <MText size="xs">{option.label}</MText>
-              </Group>
-            )}
+            renderOption={({ option }) => {
+              assertType<PlayerOption>(option);
+              return (
+                <Group>
+                  <MText size="xs" fw="bold">
+                    {option.pos}
+                  </MText>
+                  <MText size="xs">{option.name}</MText>
+                </Group>
+              );
+            }}
           />
         </Group>
       )}

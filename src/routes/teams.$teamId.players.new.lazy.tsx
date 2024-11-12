@@ -188,14 +188,16 @@ const PlayerForm: React.FC<{ team: Tables<"teams"> }> = ({ team }) => {
           {...form.getInputProps("pos")}
           label="Position"
           required
+          searchable
           mb="xs"
           data={positions}
         />
         <MultiSelect
           {...form.getInputProps("sec_pos")}
           label="Secondary Position(s)"
-          mb="xs"
+          searchable
           data={positions}
+          mb="xs"
         />
       </Group>
       <Group grow>

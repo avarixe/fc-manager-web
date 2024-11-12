@@ -146,6 +146,7 @@ export const GoalForm: React.FC<{
               label="Player"
               placeholder="Select player"
               required
+              searchable
               data={capOptions}
               renderOption={({ option }) => {
                 assertType<CapOption>(option);
@@ -176,6 +177,7 @@ export const GoalForm: React.FC<{
                   </Group>
                 );
               }}
+              searchable
               mb="xs"
             />
           </>

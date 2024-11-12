@@ -104,6 +104,7 @@ const PlayerForm: React.FC<{
         <Select
           {...form.getInputProps("pos")}
           label="Position"
+          searchable
           required
           mb="xs"
           data={positions}

@@ -78,6 +78,7 @@ export const CapEditor: React.FC<{
         <Select
           {...form.getInputProps("playerId")}
           label="Player"
+          searchable
           required
           data={playerIdOptions}
           renderOption={({ option }) => {
@@ -97,6 +98,7 @@ export const CapEditor: React.FC<{
           {...form.getInputProps("pos")}
           label="Position"
           data={matchPositions}
+          searchable
           required
           mb="xs"
         />

@@ -110,6 +110,7 @@ export const CapForm: React.FC<{
         <Select
           {...form.getInputProps("playerId")}
           label="Player"
+          searchable
           required
           data={playerIdOptions}
           renderOption={({ option }) => {
@@ -129,6 +130,7 @@ export const CapForm: React.FC<{
           {...form.getInputProps("pos")}
           label="Position"
           data={matchPositions}
+          searchable
           required
           mb="xs"
         />

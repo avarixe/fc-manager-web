@@ -154,7 +154,7 @@ function PlayerPage() {
         )}
         <Box ta="center">
           <Title>
-            <PlayerStatus status={player.status} />
+            <PlayerStatus status={player.status} w="auto" />
           </Title>
           <Title order={6}>Status</Title>
         </Box>

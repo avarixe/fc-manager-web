@@ -56,7 +56,8 @@ function MatchPage() {
       const { data, error } = await supabase
         .from("squads")
         .select()
-        .eq("team_id", teamId);
+        .eq("team_id", teamId)
+        .order("id");
       if (error) {
         console.error(error);
       } else {

@@ -173,7 +173,7 @@ function PlayersPage() {
         header: "Status",
         cell: (info) => {
           const value = info.getValue();
-          return <PlayerStatus status={value} />;
+          return <PlayerStatus status={value} w="auto" />;
         },
         meta: { align: "center" },
       }),

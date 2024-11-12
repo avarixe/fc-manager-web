@@ -138,6 +138,7 @@ export const ChangeForm: React.FC<{
           {...form.getInputProps("out.name")}
           label="Player"
           placeholder="Select player"
+          searchable
           required
           data={capOptions}
           renderOption={({ option }) => {
@@ -157,6 +158,7 @@ export const ChangeForm: React.FC<{
           {...form.getInputProps("in.name")}
           label="Replaced By"
           placeholder="Select player"
+          searchable
           required
           data={replacementOptions}
           renderOption={({ option }) => {
@@ -176,6 +178,7 @@ export const ChangeForm: React.FC<{
           {...form.getInputProps("in.pos")}
           label="Position"
           data={matchPositions}
+          searchable
           required
           mb="xs"
         />
