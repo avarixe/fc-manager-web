@@ -15,7 +15,9 @@ export const PlayerInlineField = <T,>({
   onChange,
 }: {
   target: React.ReactNode;
-  input: React.ReactNode;
+  input: (props: {
+    onKeyDown: (event: React.KeyboardEvent) => Promise<void>;
+  }) => React.ReactNode;
   field: ReturnType<typeof useField<T>>;
   onChange: () => void;
 }) => {
@@ -24,6 +26,15 @@ export const PlayerInlineField = <T,>({
       if (opened) {
         field.reset();
       } else if (!(await field.validate())) {
+        onChange();
+      }
+    },
+    [field, onChange],
+  );
+
+  const onKeyDown = useCallback(
+    async (event: React.KeyboardEvent) => {
+      if (event.key === "Enter" && !(await field.validate())) {
         onChange();
       }
     },
@@ -46,7 +57,7 @@ export const PlayerInlineField = <T,>({
           </Box>
         </Indicator>
       </Popover.Target>
-      <Popover.Dropdown p="xs">{input}</Popover.Dropdown>
+      <Popover.Dropdown p="xs">{input({ onKeyDown })}</Popover.Dropdown>
     </Popover>
   );
 };
@@ -76,16 +87,17 @@ export const PlayerKitNo: React.FC<{
   return (
     <PlayerInlineField
       target={player.kit_no ?? "-"}
-      input={
+      input={(props) => (
         <NumberInput
           {...field.getInputProps()}
+          {...props}
           label="Kit Number"
           autoFocus
           min={1}
           max={99}
           mb="xs"
         />
-      }
+      )}
       field={field}
       onChange={onChange}
     />
@@ -133,9 +145,10 @@ export const PlayerOvr: React.FC<{
   return (
     <PlayerInlineField
       target={player.ovr}
-      input={
+      input={(props) => (
         <NumberInput
           {...field.getInputProps()}
+          {...props}
           label="Overall Rating"
           required
           autoFocus
@@ -143,7 +156,7 @@ export const PlayerOvr: React.FC<{
           min={0}
           max={100}
         />
-      }
+      )}
       field={field}
       onChange={onChange}
     />
@@ -197,9 +210,10 @@ export const PlayerValue: React.FC<{
           thousandSeparator
         />
       }
-      input={
+      input={(props) => (
         <NumberInput
           {...field.getInputProps()}
+          {...props}
           label="Value"
           leftSection={team.currency}
           thousandSeparator
@@ -208,7 +222,7 @@ export const PlayerValue: React.FC<{
           min={0}
           mb="xs"
         />
-      }
+      )}
       field={field}
       onChange={onChange}
     />
