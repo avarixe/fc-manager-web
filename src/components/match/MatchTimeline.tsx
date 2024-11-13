@@ -20,10 +20,10 @@ enum MatchEventType {
 
 type MatchEvent = {
   type: MatchEventType;
+  timestamp?: number;
   minute: number;
   stoppage_time?: number;
   home: boolean;
-  priority: number;
   index: number;
 } & (Goal | Booking | { changes: (Change & { index: number })[] });
 
@@ -44,16 +44,17 @@ export const MatchTimeline: React.FC<{
     const changesByMinute = Object.entries(
       groupBy(
         indexedChanges,
-        (change) => `${change.minute}+${change.stoppage_time ?? ""}`,
+        (change) =>
+          `${change.minute}+${change.timestamp}+${change.stoppage_time ?? ""}`,
       ),
     ).map(([key, changes]) => {
-      const [minute, stoppageTime] = key.split("+");
+      const [minute, timestamp, stoppageTime] = key.split("+");
       return {
         type: MatchEventType.Change,
+        timestamp: Number(timestamp),
         minute: Number(minute),
         stoppageTime: Number(stoppageTime),
         home: team.name === match.home_team,
-        priority: 1,
         index: 0,
         changes,
       };
@@ -61,21 +62,19 @@ export const MatchTimeline: React.FC<{
 
     return orderBy(
       [
+        ...changesByMinute,
         ...match.goals.map((goal, index) => ({
           type: MatchEventType.Goal,
-          priority: 2,
           index,
           ...goal,
         })),
         ...match.bookings.map((booking, index) => ({
           type: MatchEventType.Booking,
-          priority: 3,
           index,
           ...booking,
         })),
-        ...changesByMinute,
       ],
-      ["minute", "stoppage_time", "priority"],
+      ["minute", "stoppage_time", "timestamp"],
       ["asc", "asc", "asc"],
     );
   }, [match.changes, match.goals, match.bookings, match.home_team, team.name]);

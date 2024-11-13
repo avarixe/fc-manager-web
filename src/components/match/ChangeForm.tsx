@@ -24,6 +24,7 @@ export const ChangeForm: React.FC<{
 }> = ({ record, opened, onClose, onSubmit, playerOptions }) => {
   const form = useForm({
     initialValues: {
+      timestamp: record?.timestamp ?? new Date().valueOf(),
       minute: record?.minute ?? 1,
       stoppage_time: record?.stoppage_time,
       injured: record?.injured ?? false,

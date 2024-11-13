@@ -99,6 +99,7 @@ export const MatchFormationForm: React.FC<{
     }
 
     const changes: Change[] = match!.changes;
+    const timestamp = new Date().valueOf();
 
     // Match by player id to prioritize position changes
     for (let i = newItems.length - 1; i >= 0; i--) {
@@ -109,6 +110,7 @@ export const MatchFormationForm: React.FC<{
       if (oldItemIndex >= 0) {
         const oldItem = oldItems[oldItemIndex];
         changes.push({
+          timestamp,
           minute: form.values.minute,
           stoppage_time: form.values.stoppage_time,
           injured: false,
@@ -133,6 +135,7 @@ export const MatchFormationForm: React.FC<{
       if (oldItemIndex >= 0) {
         const oldItem = oldItems[oldItemIndex];
         changes.push({
+          timestamp,
           minute: form.values.minute,
           stoppage_time: form.values.stoppage_time,
           injured: false,
@@ -155,6 +158,7 @@ export const MatchFormationForm: React.FC<{
       const item = newItems[i];
       const oldItem = oldItems[i];
       changes.push({
+        timestamp,
         minute: form.values.minute,
         stoppage_time: form.values.stoppage_time,
         injured: false,

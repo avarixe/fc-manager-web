@@ -22,6 +22,7 @@ export const BookingForm: React.FC<{
 }> = ({ record, opened, onClose, onSubmit }) => {
   const form = useForm<Booking>({
     initialValues: {
+      timestamp: record?.timestamp ?? new Date().valueOf(),
       minute: record?.minute ?? 1,
       stoppage_time: record?.stoppage_time,
       player_name: record?.player_name ?? "",
