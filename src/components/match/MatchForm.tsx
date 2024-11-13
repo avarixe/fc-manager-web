@@ -111,7 +111,6 @@ export function MatchForm({
         {...form.getInputProps("played_on")}
         label="Date Played"
         required
-        firstDayOfWeek={0}
         mb="xs"
       />
       <Select

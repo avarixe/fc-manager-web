@@ -109,14 +109,12 @@ export function TeamForm({ record }: { record?: Tables<"teams"> }) {
         {...form.getInputProps("started_on")}
         label="Start Date"
         required
-        firstDayOfWeek={0}
         mb="xs"
       />
       <DatePickerInput
         {...form.getInputProps("currently_on")}
         label="Current Date"
         required
-        firstDayOfWeek={0}
         mb="xs"
       />
       <TextInput {...form.getInputProps("currency")} label="Currency" mb="xs" />

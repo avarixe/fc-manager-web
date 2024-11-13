@@ -31,9 +31,12 @@ export const CapEditor: React.FC<{
       const newCaps = [];
       for (const oldCap of caps) {
         if (oldCap.id === cap.id) {
+          const ovr =
+            playerOptions.find((player) => player.id === Number(playerId))
+              ?.ovr ?? cap.ovr;
           const { data } = await supabase
             .from("caps")
-            .update({ player_id: Number(playerId), pos })
+            .update({ player_id: Number(playerId), pos, ovr })
             .eq("id", cap.id)
             .select("*, players(name)")
             .single();

@@ -40,6 +40,7 @@ export const DatePickerInput = forwardRef<
       ref={ref}
       value={dateValue}
       onChange={onDateChange}
+      firstDayOfWeek={0}
       {...props}
     />
   );

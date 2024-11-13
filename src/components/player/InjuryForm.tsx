@@ -98,6 +98,19 @@ export const InjuryForm: React.FC<{
         <DatePickerInput
           {...form.getInputProps("ended_on")}
           label="End Date"
+          rightSection={
+            record ? (
+              <ActionIcon
+                onClick={() =>
+                  form.setFieldValue("ended_on", team.currently_on)
+                }
+                variant="transparent"
+                color="gray"
+              >
+                <div className="i-mdi:calendar-arrow-left" />
+              </ActionIcon>
+            ) : null
+          }
           required
           disabled={!record}
           mb="xs"
