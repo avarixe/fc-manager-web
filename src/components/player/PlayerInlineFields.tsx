@@ -201,6 +201,11 @@ export const PlayerValue: React.FC<{
     team.currently_on,
   ]);
 
+  const step = useMemo(() => {
+    const magnitude = field.getValue().toString().length - 1;
+    return magnitude > 1 ? Math.pow(10, magnitude - 1) : 1;
+  }, [field]);
+
   return (
     <PlayerInlineField
       target={
@@ -219,6 +224,7 @@ export const PlayerValue: React.FC<{
           thousandSeparator
           required
           autoFocus
+          step={step}
           min={0}
           mb="xs"
         />
