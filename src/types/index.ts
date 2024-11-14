@@ -45,6 +45,7 @@ export type Injury = Player[PlayerEventKey.Injury][number];
 export type Loan = Player[PlayerEventKey.Loan][number];
 export type Transfer = Player[PlayerEventKey.Transfer][number];
 export type PlayerEvent = Contract | Injury | Loan | Transfer;
+export type PlayerHistoryData = Player["history"][string];
 
 export interface Match extends Tables<"matches"> {
   goals: {

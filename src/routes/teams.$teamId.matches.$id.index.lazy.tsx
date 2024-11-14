@@ -298,13 +298,13 @@ function MatchPage() {
   return (
     <Stack>
       <Box mb="xl">
-        <Title order={6}>{formatDate(match.played_on)}</Title>
-        <Title order={4} fw="bolder">
-          {match.competition} {match.stage}
-        </Title>
         <Title fw="lighter">
           {match.home_team} v {match.away_team}
         </Title>
+        <Title order={4} fw="bolder">
+          {match.competition} {match.stage}
+        </Title>
+        <Title order={6}>{formatDate(match.played_on)}</Title>
       </Box>
       <Switch
         label="Readonly Mode"

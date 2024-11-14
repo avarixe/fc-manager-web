@@ -43,6 +43,7 @@ declare global {
   const PlayerKitNo: typeof import('./src/components/player/PlayerInlineFields')['PlayerKitNo']
   const PlayerOvr: typeof import('./src/components/player/PlayerInlineFields')['PlayerOvr']
   const PlayerStatus: typeof import('./src/components/player/PlayerStatus')['PlayerStatus']
+  const PlayerStatusFilter: typeof import('./src/constants/index')['PlayerStatusFilter']
   const PlayerTimeline: typeof import('./src/components/player/PlayerTimeline')['PlayerTimeline']
   const PlayerValue: typeof import('./src/components/player/PlayerInlineFields')['PlayerValue']
   const RedCardIcon: typeof import('./src/components/base/CommonIcons')['RedCardIcon']
@@ -57,6 +58,7 @@ declare global {
   const TransferInIcon: typeof import('./src/components/base/CommonIcons')['TransferInIcon']
   const TransferOutIcon: typeof import('./src/components/base/CommonIcons')['TransferOutIcon']
   const YellowCardIcon: typeof import('./src/components/base/CommonIcons')['YellowCardIcon']
+  const abbrevValue: typeof import('./src/utils/player')['abbrevValue']
   const appLoadingAtom: typeof import('./src/atoms/index')['appLoadingAtom']
   const assertDefined: typeof import('./src/utils/assert')['assertDefined']
   const assertType: typeof import('./src/utils/assert')['assertType']
@@ -78,8 +80,11 @@ declare global {
   const matchScore: typeof import('./src/utils/match')['matchScore']
   const matchScoreColor: typeof import('./src/utils/match')['matchScoreColor']
   const memo: typeof import('react')['memo']
+  const ovrColor: typeof import('./src/utils/player')['ovrColor']
   const playerOvrAt: typeof import('./src/utils/player')['playerOvrAt']
+  const playerRecordAt: typeof import('./src/utils/player')['playerRecordAt']
   const playerValueAt: typeof import('./src/utils/player')['playerValueAt']
+  const playerValueColor: typeof import('./src/utils/player')['playerValueColor']
   const positions: typeof import('./src/constants/index')['positions']
   const sessionAtom: typeof import('./src/atoms/index')['sessionAtom']
   const startTransition: typeof import('react')['startTransition']
@@ -126,6 +131,6 @@ declare global {
   export type { StateSetter } from 'src/hooks'
   import('src/hooks')
   // @ts-ignore
-  export type { MatchPosType, PlayerEventKey, PlayerEventType } from './src/constants/index'
+  export type { MatchPosType, PlayerEventKey, PlayerEventType, PlayerStatusFilter } from './src/constants/index'
   import('./src/constants/index')
 }

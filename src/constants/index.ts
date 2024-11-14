@@ -67,3 +67,12 @@ export enum PlayerEventType {
   Loan = "Loan",
   Transfer = "Transfer",
 }
+
+export enum PlayerStatusFilter {
+  All = "All",
+  Youth = "Youth",
+  Active = "Active",
+  Injured = "Injured",
+  Loaned = "Loaned",
+  Pending = "Pending",
+}

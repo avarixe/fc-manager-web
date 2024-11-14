@@ -117,6 +117,10 @@ export const PlayerOvr: React.FC<{
   const supabase = useAtomValue(supabaseAtom);
   const team = useAtomValue(teamAtom)!;
   const onChange = useCallback(async () => {
+    if (field.getValue() === player.ovr) {
+      return;
+    }
+
     const changes = { ovr: field.getValue(), history: player.history };
     changes.history[team.currently_on] = {
       ovr: changes.ovr,
@@ -136,6 +140,7 @@ export const PlayerOvr: React.FC<{
     field,
     player.history,
     player.id,
+    player.ovr,
     player.value,
     setPlayer,
     supabase,
@@ -144,7 +149,7 @@ export const PlayerOvr: React.FC<{
 
   return (
     <PlayerInlineField
-      target={player.ovr}
+      target={<Box c={ovrColor(player.ovr)}>{player.ovr}</Box>}
       input={(props) => (
         <NumberInput
           {...field.getInputProps()}
@@ -176,6 +181,10 @@ export const PlayerValue: React.FC<{
   const supabase = useAtomValue(supabaseAtom);
   const team = useAtomValue(teamAtom)!;
   const onChange = useCallback(async () => {
+    if (field.getValue() === player.value) {
+      return;
+    }
+
     const changes = { value: field.getValue(), history: player.history };
     changes.history[team.currently_on] = {
       ovr: player.ovr,
@@ -196,6 +205,7 @@ export const PlayerValue: React.FC<{
     player.history,
     player.id,
     player.ovr,
+    player.value,
     setPlayer,
     supabase,
     team.currently_on,

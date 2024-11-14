@@ -18,14 +18,16 @@ export const useTeamHelpers = (team: Tables<"teams"> | null) => {
   );
 
   const seasonLabel = useCallback(
-    (season: number) => {
+    (season: number, dense = false) => {
       if (!team) {
         return "";
       }
 
       const start = dayjs(team.started_on).add(season, "year");
       const end = start.add(1, "year");
-      return `${start.format("YYYY")} - ${end.format("YYYY")}`;
+      return dense
+        ? `${start.format("YYYY")}/${end.format("YY")}`
+        : `${start.format("YYYY")} - ${end.format("YYYY")}`;
     },
     [team],
   );

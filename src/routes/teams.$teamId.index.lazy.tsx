@@ -1,15 +1,6 @@
 import { Tables } from "@/database-generated.types";
 import { Player } from "@/types";
-import {
-  Box,
-  Button,
-  Card,
-  Group,
-  NumberFormatter,
-  Stack,
-  Table,
-  Title,
-} from "@mantine/core";
+import { Box, Button, Card, Group, Stack, Table, Title } from "@mantine/core";
 import { modals } from "@mantine/modals";
 
 type CompetitionInfo = Pick<Tables<"competitions">, "id" | "name" | "champion">;
@@ -190,9 +181,11 @@ function TeamPage() {
 
   return (
     <Stack>
-      <Title fw="lighter" mb="xl">
-        {team.name}
-      </Title>
+      <Box mb="xl">
+        <Title fw="lighter">{team.name}</Title>
+        <Title order={6}>Manager: {team.manager_name}</Title>
+        <Title order={6}>Game: {team.game}</Title>
+      </Box>
       <Group>
         <Button component={Link} to={`/teams/${team.id}/edit`}>
           Edit
@@ -326,19 +319,12 @@ function TeamPage() {
                       </Table.Td>
                       <Table.Td ta="center">{player.pos}</Table.Td>
                       <Table.Td ta="end">
-                        <NumberFormatter
-                          value={player.value}
-                          prefix={team.currency}
-                          thousandSeparator
-                        />
+                        {abbrevValue(player.value, team.currency)}
                       </Table.Td>
                       <Table.Td ta="end">
-                        {latestLoan.transfer_fee && (
-                          <NumberFormatter
-                            value={latestLoan.transfer_fee}
-                            prefix={team.currency}
-                            thousandSeparator
-                          />
+                        {abbrevValue(
+                          latestLoan.transfer_fee ?? undefined,
+                          team.currency,
                         )}
                       </Table.Td>
                     </Table.Tr>
@@ -381,19 +367,11 @@ function TeamPage() {
                       </Button>
                     </Table.Td>
                     <Table.Td ta="center">{player.pos}</Table.Td>
-                    <Table.Td ta="end">
-                      <NumberFormatter
-                        value={player.value}
-                        prefix={team.currency}
-                        thousandSeparator
-                      />
+                    <Table.Td ta="end" c={playerValueColor(player.value)}>
+                      {abbrevValue(player.value, team.currency)}
                     </Table.Td>
                     <Table.Td ta="end">
-                      <NumberFormatter
-                        value={player.wage ?? 0}
-                        prefix={team.currency}
-                        thousandSeparator
-                      />
+                      {abbrevValue(player.wage ?? 0, team.currency)}
                     </Table.Td>
                   </Table.Tr>
                 ))}

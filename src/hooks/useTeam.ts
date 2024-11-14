@@ -27,6 +27,8 @@ export const useTeam = (teamId?: string) => {
     seasonLabel,
     currentYear,
     endOfCurrentSeason,
+    startOfSeason,
+    endOfSeason,
   } = useTeamHelpers(team);
 
   return {
@@ -36,5 +38,7 @@ export const useTeam = (teamId?: string) => {
     currentSeason,
     currentYear,
     endOfCurrentSeason,
+    startOfSeason,
+    endOfSeason,
   };
 };

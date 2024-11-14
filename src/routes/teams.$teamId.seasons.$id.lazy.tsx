@@ -95,7 +95,7 @@ function SeasonPage() {
         </Button>
         <Button
           component={Link}
-          to={`/teams/${team.id}/matches/${season + 1}`}
+          to={`/teams/${team.id}/seasons/${season + 1}`}
           variant="default"
           disabled={season === currentSeason}
         >
@@ -429,21 +429,24 @@ const TransferActivity: React.FC<{
                 <BaseIcon name={item.icon.name} c={item.icon.color} />
               </Table.Td>
               <Table.Td>{item.fromTo}</Table.Td>
-              <Table.Td ta="end" c={numberCellColor(item.value)}>
+              <Table.Td ta="end" c={ledgerColor(item.value)}>
+                {item.value && item.value > 0 ? "+" : null}
                 <NumberFormatter
                   value={item.value}
                   prefix={team.currency}
                   thousandSeparator
                 />
               </Table.Td>
-              <Table.Td ta="end" c={numberCellColor(item.fee)}>
+              <Table.Td ta="end" c={ledgerColor(item.fee)}>
+                {item.fee && item.fee > 0 ? "+" : null}
                 <NumberFormatter
                   value={item.fee}
                   prefix={team.currency}
                   thousandSeparator
                 />
               </Table.Td>
-              <Table.Td ta="end" c={numberCellColor(item.netValue)}>
+              <Table.Td ta="end" c={ledgerColor(item.netValue)}>
+                {item.netValue && item.netValue > 0 ? "+" : null}
                 <NumberFormatter
                   value={item.netValue}
                   prefix={team.currency}
@@ -498,21 +501,24 @@ const TransferActivity: React.FC<{
                 </Group>
               </Box>
             </Table.Th>
-            <Table.Th ta="end" c={numberCellColor(totalValue)}>
+            <Table.Th ta="end" c={ledgerColor(totalValue)}>
+              {totalValue > 0 ? "+" : null}
               <NumberFormatter
                 value={totalValue}
                 prefix={team.currency}
                 thousandSeparator
               />
             </Table.Th>
-            <Table.Th ta="end" c={numberCellColor(totalFee)}>
+            <Table.Th ta="end" c={ledgerColor(totalFee)}>
+              {totalFee > 0 ? "+" : null}
               <NumberFormatter
                 value={totalFee}
                 prefix={team.currency}
                 thousandSeparator
               />
             </Table.Th>
-            <Table.Th ta="end" c={numberCellColor(totalNetValue)}>
+            <Table.Th ta="end" c={ledgerColor(totalNetValue)}>
+              {totalNetValue > 0 ? "+" : null}
               <NumberFormatter
                 value={totalNetValue}
                 prefix={team.currency}
@@ -526,7 +532,7 @@ const TransferActivity: React.FC<{
   );
 };
 
-function numberCellColor(value?: number) {
+function ledgerColor(value?: number) {
   if (!value) return undefined;
 
   return value < 0 ? "red" : "green";

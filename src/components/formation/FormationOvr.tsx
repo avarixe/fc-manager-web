@@ -39,7 +39,9 @@ export const FormationOvr: React.FC<{
     <Group grow>
       {[MatchPosType.DEF, MatchPosType.MID, MatchPosType.FWD].map((type) => (
         <Box ta="center" key={type}>
-          <Title>{formationOvr[type].average}</Title>
+          <Title c={ovrColor(formationOvr[type].average)}>
+            {formationOvr[type].average}
+          </Title>
           <Title order={6}>{type}</Title>
         </Box>
       ))}

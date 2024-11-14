@@ -62,6 +62,12 @@ export const AppNavbar = () => {
               label="New"
               leftSection={<BaseIcon name="i-mdi:plus-circle-outline" />}
             />
+            <NavLink
+              component={Link}
+              to={`/teams/${team.id}/players/development`}
+              label="Development"
+              leftSection={<BaseIcon name="i-mdi:trending-up" />}
+            />
           </NavLink>
           <NavLink
             label="Matches"

@@ -8,28 +8,6 @@ import {
   Tooltip,
 } from "@mantine/core";
 
-enum StatusFilter {
-  All = "All",
-  Youth = "Youth",
-  Active = "Active",
-  Injured = "Injured",
-  Loaned = "Loaned",
-  Pending = "Pending",
-}
-
-const statusFilters = [
-  { value: StatusFilter.All, icon: "i-mdi:earth", color: "blue" },
-  { value: StatusFilter.Youth, icon: "i-mdi:school", color: "cyan" },
-  { value: StatusFilter.Active, icon: "i-mdi:account-check", color: "green" },
-  { value: StatusFilter.Injured, icon: "i-mdi:ambulance", color: "pink" },
-  {
-    value: StatusFilter.Loaned,
-    icon: "i-mdi:transit-transfer",
-    color: "orange",
-  },
-  { value: StatusFilter.Pending, icon: "i-mdi:lock-clock", color: "yellow" },
-];
-
 export const Route = createLazyFileRoute("/teams/$teamId/players/")({
   component: PlayersPage,
 });
@@ -49,7 +27,7 @@ function PlayersPage() {
       desc: false,
     },
   });
-  const [statusFilter, setStatusFilter] = useState(StatusFilter.Active);
+  const [statusFilter, setStatusFilter] = useState(PlayerStatusFilter.Active);
   useEffect(() => {
     const fetchPage = async () => {
       const pageQuery = supabase
@@ -68,19 +46,19 @@ function PlayersPage() {
         .eq("team_id", teamId);
 
       switch (statusFilter) {
-        case StatusFilter.Youth:
+        case PlayerStatusFilter.Youth:
           pageQuery.eq("youth", true);
           countQuery.eq("youth", true);
           break;
-        case StatusFilter.Active:
+        case PlayerStatusFilter.Active:
           pageQuery.neq("status", null);
-          pageQuery.neq("status", StatusFilter.Pending);
+          pageQuery.neq("status", PlayerStatusFilter.Pending);
           countQuery.neq("status", null);
-          countQuery.neq("status", StatusFilter.Pending);
+          countQuery.neq("status", PlayerStatusFilter.Pending);
           break;
-        case StatusFilter.Injured:
-        case StatusFilter.Loaned:
-        case StatusFilter.Pending:
+        case PlayerStatusFilter.Injured:
+        case PlayerStatusFilter.Loaned:
+        case PlayerStatusFilter.Pending:
           pageQuery.eq("status", statusFilter);
           countQuery.eq("status", statusFilter);
           break;
@@ -127,7 +105,7 @@ function PlayersPage() {
     team?.currently_on,
   ]);
 
-  const onChangeStatusFilter = useCallback((status: StatusFilter) => {
+  const onChangeStatusFilter = useCallback((status: PlayerStatusFilter) => {
     setStatusFilter(status);
     setTableState((prev) => ({ ...prev, pageIndex: 0 }));
   }, []);
@@ -162,7 +140,7 @@ function PlayersPage() {
         meta: { sortable: true },
       }),
       columnHelper.accessor("nationality", {
-        header: () => <div className="i-mdi:flag" />,
+        header: () => <BaseIcon name="i-mdi:flag" />,
         cell: (info) => {
           const value = info.getValue();
           return value ? <PlayerFlag nationality={value} /> : null;
@@ -274,7 +252,7 @@ function PlayersPage() {
       </Group>
 
       <Group>
-        <PlayerStatusFilter
+        <StatusFilterToggle
           statusFilter={statusFilter}
           onChangeStatusFilter={onChangeStatusFilter}
         />
@@ -290,9 +268,30 @@ function PlayersPage() {
   );
 }
 
-const PlayerStatusFilter: React.FC<{
-  statusFilter: StatusFilter;
-  onChangeStatusFilter: (status: StatusFilter) => void;
+const statusFilters = [
+  { value: PlayerStatusFilter.All, icon: "i-mdi:earth", color: "blue" },
+  { value: PlayerStatusFilter.Youth, icon: "i-mdi:school", color: "cyan" },
+  {
+    value: PlayerStatusFilter.Active,
+    icon: "i-mdi:account-check",
+    color: "green",
+  },
+  { value: PlayerStatusFilter.Injured, icon: "i-mdi:ambulance", color: "pink" },
+  {
+    value: PlayerStatusFilter.Loaned,
+    icon: "i-mdi:transit-transfer",
+    color: "orange",
+  },
+  {
+    value: PlayerStatusFilter.Pending,
+    icon: "i-mdi:lock-clock",
+    color: "yellow",
+  },
+];
+
+const StatusFilterToggle: React.FC<{
+  statusFilter: PlayerStatusFilter;
+  onChangeStatusFilter: (status: PlayerStatusFilter) => void;
 }> = ({ statusFilter, onChangeStatusFilter }) => {
   return (
     <Button.Group>
