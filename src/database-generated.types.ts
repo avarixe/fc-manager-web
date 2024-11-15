@@ -144,6 +144,7 @@ export type Database = {
           goals: Json
           home_penalty_score: number | null
           home_possession: number | null
+          home_result: string | null
           home_score: number
           home_team: string
           home_xg: number | null
@@ -170,6 +171,7 @@ export type Database = {
           goals?: Json
           home_penalty_score?: number | null
           home_possession?: number | null
+          home_result?: string | null
           home_score?: number
           home_team: string
           home_xg?: number | null
@@ -196,6 +198,7 @@ export type Database = {
           goals?: Json
           home_penalty_score?: number | null
           home_possession?: number | null
+          home_result?: string | null
           home_score?: number
           home_team?: string
           home_xg?: number | null

@@ -4,6 +4,7 @@ import {
   ActionIcon,
   Box,
   Button,
+  Divider,
   Group,
   LoadingOverlay,
   Modal,
@@ -286,32 +287,58 @@ function CompetitionPage() {
           </Button>
         </Group>
       )}
-      <Accordion defaultValue={[StageType.Group, StageType.Knockout]} multiple>
-        {categories.map((category, i) => (
-          <Accordion.Item
-            key={i}
-            value={category.value}
-            hidden={category.stages.length === 0}
-          >
-            <Accordion.Control>{category.name}</Accordion.Control>
-            <Accordion.Panel>
-              {category.stages.map((stage, j) => (
-                <StageItem
-                  key={j}
-                  stage={stage}
-                  type={category.value}
-                  readonly={readonly}
-                  onChange={(newStage) =>
-                    onChangeStage(category.value, j, newStage)
-                  }
-                  onDelete={() => onDeleteStage(category.value, j)}
-                  getTeamColor={getTeamColor}
-                />
-              ))}
-            </Accordion.Panel>
-          </Accordion.Item>
-        ))}
-      </Accordion>
+
+      <Box my="lg">
+        <Title order={2}>
+          <Group>
+            <BaseIcon name="i-mdi:table" />
+            Stages
+          </Group>
+        </Title>
+        <Divider my="xs" />
+
+        <Accordion
+          defaultValue={[StageType.Group, StageType.Knockout]}
+          multiple
+        >
+          {categories.map((category, i) => (
+            <Accordion.Item
+              key={i}
+              value={category.value}
+              hidden={category.stages.length === 0}
+            >
+              <Accordion.Control>{category.name}</Accordion.Control>
+              <Accordion.Panel>
+                {category.stages.map((stage, j) => (
+                  <StageItem
+                    key={j}
+                    stage={stage}
+                    type={category.value}
+                    readonly={readonly}
+                    onChange={(newStage) =>
+                      onChangeStage(category.value, j, newStage)
+                    }
+                    onDelete={() => onDeleteStage(category.value, j)}
+                    getTeamColor={getTeamColor}
+                  />
+                ))}
+              </Accordion.Panel>
+            </Accordion.Item>
+          ))}
+        </Accordion>
+      </Box>
+
+      <Box my="lg">
+        <Title order={2}>
+          <Group>
+            <BaseIcon name="i-mdi:soccer-field" />
+            Matches
+          </Group>
+        </Title>
+        <Divider my="xs" />
+
+        <MatchTable filters={{ competition: competition.name }} />
+      </Box>
     </Stack>
   );
 }

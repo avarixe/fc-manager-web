@@ -35,6 +35,7 @@ declare global {
   const MatchFormationForm: typeof import('./src/components/match/MatchFormationForm')['MatchFormationForm']
   const MatchLineup: typeof import('./src/components/match/MatchLineup')['MatchLineup']
   const MatchPosType: typeof import('./src/constants/index')['MatchPosType']
+  const MatchTable: typeof import('./src/components/match/MatchTable')['MatchTable']
   const MatchTimeline: typeof import('./src/components/match/MatchTimeline')['MatchTimeline']
   const PenaltyShootoutForm: typeof import('./src/components/match/PenaltyShootoutForm')['PenaltyShootoutForm']
   const PlayerEventKey: typeof import('./src/constants/index')['PlayerEventKey']

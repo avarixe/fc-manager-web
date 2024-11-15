@@ -301,6 +301,7 @@ const StatusFilterToggle: React.FC<{
             component={"div"}
             color={statusFilter === filter.value ? filter.color : undefined}
             variant={statusFilter === filter.value ? "filled" : "default"}
+            size="compact-lg"
             onClick={() => onChangeStatusFilter(filter.value)}
           >
             <div className={filter.icon} />

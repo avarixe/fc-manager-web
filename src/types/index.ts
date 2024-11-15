@@ -123,3 +123,10 @@ export interface BreadcrumbItem {
   title: string;
   to: string;
 }
+
+export interface MatchFilters {
+  season?: string | null;
+  competition?: string;
+  team?: string;
+  results?: string[];
+}
