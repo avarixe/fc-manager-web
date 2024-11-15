@@ -1,5 +1,6 @@
 import { Tables } from "@/database-generated.types";
-import { Button, NavLink } from "@mantine/core";
+import { Competition } from "@/types";
+import { BoxProps, Button, NavLink } from "@mantine/core";
 
 type CompetitionItem = Pick<Tables<"competitions">, "id" | "name" | "champion">;
 
@@ -9,19 +10,6 @@ export const CompetitionList: React.FC<{
   team: Tables<"teams">;
 }> = ({ competitions, season, team }) => {
   const { seasonLabel } = useTeamHelpers(team);
-
-  const statusIcon = useCallback(
-    (competition: CompetitionItem) => {
-      if (competition.champion) {
-        return competition.champion === team.name
-          ? "i-mdi:trophy text-yellow"
-          : "i-mdi:trophy-broken text-red";
-      } else {
-        return "i-mdi:timelapse";
-      }
-    },
-    [team.name],
-  );
 
   return (
     <>
@@ -40,9 +28,26 @@ export const CompetitionList: React.FC<{
           to={`/teams/${team.id}/competitions/${competition.id}`}
           label={competition.name}
           description={competition.champion}
-          leftSection={<div className={statusIcon(competition)} />}
+          leftSection={<CompetitionStatusIcon competition={competition} />}
         />
       ))}
     </>
   );
+};
+
+export const CompetitionStatusIcon: React.FC<
+  BoxProps & {
+    competition: Pick<Competition, "champion">;
+  }
+> = ({ competition, ...rest }) => {
+  const team = useAtomValue(teamAtom)!;
+  if (competition.champion) {
+    return competition.champion === team.name ? (
+      <BaseIcon name="i-mdi:trophy" c="yellow" {...rest} />
+    ) : (
+      <BaseIcon name="i-mdi:trophy-broken" c="red.6" {...rest} />
+    );
+  } else {
+    return <BaseIcon name="i-mdi:timelapse" {...rest} />;
+  }
 };

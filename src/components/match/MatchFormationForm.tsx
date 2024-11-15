@@ -98,7 +98,7 @@ export const MatchFormationForm: React.FC<{
       }
     }
 
-    const changes: Change[] = match!.changes;
+    const changes: Change[] = [...match!.changes];
     const timestamp = new Date().valueOf();
 
     // Match by player id to prioritize position changes

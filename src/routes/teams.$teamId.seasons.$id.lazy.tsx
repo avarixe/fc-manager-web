@@ -5,12 +5,15 @@ import {
   Checkbox,
   Divider,
   Group,
+  Indicator,
   NumberFormatter,
   Stack,
   Table,
   Title,
 } from "@mantine/core";
 import { orderBy, sumBy } from "lodash-es";
+import CountUp from "react-countup";
+import { Odometer } from "odometer_countup";
 
 export const Route = createLazyFileRoute("/teams/$teamId/seasons/$id")({
   component: SeasonPage,
@@ -28,6 +31,17 @@ type PlayerData = Pick<
   | "history"
 >;
 
+interface CompetitionStat {
+  id: number;
+  name: string;
+  champion: string;
+  wins: number;
+  draws: number;
+  losses: number;
+  goals_for: number;
+  goals_against: number;
+}
+
 enum TransferActivityColor {
   TransferIn = "green",
   TransferOut = "red",
@@ -44,6 +58,7 @@ function SeasonPage() {
   const season = Number(id);
 
   const [players, setPlayers] = useState<PlayerData[]>([]);
+  const [competitions, setCompetitions] = useState<CompetitionStat[]>([]);
   const supabase = useAtomValue(supabaseAtom);
   useEffect(() => {
     const fetchPlayers = async () => {
@@ -57,7 +72,20 @@ function SeasonPage() {
         setPlayers(data);
       }
     };
+    const fetchStats = async () => {
+      const { data } = await supabase.rpc("get_competition_stats", {
+        team_id: Number(teamId),
+        season,
+        competition: null,
+      });
+      if (data) {
+        assertType<CompetitionStat[]>(data);
+        setCompetitions(data);
+      }
+    };
+
     fetchPlayers();
+    fetchStats();
   }, [season, supabase, teamId]);
 
   const setBreadcrumbs = useSetAtom(breadcrumbsAtom);
@@ -97,7 +125,7 @@ function SeasonPage() {
           component={Link}
           to={`/teams/${team.id}/seasons/${season + 1}`}
           variant="default"
-          disabled={season === currentSeason}
+          disabled={season >= currentSeason}
         >
           Next Season
         </Button>
@@ -111,7 +139,11 @@ function SeasonPage() {
           </Group>
         </Title>
         <Divider my="xs" />
-        TODO
+        <SeasonSummary
+          season={season}
+          competitions={competitions}
+          players={players}
+        />
       </Box>
 
       <Box my="lg">
@@ -122,7 +154,7 @@ function SeasonPage() {
           </Group>
         </Title>
         <Divider my="xs" />
-        TODO
+        <CompetitionSummary competitions={competitions} />
       </Box>
 
       <Box my="lg">
@@ -138,6 +170,213 @@ function SeasonPage() {
     </Stack>
   );
 }
+
+const SeasonSummary: React.FC<{
+  season: number;
+  competitions: CompetitionStat[];
+  players: PlayerData[];
+}> = ({ season, competitions, players }) => {
+  const team = useAtomValue(teamAtom)!;
+  const { startOfSeason, endOfSeason } = useTeamHelpers(team);
+  const teamStats = useMemo(() => {
+    const seasonStart = startOfSeason(season);
+    const seasonEnd = endOfSeason(season);
+
+    const stats = {
+      ovr: [0, 0],
+      value: [0, 0],
+      numPlayers: [0, 0],
+    };
+
+    for (const player of players) {
+      if (
+        player.contracts.some(
+          (contract) =>
+            contract.started_on < seasonEnd && seasonStart < contract.ended_on,
+        )
+      ) {
+        const seasonStartData = playerRecordAt(player, seasonStart);
+        const seasonEndData = playerRecordAt(player, seasonEnd);
+        stats.ovr[0] += seasonStartData?.ovr ?? 0;
+        stats.ovr[1] += seasonEndData?.ovr ?? 0;
+        stats.value[0] += seasonStartData?.value ?? 0;
+        stats.value[1] += seasonEndData?.value ?? 0;
+        if (seasonStartData) {
+          stats.numPlayers[0]++;
+        }
+        if (seasonEndData) {
+          stats.numPlayers[1]++;
+        }
+      }
+    }
+    stats.ovr[0] = Math.round(stats.ovr[0] / (stats.numPlayers[0] ?? 1));
+    stats.ovr[1] = Math.round(stats.ovr[1] / (stats.numPlayers[1] ?? 1));
+
+    return stats;
+  }, [endOfSeason, players, season, startOfSeason]);
+
+  const totalStats: CompetitionStat = competitions.reduce(
+    (total, competition) => {
+      total.wins += competition.wins;
+      total.draws += competition.draws;
+      total.losses += competition.losses;
+      total.goals_for += competition.goals_for;
+      total.goals_against += competition.goals_against;
+      return total;
+    },
+    {
+      id: 0,
+      name: "Total",
+      champion: "",
+      wins: 0,
+      draws: 0,
+      losses: 0,
+      goals_for: 0,
+      goals_against: 0,
+    },
+  );
+
+  return (
+    <Box>
+      <Group grow>
+        <Box ta="center">
+          <Title c={ledgerColor(teamStats.ovr[1] - teamStats.ovr[0])}>
+            <Indicator
+              label={
+                <Box c={ledgerColor(teamStats.ovr[1] - teamStats.ovr[0])}>
+                  <CountUp
+                    end={teamStats.ovr[1] - teamStats.ovr[0]}
+                    plugin={new Odometer({ lastDigitDelay: 0 })}
+                    prefix={teamStats.ovr[1] >= teamStats.ovr[0] ? "+" : ""}
+                  />
+                </Box>
+              }
+              color="transparent"
+              inline
+              position="top-end"
+              zIndex={1}
+            >
+              <CountUp
+                start={teamStats.ovr[0]}
+                end={teamStats.ovr[1]}
+                plugin={new Odometer({ lastDigitDelay: 0 })}
+              />
+            </Indicator>
+          </Title>
+          <Title order={6}>Overall Rating</Title>
+        </Box>
+        <Box ta="center">
+          <Title c={ledgerColor(teamStats.value[1] - teamStats.value[0])}>
+            <Indicator
+              label={
+                <Box c={ledgerColor(teamStats.value[1] - teamStats.value[0])}>
+                  <CountUp
+                    end={
+                      (100 * (teamStats.value[1] - teamStats.value[0])) /
+                      (teamStats.value[0] || 1)
+                    }
+                    plugin={new Odometer({ lastDigitDelay: 0 })}
+                    prefix={teamStats.value[1] >= teamStats.value[0] ? "+" : ""}
+                    suffix={"%"}
+                  />
+                </Box>
+              }
+              color="transparent"
+              inline
+              position="top-end"
+              zIndex={1}
+            >
+              <CountUp
+                start={teamStats.value[0]}
+                end={teamStats.value[1]}
+                plugin={new Odometer({ lastDigitDelay: 0 })}
+                prefix={team.currency}
+              />
+            </Indicator>
+          </Title>
+          <Title order={6}>Market Value</Title>
+        </Box>
+      </Group>
+      <Group grow>
+        <Box ta="center">
+          <Title>{totalStats.wins}</Title>
+          <Title order={6}>Wins</Title>
+        </Box>
+        <Box ta="center">
+          <Title>{totalStats.draws}</Title>
+          <Title order={6}>Draws</Title>
+        </Box>
+        <Box ta="center">
+          <Title>{totalStats.losses}</Title>
+          <Title order={6}>Losses</Title>
+        </Box>
+        <Box ta="center">
+          <Title>{totalStats.goals_for}</Title>
+          <Title order={6}>Goals For</Title>
+        </Box>
+        <Box ta="center">
+          <Title>{totalStats.goals_against}</Title>
+          <Title order={6}>Goals Against</Title>
+        </Box>
+      </Group>
+    </Box>
+  );
+};
+
+const CompetitionSummary: React.FC<{
+  competitions: CompetitionStat[];
+}> = ({ competitions }) => {
+  const team = useAtomValue(teamAtom)!;
+  return (
+    <Table.ScrollContainer minWidth={600}>
+      <Table highlightOnHover>
+        <Table.Thead>
+          <Table.Tr>
+            <Table.Th>Competition</Table.Th>
+            <Table.Th ta="center">Status</Table.Th>
+            <Table.Th ta="end">GP</Table.Th>
+            <Table.Th ta="end">W</Table.Th>
+            <Table.Th ta="end">D</Table.Th>
+            <Table.Th ta="end">L</Table.Th>
+            <Table.Th ta="end">GF</Table.Th>
+            <Table.Th ta="end">GA</Table.Th>
+            <Table.Th ta="end">GD</Table.Th>
+          </Table.Tr>
+        </Table.Thead>
+        <Table.Tbody>
+          {competitions.map((competition) => (
+            <Table.Tr key={competition.id}>
+              <Table.Td>
+                <Button
+                  component={Link}
+                  to={`/teams/${team.id}/competitions/${competition.id}`}
+                  variant="subtle"
+                  size="compact-xs"
+                >
+                  {competition.name}
+                </Button>
+              </Table.Td>
+              <Table.Td ta="center">
+                <CompetitionStatusIcon competition={competition} w="auto" />
+              </Table.Td>
+              <Table.Td ta="end">
+                {competition.wins + competition.draws + competition.losses}
+              </Table.Td>
+              <Table.Td ta="end">{competition.wins}</Table.Td>
+              <Table.Td ta="end">{competition.draws}</Table.Td>
+              <Table.Td ta="end">{competition.losses}</Table.Td>
+              <Table.Td ta="end">{competition.goals_for}</Table.Td>
+              <Table.Td ta="end">{competition.goals_against}</Table.Td>
+              <Table.Td ta="end">
+                {competition.goals_for - competition.goals_against}
+              </Table.Td>
+            </Table.Tr>
+          ))}
+        </Table.Tbody>
+      </Table>
+    </Table.ScrollContainer>
+  );
+};
 
 interface TransferActivityItem {
   playerId: number;

@@ -417,6 +417,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_competition_stats: {
+        Args: {
+          team_id: number
+          season: number
+          competition: string | null
+        }
+        Returns: Json
+      }
       get_player_stats: {
         Args: {
           player_ids: Json

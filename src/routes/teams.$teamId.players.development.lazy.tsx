@@ -93,7 +93,6 @@ function PlayersDevelopmentPage() {
           if (
             player.contracts.some(
               (contract) =>
-                contract.signed_on &&
                 contract.started_on < seasonEnd &&
                 seasonStart < contract.ended_on,
             )

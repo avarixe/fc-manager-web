@@ -16,6 +16,7 @@ declare global {
   const ChangeForm: typeof import('./src/components/match/ChangeForm')['ChangeForm']
   const CompetitionForm: typeof import('./src/components/competition/CompetitionForm')['CompetitionForm']
   const CompetitionList: typeof import('./src/components/competition/CompetitionList')['CompetitionList']
+  const CompetitionStatusIcon: typeof import('./src/components/competition/CompetitionList')['CompetitionStatusIcon']
   const ContractForm: typeof import('./src/components/player/ContractForm')['ContractForm']
   const ContractIcon: typeof import('./src/components/base/CommonIcons')['ContractIcon']
   const DataTable: typeof import('./src/components/base/DataTable')['DataTable']
