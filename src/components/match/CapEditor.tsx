@@ -68,7 +68,7 @@ export const CapEditor: React.FC<{
       width={300}
       trapFocus
       withArrow
-      position="bottom-start"
+      position="bottom"
       arrowPosition="side"
       disabled={readonly}
     >

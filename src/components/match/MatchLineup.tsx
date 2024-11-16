@@ -2,6 +2,7 @@ import { Cap, Player } from "@/types";
 import {
   ActionIcon,
   Box,
+  Button,
   Group,
   Indicator,
   NavLink,
@@ -32,25 +33,32 @@ export const MatchLineup: React.FC<{
         Players
       </MText>
       {sortedCaps.map((cap) => (
-        <CapEditor
+        <NavLink
           key={cap.id}
-          cap={cap}
-          readonly={readonly}
-          playerOptions={playerOptions}
-          target={
-            <NavLink
-              label={<MatchLineupStats cap={cap} />}
-              leftSection={
-                <Box w={40} fw={700}>
-                  {cap.pos}
-                </Box>
-              }
-              rightSection={<CapRating cap={cap} readonly={readonly} />}
-              classNames={{
-                body: "overflow-visible",
-              }}
-            />
+          label={
+            <Group>
+              <CapEditor
+                cap={cap}
+                readonly={readonly}
+                playerOptions={playerOptions}
+                target={
+                  <Button size="compact-sm" variant="transparent" color="gray">
+                    {cap.players.name}
+                  </Button>
+                }
+              />
+              <MatchLineupStats cap={cap} />
+            </Group>
           }
+          leftSection={
+            <Box w={40} fw={700}>
+              {cap.pos}
+            </Box>
+          }
+          rightSection={<CapRating cap={cap} readonly={readonly} />}
+          classNames={{
+            body: "overflow-visible",
+          }}
         />
       ))}
       <MText pl="xs" size="sm" mt="xs" className="opacity-60">
@@ -155,7 +163,6 @@ const CapRating: React.FC<{
 
 const MatchLineupStats: React.FC<{ cap: Cap }> = ({ cap }) => {
   const {
-    playerName,
     startMinute,
     stopMinute,
     numGoals,
@@ -169,7 +176,6 @@ const MatchLineupStats: React.FC<{ cap: Cap }> = ({ cap }) => {
 
   return (
     <Group gap="xs">
-      <MText component="span">{playerName}</MText>
       {startMinute > 0 && (
         <Indicator
           label={startMinute}

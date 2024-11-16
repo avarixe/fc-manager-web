@@ -192,21 +192,26 @@ const SeasonSummary: React.FC<{
       if (
         player.contracts.some(
           (contract) =>
-            contract.started_on < seasonEnd && seasonStart < contract.ended_on,
+            contract.started_on <= seasonStart &&
+            seasonStart < contract.ended_on,
         )
       ) {
         const seasonStartData = playerRecordAt(player, seasonStart);
-        const seasonEndData = playerRecordAt(player, seasonEnd);
         stats.ovr[0] += seasonStartData?.ovr ?? 0;
-        stats.ovr[1] += seasonEndData?.ovr ?? 0;
         stats.value[0] += seasonStartData?.value ?? 0;
+        stats.numPlayers[0]++;
+      }
+
+      if (
+        player.contracts.some(
+          (contract) =>
+            contract.started_on <= seasonEnd && seasonEnd < contract.ended_on,
+        )
+      ) {
+        const seasonEndData = playerRecordAt(player, seasonEnd);
+        stats.ovr[1] += seasonEndData?.ovr ?? 0;
         stats.value[1] += seasonEndData?.value ?? 0;
-        if (seasonStartData) {
-          stats.numPlayers[0]++;
-        }
-        if (seasonEndData) {
-          stats.numPlayers[1]++;
-        }
+        stats.numPlayers[1]++;
       }
     }
     stats.ovr[0] = Math.round(stats.ovr[0] / (stats.numPlayers[0] ?? 1));
