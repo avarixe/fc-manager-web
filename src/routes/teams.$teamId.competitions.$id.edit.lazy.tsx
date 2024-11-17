@@ -1,4 +1,4 @@
-import { Tables } from "@/database-generated.types";
+import { Competition } from "@/types";
 import { Stack, Title } from "@mantine/core";
 
 export const Route = createLazyFileRoute(
@@ -11,9 +11,7 @@ function EditCompetitionPage() {
   const { id, teamId } = Route.useParams();
   const { team } = useTeam(teamId);
 
-  const [competition, setCompetition] = useState<Tables<"competitions"> | null>(
-    null,
-  );
+  const [competition, setCompetition] = useAtom(competitionAtom);
   const supabase = useAtomValue(supabaseAtom);
   useEffect(() => {
     const fetchCompetition = async () => {
@@ -26,12 +24,13 @@ function EditCompetitionPage() {
       if (error) {
         console.error(error);
       } else {
+        assertType<Competition>(data);
         setCompetition(data);
       }
     };
 
     fetchCompetition();
-  }, [id, supabase, teamId]);
+  }, [id, setCompetition, supabase, teamId]);
 
   const setBreadcrumbs = useSetAtom(breadcrumbsAtom);
   useEffect(() => {

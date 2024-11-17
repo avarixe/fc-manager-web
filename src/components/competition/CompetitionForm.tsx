@@ -61,6 +61,8 @@ export function CompetitionForm({
     fetchCompetitions();
   }, [form.values.season, supabase, team.id]);
 
+  const { championOptions } = useCompetitionHelpers();
+
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>
       <TextInput
@@ -79,9 +81,10 @@ export function CompetitionForm({
       />
       {record && (
         <TeamAutocomplete
+          {...form.getInputProps("champion")}
+          data={championOptions}
           label="Champion"
           mb="xs"
-          {...form.getInputProps("champion")}
         />
       )}
       <Button mt="xl" type="submit">

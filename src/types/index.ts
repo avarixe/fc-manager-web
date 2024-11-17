@@ -109,6 +109,10 @@ export interface Competition extends Tables<"competitions"> {
   }[];
 }
 
+export type Stage = Competition["stages"][number];
+export type StageTableRowData = Stage["table"][number];
+export type StageFixtureData = Stage["fixtures"][number];
+
 export interface Squad extends Tables<"squads"> {
   formation: Record<string, number>;
 }
