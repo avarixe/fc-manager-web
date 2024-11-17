@@ -97,21 +97,25 @@ export const useCompetitionHelpers = () => {
 
   const teamsFromPrevousStage = useCallback(
     (knockoutStageIndex: number) => {
-      if (knockoutStageIndex > 0) {
-        return knockoutStageAdvances(knockoutStageIndex - 1);
-      } else {
-        return groupStageAdvances(2);
-      }
+      return [
+        ...new Set(
+          knockoutStageIndex > 0
+            ? knockoutStageAdvances(knockoutStageIndex - 1)
+            : groupStageAdvances(2),
+        ),
+      ];
     },
     [groupStageAdvances, knockoutStageAdvances],
   );
 
   const championOptions = useMemo(() => {
-    if (knockoutStages.length > 0) {
-      return knockoutStageAdvances(knockoutStages.length - 1);
-    } else {
-      return groupStageAdvances(1);
-    }
+    return [
+      ...new Set(
+        knockoutStages.length > 0
+          ? knockoutStageAdvances(knockoutStages.length - 1)
+          : groupStageAdvances(1),
+      ),
+    ];
   }, [groupStageAdvances, knockoutStageAdvances, knockoutStages.length]);
 
   return {
