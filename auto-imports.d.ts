@@ -89,6 +89,7 @@ declare global {
   const playerValueAt: typeof import('./src/utils/player')['playerValueAt']
   const playerValueColor: typeof import('./src/utils/player')['playerValueColor']
   const positions: typeof import('./src/constants/index')['positions']
+  const ratingColor: typeof import('./src/utils/match')['ratingColor']
   const sessionAtom: typeof import('./src/atoms/index')['sessionAtom']
   const startTransition: typeof import('react')['startTransition']
   const supabaseAtom: typeof import('./src/atoms/index')['supabaseAtom']

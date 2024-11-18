@@ -32,10 +32,10 @@ interface PlayerRow extends PlayerData {
 }
 
 export const Route = createLazyFileRoute("/teams/$teamId/players/development")({
-  component: PlayersDevelopmentPage,
+  component: PlayerDevelopmentPage,
 });
 
-function PlayersDevelopmentPage() {
+function PlayerDevelopmentPage() {
   const { teamId } = Route.useParams();
   const { team, currentSeason, seasonLabel, startOfSeason, endOfSeason } =
     useTeam(teamId);

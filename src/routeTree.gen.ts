@@ -37,6 +37,9 @@ const TeamsTeamIdCompetitionsIndexLazyImport = createFileRoute(
 const TeamsTeamIdSeasonsIdLazyImport = createFileRoute(
   '/teams/$teamId/seasons/$id',
 )()
+const TeamsTeamIdPlayersStatisticsLazyImport = createFileRoute(
+  '/teams/$teamId/players/statistics',
+)()
 const TeamsTeamIdPlayersNewLazyImport = createFileRoute(
   '/teams/$teamId/players/new',
 )()
@@ -145,6 +148,16 @@ const TeamsTeamIdSeasonsIdLazyRoute = TeamsTeamIdSeasonsIdLazyImport.update({
 } as any).lazy(() =>
   import('./routes/teams.$teamId.seasons.$id.lazy').then((d) => d.Route),
 )
+
+const TeamsTeamIdPlayersStatisticsLazyRoute =
+  TeamsTeamIdPlayersStatisticsLazyImport.update({
+    path: '/teams/$teamId/players/statistics',
+    getParentRoute: () => rootRoute,
+  } as any).lazy(() =>
+    import('./routes/teams.$teamId.players.statistics.lazy').then(
+      (d) => d.Route,
+    ),
+  )
 
 const TeamsTeamIdPlayersNewLazyRoute = TeamsTeamIdPlayersNewLazyImport.update({
   path: '/teams/$teamId/players/new',
@@ -308,6 +321,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TeamsTeamIdPlayersNewLazyImport
       parentRoute: typeof rootRoute
     }
+    '/teams/$teamId/players/statistics': {
+      id: '/teams/$teamId/players/statistics'
+      path: '/teams/$teamId/players/statistics'
+      fullPath: '/teams/$teamId/players/statistics'
+      preLoaderRoute: typeof TeamsTeamIdPlayersStatisticsLazyImport
+      parentRoute: typeof rootRoute
+    }
     '/teams/$teamId/seasons/$id': {
       id: '/teams/$teamId/seasons/$id'
       path: '/teams/$teamId/seasons/$id'
@@ -401,6 +421,7 @@ export interface FileRoutesByFullPath {
   '/teams/$teamId/matches/new': typeof TeamsTeamIdMatchesNewLazyRoute
   '/teams/$teamId/players/development': typeof TeamsTeamIdPlayersDevelopmentLazyRoute
   '/teams/$teamId/players/new': typeof TeamsTeamIdPlayersNewLazyRoute
+  '/teams/$teamId/players/statistics': typeof TeamsTeamIdPlayersStatisticsLazyRoute
   '/teams/$teamId/seasons/$id': typeof TeamsTeamIdSeasonsIdLazyRoute
   '/teams/$teamId/competitions': typeof TeamsTeamIdCompetitionsIndexLazyRoute
   '/teams/$teamId/matches': typeof TeamsTeamIdMatchesIndexLazyRoute
@@ -425,6 +446,7 @@ export interface FileRoutesByTo {
   '/teams/$teamId/matches/new': typeof TeamsTeamIdMatchesNewLazyRoute
   '/teams/$teamId/players/development': typeof TeamsTeamIdPlayersDevelopmentLazyRoute
   '/teams/$teamId/players/new': typeof TeamsTeamIdPlayersNewLazyRoute
+  '/teams/$teamId/players/statistics': typeof TeamsTeamIdPlayersStatisticsLazyRoute
   '/teams/$teamId/seasons/$id': typeof TeamsTeamIdSeasonsIdLazyRoute
   '/teams/$teamId/competitions': typeof TeamsTeamIdCompetitionsIndexLazyRoute
   '/teams/$teamId/matches': typeof TeamsTeamIdMatchesIndexLazyRoute
@@ -450,6 +472,7 @@ export interface FileRoutesById {
   '/teams/$teamId/matches/new': typeof TeamsTeamIdMatchesNewLazyRoute
   '/teams/$teamId/players/development': typeof TeamsTeamIdPlayersDevelopmentLazyRoute
   '/teams/$teamId/players/new': typeof TeamsTeamIdPlayersNewLazyRoute
+  '/teams/$teamId/players/statistics': typeof TeamsTeamIdPlayersStatisticsLazyRoute
   '/teams/$teamId/seasons/$id': typeof TeamsTeamIdSeasonsIdLazyRoute
   '/teams/$teamId/competitions/': typeof TeamsTeamIdCompetitionsIndexLazyRoute
   '/teams/$teamId/matches/': typeof TeamsTeamIdMatchesIndexLazyRoute
@@ -476,6 +499,7 @@ export interface FileRouteTypes {
     | '/teams/$teamId/matches/new'
     | '/teams/$teamId/players/development'
     | '/teams/$teamId/players/new'
+    | '/teams/$teamId/players/statistics'
     | '/teams/$teamId/seasons/$id'
     | '/teams/$teamId/competitions'
     | '/teams/$teamId/matches'
@@ -499,6 +523,7 @@ export interface FileRouteTypes {
     | '/teams/$teamId/matches/new'
     | '/teams/$teamId/players/development'
     | '/teams/$teamId/players/new'
+    | '/teams/$teamId/players/statistics'
     | '/teams/$teamId/seasons/$id'
     | '/teams/$teamId/competitions'
     | '/teams/$teamId/matches'
@@ -522,6 +547,7 @@ export interface FileRouteTypes {
     | '/teams/$teamId/matches/new'
     | '/teams/$teamId/players/development'
     | '/teams/$teamId/players/new'
+    | '/teams/$teamId/players/statistics'
     | '/teams/$teamId/seasons/$id'
     | '/teams/$teamId/competitions/'
     | '/teams/$teamId/matches/'
@@ -547,6 +573,7 @@ export interface RootRouteChildren {
   TeamsTeamIdMatchesNewLazyRoute: typeof TeamsTeamIdMatchesNewLazyRoute
   TeamsTeamIdPlayersDevelopmentLazyRoute: typeof TeamsTeamIdPlayersDevelopmentLazyRoute
   TeamsTeamIdPlayersNewLazyRoute: typeof TeamsTeamIdPlayersNewLazyRoute
+  TeamsTeamIdPlayersStatisticsLazyRoute: typeof TeamsTeamIdPlayersStatisticsLazyRoute
   TeamsTeamIdSeasonsIdLazyRoute: typeof TeamsTeamIdSeasonsIdLazyRoute
   TeamsTeamIdCompetitionsIndexLazyRoute: typeof TeamsTeamIdCompetitionsIndexLazyRoute
   TeamsTeamIdMatchesIndexLazyRoute: typeof TeamsTeamIdMatchesIndexLazyRoute
@@ -572,6 +599,7 @@ const rootRouteChildren: RootRouteChildren = {
   TeamsTeamIdPlayersDevelopmentLazyRoute:
     TeamsTeamIdPlayersDevelopmentLazyRoute,
   TeamsTeamIdPlayersNewLazyRoute: TeamsTeamIdPlayersNewLazyRoute,
+  TeamsTeamIdPlayersStatisticsLazyRoute: TeamsTeamIdPlayersStatisticsLazyRoute,
   TeamsTeamIdSeasonsIdLazyRoute: TeamsTeamIdSeasonsIdLazyRoute,
   TeamsTeamIdCompetitionsIndexLazyRoute: TeamsTeamIdCompetitionsIndexLazyRoute,
   TeamsTeamIdMatchesIndexLazyRoute: TeamsTeamIdMatchesIndexLazyRoute,
@@ -609,6 +637,7 @@ export const routeTree = rootRoute
         "/teams/$teamId/matches/new",
         "/teams/$teamId/players/development",
         "/teams/$teamId/players/new",
+        "/teams/$teamId/players/statistics",
         "/teams/$teamId/seasons/$id",
         "/teams/$teamId/competitions/",
         "/teams/$teamId/matches/",
@@ -651,6 +680,9 @@ export const routeTree = rootRoute
     },
     "/teams/$teamId/players/new": {
       "filePath": "teams.$teamId.players.new.lazy.tsx"
+    },
+    "/teams/$teamId/players/statistics": {
+      "filePath": "teams.$teamId.players.statistics.lazy.tsx"
     },
     "/teams/$teamId/seasons/$id": {
       "filePath": "teams.$teamId.seasons.$id.lazy.tsx"

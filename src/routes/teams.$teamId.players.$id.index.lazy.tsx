@@ -16,6 +16,7 @@ import {
 } from "@mantine/charts";
 import { Player } from "@/types";
 import { modals } from "@mantine/modals";
+import { round } from "lodash-es";
 
 export const Route = createLazyFileRoute("/teams/$teamId/players/$id/")({
   component: PlayerPage,
@@ -23,6 +24,7 @@ export const Route = createLazyFileRoute("/teams/$teamId/players/$id/")({
 
 interface PlayerStats {
   num_matches: number;
+  num_minutes: number;
   num_clean_sheets: number;
   num_goals: number;
   num_assists: number;
@@ -63,13 +65,25 @@ function PlayerPage() {
       });
       if (data) {
         assertType<PlayerStats[]>(data);
-        setStats({
-          numMatches: data[0].num_matches,
-          numCleanSheets: data[0].num_clean_sheets,
-          numGoals: data[0].num_goals,
-          numAssists: data[0].num_assists,
-          avgRating: data[0].avg_rating,
+        let numMinutes = 0;
+        const totalStats = {
+          numMatches: 0,
+          numCleanSheets: 0,
+          numGoals: 0,
+          numAssists: 0,
+          avgRating: 0,
+        };
+        data.forEach((playerStats) => {
+          totalStats.numMatches += playerStats.num_matches;
+          totalStats.numCleanSheets += playerStats.num_clean_sheets;
+          totalStats.numGoals += playerStats.num_goals;
+          totalStats.numAssists += playerStats.num_assists;
+          totalStats.avgRating +=
+            playerStats.avg_rating * playerStats.num_minutes;
+          numMinutes += playerStats.num_minutes;
         });
+        totalStats.avgRating /= numMinutes || 1;
+        setStats(totalStats);
       }
     };
 
@@ -238,7 +252,7 @@ function PlayerPage() {
             <Title order={6}>Assists</Title>
           </Box>
           <Box ta="center">
-            <Title>{stats.avgRating?.toFixed(2) ?? 0}</Title>
+            <Title>{round(stats.avgRating ?? 0, 2).toFixed(2)}</Title>
             <Title order={6}>Rating</Title>
           </Box>
         </Group>

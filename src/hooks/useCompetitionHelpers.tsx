@@ -1,4 +1,4 @@
-import { Competition } from "@/types";
+import { StageFixtureData } from "@/types";
 import { orderBy } from "lodash-es";
 
 export const useCompetitionHelpers = () => {
@@ -33,35 +33,32 @@ export const useCompetitionHelpers = () => {
     [competition, team],
   );
 
-  const scoreDiff = useCallback(
-    (fixture: Competition["stages"][number]["fixtures"][number]) => {
-      let homeScore = 0;
-      let awayScore = 0;
+  const scoreDiff = useCallback((fixture: StageFixtureData) => {
+    let homeScore = 0;
+    let awayScore = 0;
 
-      const scoreRegex = /^(\d+)(?: \((\d+)\))?$/;
-      fixture.legs.forEach((leg) => {
-        if (!leg.home_score || !leg.away_score) {
-          return;
-        }
+    const scoreRegex = /^(\d+)(?: \((\d+)\))?$/;
+    fixture.legs.forEach((leg) => {
+      if (!leg.home_score || !leg.away_score) {
+        return;
+      }
 
-        const [, homeLegScore, homePenScore] =
-          scoreRegex.exec(leg.home_score) || [];
-        const [, awayLegScore, awayPenScore] =
-          scoreRegex.exec(leg.away_score) || [];
+      const [, homeLegScore, homePenScore] =
+        scoreRegex.exec(leg.home_score) || [];
+      const [, awayLegScore, awayPenScore] =
+        scoreRegex.exec(leg.away_score) || [];
 
-        if (homePenScore && awayPenScore) {
-          homeScore = parseInt(homePenScore);
-          awayScore = parseInt(awayPenScore);
-        } else {
-          homeScore += parseInt(homeLegScore);
-          awayScore += parseInt(awayLegScore);
-        }
-      });
+      if (homePenScore && awayPenScore) {
+        homeScore = parseInt(homePenScore);
+        awayScore = parseInt(awayPenScore);
+      } else {
+        homeScore += parseInt(homeLegScore);
+        awayScore += parseInt(awayLegScore);
+      }
+    });
 
-      return homeScore - awayScore;
-    },
-    [],
-  );
+    return homeScore - awayScore;
+  }, []);
 
   const groupStageAdvances = useCallback(
     (numAdvancesPerGroup: number) => {

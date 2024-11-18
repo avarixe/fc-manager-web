@@ -49,3 +49,27 @@ export function matchScoreColor(
     }
   }
 }
+
+export function ratingColor(rating: number) {
+  if (rating >= 90) {
+    return "green.8";
+  } else if (rating >= 4.5) {
+    return "green.6";
+  } else if (rating >= 4.0) {
+    return "green";
+  } else if (rating >= 3.5) {
+    return "lime.2";
+  } else if (rating >= 3) {
+    return "yellow";
+  } else if (rating >= 2.7) {
+    return "orange.2";
+  } else if (rating >= 2.3) {
+    return "orange";
+  } else if (rating >= 2) {
+    return "orange.6";
+  } else if (rating >= 1.5) {
+    return "red";
+  } else {
+    return "red.6";
+  }
+}
