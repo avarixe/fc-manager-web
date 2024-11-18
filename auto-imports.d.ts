@@ -30,6 +30,7 @@ declare global {
   const Link: typeof import('@tanstack/react-router')['Link']
   const LoanForm: typeof import('./src/components/player/LoanForm')['LoanForm']
   const LoanIcon: typeof import('./src/components/base/CommonIcons')['LoanIcon']
+  const LocalDataTable: typeof import('./src/components/base/LocalDataTable')['LocalDataTable']
   const MText: typeof import('@mantine/core')['Text']
   const MatchForm: typeof import('./src/components/match/MatchForm')['MatchForm']
   const MatchFormationForm: typeof import('./src/components/match/MatchFormationForm')['MatchFormationForm']

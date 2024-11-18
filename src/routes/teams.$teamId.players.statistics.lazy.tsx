@@ -5,7 +5,6 @@ import {
   Group,
   Select,
   Stack,
-  Table,
   Title,
   Tooltip,
 } from "@mantine/core";
@@ -13,7 +12,7 @@ import { groupBy, round } from "lodash-es";
 
 type PlayerData = Pick<
   Player,
-  "id" | "name" | "nationality" | "status" | "pos" | "youth"
+  "id" | "name" | "nationality" | "status" | "pos" | "pos_order" | "youth"
 >;
 
 interface PlayerStats {
@@ -28,9 +27,8 @@ interface PlayerStats {
   avg_rating: number;
 }
 
-interface PlayerRow extends Omit<PlayerStats, "player_id"> {
-  id: string;
-  player: PlayerData;
+interface PlayerRow extends Omit<PlayerStats, "player_id">, PlayerData {
+  key: string;
   xg: number;
   xa: number;
   xg_and_xa: number;
@@ -51,7 +49,7 @@ function PlayerStatisticsPage() {
     const fetchPlayers = async () => {
       const { data } = await supabase
         .from("players")
-        .select("id, name, nationality, status, pos, youth")
+        .select("id, name, nationality, status, pos, pos_order, youth")
         .eq("team_id", teamId)
         .order("pos_order");
       assertType<PlayerData[]>(data);
@@ -138,8 +136,8 @@ function PlayerStatisticsPage() {
 
       for (const key in splitStats) {
         const row: PlayerRow = {
-          id: key,
-          player,
+          key,
+          ...player,
           season: splitStats[key][0].season,
           competition: splitStats[key][0].competition,
           num_matches: 0,
@@ -180,6 +178,118 @@ function PlayerStatisticsPage() {
     statsByPlayerId,
     statusFilter,
   ]);
+
+  const columnHelper = createColumnHelper<PlayerRow>();
+  const columns = useMemo(() => {
+    const accessors = [
+      columnHelper.accessor("name", {
+        header: "Player",
+        cell: (info) => {
+          const value = info.getValue();
+          return (
+            <Button
+              component={Link}
+              to={`/teams/${teamId}/players/${info.row.original.id}`}
+              variant="subtle"
+              size="compact-xs"
+            >
+              {value}
+            </Button>
+          );
+        },
+        meta: { sortable: true },
+      }),
+      columnHelper.accessor("nationality", {
+        header: () => <BaseIcon name="i-mdi:flag" />,
+        cell: (info) => {
+          const value = info.row.original.nationality;
+          return value ? <PlayerFlag nationality={value} /> : null;
+        },
+        meta: { align: "center", sortable: true },
+      }),
+      columnHelper.accessor("pos", {
+        header: "Pos",
+        sortingFn: (a, b) => {
+          return (a.original.pos_order ?? 0) - (b.original.pos_order ?? 0);
+        },
+        meta: { align: "center", sortable: true },
+      }),
+      columnHelper.accessor("season", {
+        header: "Season",
+        cell: (info) => {
+          const value = info.getValue();
+          return seasonLabel(value);
+        },
+        meta: { align: "center", sortable: true },
+      }),
+      columnHelper.accessor("competition", {
+        header: "Competition",
+        meta: { align: "center", sortable: true },
+      }),
+      columnHelper.accessor("num_matches", {
+        header: "GP",
+        meta: { align: "end", sortable: true },
+      }),
+      columnHelper.accessor("num_minutes", {
+        header: "Minutes",
+        meta: { align: "end", sortable: true },
+      }),
+      columnHelper.accessor("num_goals", {
+        header: "G",
+        meta: { align: "end", sortable: true },
+      }),
+      columnHelper.accessor("num_assists", {
+        header: "A",
+        meta: { align: "end", sortable: true },
+      }),
+      columnHelper.accessor("num_clean_sheets", {
+        header: "CS",
+        meta: { align: "end", sortable: true },
+      }),
+      columnHelper.accessor("avg_rating", {
+        header: "Rating",
+        cell: (info) => {
+          const value = info.getValue();
+          return (
+            <MText c={ratingColor(value)}>{round(value, 2).toFixed(2)}</MText>
+          );
+        },
+        meta: { align: "center", sortable: true },
+      }),
+      columnHelper.accessor("xg_and_xa", {
+        header: "xG + xA",
+        cell: (info) => {
+          const value = info.getValue();
+          return round(value, 2).toFixed(2);
+        },
+        meta: { align: "center", sortable: true },
+      }),
+      columnHelper.accessor("xg", {
+        header: "xG",
+        cell: (info) => {
+          const value = info.getValue();
+          return round(value, 2).toFixed(2);
+        },
+        meta: { align: "center", sortable: true },
+      }),
+      columnHelper.accessor("xa", {
+        header: "xA",
+        cell: (info) => {
+          const value = info.getValue();
+          return round(value, 2).toFixed(2);
+        },
+        meta: { align: "center", sortable: true },
+      }),
+    ];
+    if (!splitByCompetition) {
+      accessors.splice(4, 1);
+    }
+    if (!splitBySeason) {
+      accessors.splice(3, 1);
+    }
+
+    return accessors;
+  }, [columnHelper, seasonLabel, splitByCompetition, splitBySeason, teamId]);
 
   const setBreadcrumbs = useSetAtom(breadcrumbsAtom);
   useEffect(() => {
@@ -243,69 +353,7 @@ function PlayerStatisticsPage() {
         </Stack>
       </Group>
 
-      <Table.ScrollContainer minWidth={600}>
-        <Table highlightOnHover>
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th>Player</Table.Th>
-              <Table.Th ta="center">
-                <BaseIcon name="i-mdi:flag" w="auto" />
-              </Table.Th>
-              <Table.Th ta="center">Pos</Table.Th>
-              {splitBySeason && <Table.Th>Season</Table.Th>}
-              {splitByCompetition && <Table.Th>Competition</Table.Th>}
-              <Table.Th ta="end">GP</Table.Th>
-              <Table.Th ta="end">Minutes</Table.Th>
-              <Table.Th ta="end">G</Table.Th>
-              <Table.Th ta="end">A</Table.Th>
-              <Table.Th ta="end">CS</Table.Th>
-              <Table.Th ta="center">Rating</Table.Th>
-              <Table.Th ta="center">xG + xA</Table.Th>
-              <Table.Th ta="center">xG</Table.Th>
-              <Table.Th ta="center">xA</Table.Th>
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>
-            {items.map((item) => (
-              <Table.Tr key={item.id}>
-                <Table.Td>
-                  <Button
-                    component={Link}
-                    to={`/teams/${team.id}/players/${item.player.id}`}
-                    variant="subtle"
-                    size="compact-xs"
-                  >
-                    {item.player.name}
-                  </Button>
-                </Table.Td>
-                <Table.Td ta="center">
-                  {item.player.nationality && (
-                    <PlayerFlag nationality={item.player.nationality} />
-                  )}
-                </Table.Td>
-                <Table.Td ta="center">{item.player.pos}</Table.Td>
-                {splitBySeason && (
-                  <Table.Td>{seasonLabel(item.season)}</Table.Td>
-                )}
-                {splitByCompetition && <Table.Td>{item.competition}</Table.Td>}
-                <Table.Td ta="end">{item.num_matches}</Table.Td>
-                <Table.Td ta="end">{item.num_minutes}</Table.Td>
-                <Table.Td ta="end">{item.num_goals}</Table.Td>
-                <Table.Td ta="end">{item.num_assists}</Table.Td>
-                <Table.Td ta="end">{item.num_clean_sheets}</Table.Td>
-                <Table.Td ta="center" c={ratingColor(item.avg_rating)}>
-                  {round(item.avg_rating, 2).toFixed(2)}
-                </Table.Td>
-                <Table.Td ta="center">
-                  {round(item.xg_and_xa, 2).toFixed(2)}
-                </Table.Td>
-                <Table.Td ta="center">{round(item.xg, 2).toFixed(2)}</Table.Td>
-                <Table.Td ta="center">{round(item.xa, 2).toFixed(2)}</Table.Td>
-              </Table.Tr>
-            ))}
-          </Table.Tbody>
-        </Table>
-      </Table.ScrollContainer>
+      <LocalDataTable data={items} columns={columns} sortBy="pos" />
     </Stack>
   );
 }

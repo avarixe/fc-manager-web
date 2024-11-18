@@ -4,7 +4,6 @@ import {
   Group,
   SegmentedControl,
   Stack,
-  Table,
   Title,
   Tooltip,
 } from "@mantine/core";
@@ -16,6 +15,7 @@ type PlayerData = Pick<
   | "nationality"
   | "status"
   | "pos"
+  | "pos_order"
   | "ovr"
   | "value"
   | "history"
@@ -47,7 +47,7 @@ function PlayerDevelopmentPage() {
       const { data } = await supabase
         .from("players")
         .select(
-          "id, name, nationality, status, pos, ovr, value, history, contracts, youth",
+          "id, name, nationality, status, pos, pos_order, ovr, value, history, contracts, youth",
         )
         .eq("team_id", teamId)
         .order("pos_order");
@@ -121,6 +121,143 @@ function PlayerDevelopmentPage() {
 
   const [dataType, setDataType] = useState("ovr");
 
+  const columnHelper = createColumnHelper<PlayerRow>();
+  const columns = useMemo(() => {
+    const accessors = [
+      columnHelper.accessor("name", {
+        header: "Player",
+        cell: (info) => {
+          const value = info.getValue();
+          return (
+            <Button
+              component={Link}
+              to={`/teams/${teamId}/players/${info.row.original.id}`}
+              variant="subtle"
+              size="compact-xs"
+            >
+              {value}
+            </Button>
+          );
+        },
+        meta: { sortable: true },
+      }),
+      columnHelper.accessor("nationality", {
+        header: () => <BaseIcon name="i-mdi:flag" />,
+        cell: (info) => {
+          const value = info.row.original.nationality;
+          return value ? <PlayerFlag nationality={value} /> : null;
+        },
+        meta: { align: "center", sortable: true },
+      }),
+      columnHelper.accessor("pos", {
+        header: "Pos",
+        sortingFn: (a, b) => {
+          return (a.original.pos_order ?? 0) - (b.original.pos_order ?? 0);
+        },
+        meta: { align: "center", sortable: true },
+      }),
+      columnHelper.accessor("total.ovr", {
+        header: "Change",
+        cell: (info) => {
+          const value = info.getValue();
+          return (
+            <MText
+              c={statDiffColor(
+                "ovr",
+                value / (info.row.original.numSeasons || 1),
+              )}
+            >
+              {value > 0 ? "+" : null}
+              {value}
+            </MText>
+          );
+        },
+        meta: { align: "end", sortable: true },
+      }),
+      columnHelper.accessor("start.ovr", {
+        header: "Start",
+        cell: (info) => {
+          const value = info.getValue();
+          return <MText c={ovrColor(value)}>{value}</MText>;
+        },
+        meta: { align: "end", sortable: true },
+      }),
+      ...seasons.map((season) =>
+        columnHelper.accessor(() => `seasons.${season}.ovr`, {
+          header: seasonLabel(season, true),
+          sortingFn: (a, b) => {
+            return (
+              (a.original.seasons[season]?.ovr || 0) -
+              (b.original.seasons[season]?.ovr || 0)
+            );
+          },
+          cell: (info) => {
+            const value = info.row.original.seasons[season]?.ovr;
+            return (
+              <MText c={value ? ovrColor(value) : undefined}>{value}</MText>
+            );
+          },
+          meta: { sortable: true, align: "end" },
+        }),
+      ),
+      columnHelper.accessor("total.value", {
+        header: "Change",
+        cell: (info) => {
+          const value = info.getValue();
+          return (
+            <MText
+              c={statDiffColor("value", value / info.row.original.start.value)}
+            >
+              {value > 0 ? "+" : null}
+              {abbrevValue(value, team?.currency)}
+            </MText>
+          );
+        },
+        meta: { align: "end", sortable: true },
+      }),
+      columnHelper.accessor("start.value", {
+        header: "Start",
+        cell: (info) => {
+          const value = info.getValue();
+          return (
+            <MText c={playerValueColor(value)}>
+              {abbrevValue(value, team?.currency)}
+            </MText>
+          );
+        },
+        meta: { align: "end", sortable: true },
+      }),
+      ...seasons.map((season) =>
+        columnHelper.accessor(() => `seasons.${season}.value`, {
+          header: seasonLabel(season, true),
+          sortingFn: (a, b) => {
+            return (
+              (a.original.seasons[season]?.value || 0) -
+              (b.original.seasons[season]?.value || 0)
+            );
+          },
+          cell: (info) => {
+            const value = info.row.original.seasons[season]?.value;
+            return (
+              <MText c={value ? playerValueColor(value) : undefined}>
+                {abbrevValue(value, team?.currency)}
+              </MText>
+            );
+          },
+          meta: { sortable: true, align: "end" },
+        }),
+      ),
+    ];
+
+    if (dataType === "value") {
+      accessors.splice(3, 2 + seasons.length);
+    } else {
+      accessors.splice(5 + seasons.length, 2 + seasons.length);
+    }
+
+    return accessors;
+  }, [columnHelper, dataType, seasonLabel, seasons, team?.currency, teamId]);
+
   const setBreadcrumbs = useSetAtom(breadcrumbsAtom);
   useEffect(() => {
     setBreadcrumbs([
@@ -167,105 +304,7 @@ function PlayerDevelopmentPage() {
         />
       </Group>
 
-      <Table.ScrollContainer minWidth={600}>
-        <Table highlightOnHover>
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th>Player</Table.Th>
-              <Table.Th ta="center">
-                <BaseIcon name="i-mdi:flag" w="auto" />
-              </Table.Th>
-              <Table.Th ta="center">Pos</Table.Th>
-              <Table.Th ta="end">Change</Table.Th>
-              <Table.Th ta="end">Start</Table.Th>
-              {seasons.map((season) => (
-                <Table.Th key={season} ta="end">
-                  {seasonLabel(season, true)}
-                </Table.Th>
-              ))}
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>
-            {items.map((item) => (
-              <Table.Tr key={item.id}>
-                <Table.Td>
-                  <Button
-                    component={Link}
-                    to={`/teams/${team.id}/players/${item.id}`}
-                    variant="subtle"
-                    size="compact-xs"
-                  >
-                    {item.name}
-                  </Button>
-                </Table.Td>
-                <Table.Td ta="center">
-                  {item.nationality && (
-                    <PlayerFlag nationality={item.nationality} />
-                  )}
-                </Table.Td>
-                <Table.Td ta="center">{item.pos}</Table.Td>
-                {dataType === "ovr" ? (
-                  <>
-                    <Table.Td
-                      ta="end"
-                      c={statDiffColor(
-                        "ovr",
-                        item.total.ovr / (item.numSeasons || 1),
-                      )}
-                    >
-                      {item.total.ovr > 0 ? "+" : null}
-                      {item.total.ovr}
-                    </Table.Td>
-                    <Table.Td ta="end" c={ovrColor(item.start.ovr)}>
-                      {item.start.ovr}
-                    </Table.Td>
-                    {seasons.map((season) => {
-                      const stat = item.seasons[season]?.ovr;
-                      return (
-                        <Table.Td
-                          key={season}
-                          ta="end"
-                          c={stat ? ovrColor(stat) : undefined}
-                        >
-                          {stat}
-                        </Table.Td>
-                      );
-                    })}
-                  </>
-                ) : (
-                  <>
-                    <Table.Td
-                      ta="end"
-                      c={statDiffColor(
-                        "value",
-                        item.total.value / item.start.value,
-                      )}
-                    >
-                      {item.total.value > 0 ? "+" : null}
-                      {abbrevValue(item.total.value, team.currency)}
-                    </Table.Td>
-                    <Table.Td ta="end" c={playerValueColor(item.start.value)}>
-                      {abbrevValue(item.start.value, team.currency)}
-                    </Table.Td>
-                    {seasons.map((season) => {
-                      const stat = item.seasons[season]?.value;
-                      return (
-                        <Table.Td
-                          key={season}
-                          ta="end"
-                          c={stat ? playerValueColor(stat) : undefined}
-                        >
-                          {abbrevValue(stat, team.currency)}
-                        </Table.Td>
-                      );
-                    })}
-                  </>
-                )}
-              </Table.Tr>
-            ))}
-          </Table.Tbody>
-        </Table>
-      </Table.ScrollContainer>
+      <LocalDataTable data={items} columns={columns} sortBy="pos" />
     </Stack>
   );
 }
