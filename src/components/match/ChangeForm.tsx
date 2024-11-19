@@ -22,6 +22,40 @@ export const ChangeForm: React.FC<{
   playerOptions: PlayerOption[];
   onSubmit: (change: Change) => Promise<void>;
 }> = ({ record, opened, onClose, onSubmit, playerOptions }) => {
+  const submitAndClose = useCallback(
+    async (change: Change) => {
+      await onSubmit(change);
+      onClose();
+    },
+    [onClose, onSubmit],
+  );
+
+  return (
+    <Modal
+      opened={opened}
+      onClose={onClose}
+      title={`${record ? "Edit" : "New"} Formation Change`}
+      centered
+      closeOnClickOutside={false}
+      trapFocus
+    >
+      <BaseChangeForm
+        record={record}
+        opened={opened}
+        playerOptions={playerOptions}
+        onSubmit={submitAndClose}
+      />
+    </Modal>
+  );
+};
+
+export const BaseChangeForm: React.FC<{
+  record?: Change;
+  prefill?: Partial<Change>;
+  opened: boolean;
+  playerOptions: PlayerOption[];
+  onSubmit: (change: Change) => Promise<void>;
+}> = ({ record, prefill, opened, onSubmit, playerOptions }) => {
   const form = useForm({
     initialValues: {
       timestamp: record?.timestamp ?? new Date().valueOf(),
@@ -29,8 +63,8 @@ export const ChangeForm: React.FC<{
       stoppage_time: record?.stoppage_time,
       injured: record?.injured ?? false,
       out: {
-        name: record?.out?.name ?? "",
-        pos: record?.out?.pos ?? "",
+        name: record?.out?.name ?? prefill?.out?.name ?? "",
+        pos: record?.out?.pos ?? prefill?.out?.pos ?? "",
       },
       in: {
         name: record?.in?.name ?? "",
@@ -63,6 +97,7 @@ export const ChangeForm: React.FC<{
   useEffect(() => {
     if (opened) {
       form.reset();
+      form.setFieldValue("in.pos", prefill?.out?.pos ?? "");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [opened]);
@@ -77,8 +112,7 @@ export const ChangeForm: React.FC<{
     setLoading(true);
     await onSubmit(form.values);
     setLoading(false);
-    onClose();
-  }, [form, onClose, onSubmit]);
+  }, [form, onSubmit]);
 
   const { capsAtMinute } = useMatchState(form.values.minute);
   const capOptions = useMemo(
@@ -104,37 +138,30 @@ export const ChangeForm: React.FC<{
   );
 
   return (
-    <Modal
-      opened={opened}
-      onClose={onClose}
-      title={`${record ? "Edit" : "New"} Formation Change`}
-      centered
-      closeOnClickOutside={false}
-      trapFocus
-    >
+    <form onSubmit={form.onSubmit(handleSubmit)}>
       <LoadingOverlay
         visible={loading}
         overlayProps={{ radius: "sm", blur: 2 }}
       />
-      <form onSubmit={form.onSubmit(handleSubmit)}>
-        <Group grow mb="xs">
+      <Group grow mb="xs">
+        <NumberInput
+          {...form.getInputProps("minute")}
+          label="Minute"
+          suffix="'"
+          required
+          min={1}
+          max={match.extra_time ? 120 : 90}
+        />
+        {[45, 90, 105, 120].includes(form.values.minute) && (
           <NumberInput
-            {...form.getInputProps("minute")}
-            label="Minute"
-            suffix="'"
-            required
-            min={1}
-            max={match.extra_time ? 120 : 90}
+            {...form.getInputProps("stoppage_time")}
+            label="Stoppage Time"
+            prefix="+"
+            min={0}
           />
-          {[45, 90, 105, 120].includes(form.values.minute) && (
-            <NumberInput
-              {...form.getInputProps("stoppage_time")}
-              label="Stoppage Time"
-              prefix="+"
-              min={0}
-            />
-          )}
-        </Group>
+        )}
+      </Group>
+      {prefill?.out?.name === undefined && (
         <Select
           {...form.getInputProps("out.name")}
           label="Player"
@@ -155,39 +182,39 @@ export const ChangeForm: React.FC<{
           }}
           mb="xs"
         />
-        <Select
-          {...form.getInputProps("in.name")}
-          label="Replaced By"
-          placeholder="Select player"
-          searchable
-          required
-          data={replacementOptions}
-          renderOption={({ option }) => {
-            assertType<ReplacementOption>(option);
-            return (
-              <Group>
-                <MText size="xs" fw="bold">
-                  {option.pos}
-                </MText>
-                <MText size="xs">{option.name}</MText>
-              </Group>
-            );
-          }}
-          mb="xs"
-        />
-        <Select
-          {...form.getInputProps("in.pos")}
-          label="Position"
-          data={matchPositions}
-          searchable
-          required
-          mb="xs"
-        />
-        <Checkbox {...form.getInputProps("injured")} label="Injury" mt="md" />
-        <Button type="submit" fullWidth mt="xl">
-          Save
-        </Button>
-      </form>
-    </Modal>
+      )}
+      <Select
+        {...form.getInputProps("in.name")}
+        label="Replaced By"
+        placeholder="Select player"
+        searchable
+        required
+        data={replacementOptions}
+        renderOption={({ option }) => {
+          assertType<ReplacementOption>(option);
+          return (
+            <Group>
+              <MText size="xs" fw="bold">
+                {option.pos}
+              </MText>
+              <MText size="xs">{option.name}</MText>
+            </Group>
+          );
+        }}
+        mb="xs"
+      />
+      <Select
+        {...form.getInputProps("in.pos")}
+        label="Position"
+        data={matchPositions}
+        searchable
+        required
+        mb="xs"
+      />
+      <Checkbox {...form.getInputProps("injured")} label="Injury" mt="md" />
+      <Button type="submit" fullWidth mt="xl">
+        Save
+      </Button>
+    </form>
   );
 };

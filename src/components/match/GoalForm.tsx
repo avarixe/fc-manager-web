@@ -21,14 +21,42 @@ export const GoalForm: React.FC<{
   onClose: () => void;
   onSubmit: (goal: Goal) => Promise<void>;
 }> = ({ record, opened, onClose, onSubmit }) => {
+  const submitAndClose = useCallback(
+    async (goal: Goal) => {
+      await onSubmit(goal);
+      onClose();
+    },
+    [onClose, onSubmit],
+  );
+
+  return (
+    <Modal
+      opened={opened}
+      onClose={onClose}
+      title={`${record ? "Edit" : "New"} Goal`}
+      centered
+      closeOnClickOutside={false}
+      trapFocus
+    >
+      <BaseGoalForm record={record} opened={opened} onSubmit={submitAndClose} />
+    </Modal>
+  );
+};
+
+export const BaseGoalForm: React.FC<{
+  record?: Goal;
+  prefill?: Partial<Goal>;
+  opened: boolean;
+  onSubmit: (goal: Goal) => Promise<void>;
+}> = ({ record, prefill, opened, onSubmit }) => {
   const form = useForm<Goal>({
     initialValues: {
       timestamp: record?.timestamp ?? new Date().valueOf(),
       minute: record?.minute ?? 1,
       stoppage_time: record?.stoppage_time,
-      player_name: record?.player_name ?? "",
+      player_name: record?.player_name ?? prefill?.player_name ?? "",
       assisted_by: record?.assisted_by ?? null,
-      home: record?.home ?? true,
+      home: record?.home ?? prefill?.home ?? true,
       set_piece: record?.set_piece ?? null,
       own_goal: record?.own_goal ?? false,
     },
@@ -74,8 +102,7 @@ export const GoalForm: React.FC<{
     setLoading(true);
     await onSubmit(form.values);
     setLoading(false);
-    onClose();
-  }, [form, onClose, onSubmit]);
+  }, [form, onSubmit]);
 
   const { capsAtMinute } = useMatchState(form.values.minute);
   const capOptions = useMemo(
@@ -99,19 +126,12 @@ export const GoalForm: React.FC<{
     : team.name === match.away_team;
 
   return (
-    <Modal
-      opened={opened}
-      onClose={onClose}
-      title={`${record ? "Edit" : "New"} Goal`}
-      centered
-      closeOnClickOutside={false}
-      trapFocus
-    >
+    <form onSubmit={form.onSubmit(handleSubmit)}>
       <LoadingOverlay
         visible={loading}
         overlayProps={{ radius: "sm", blur: 2 }}
       />
-      <form onSubmit={form.onSubmit(handleSubmit)}>
+      {prefill?.home === undefined && (
         <SegmentedControl
           value={form.values.home ? "true" : "false"}
           onChange={(value) => form.setFieldValue("home", value === "true")}
@@ -122,26 +142,28 @@ export const GoalForm: React.FC<{
           ]}
           mb="xs"
         />
-        <Group grow mb="xs">
+      )}
+      <Group grow mb="xs">
+        <NumberInput
+          {...form.getInputProps("minute")}
+          label="Minute"
+          suffix="'"
+          required
+          min={1}
+          max={match.extra_time ? 120 : 90}
+        />
+        {[45, 90, 105, 120].includes(form.values.minute) && (
           <NumberInput
-            {...form.getInputProps("minute")}
-            label="Minute"
-            suffix="'"
-            required
-            min={1}
-            max={match.extra_time ? 120 : 90}
+            {...form.getInputProps("stoppage_time")}
+            label="Stoppage Time"
+            prefix="+"
+            min={0}
           />
-          {[45, 90, 105, 120].includes(form.values.minute) && (
-            <NumberInput
-              {...form.getInputProps("stoppage_time")}
-              label="Stoppage Time"
-              prefix="+"
-              min={0}
-            />
-          )}
-        </Group>
-        {isUserGoal ? (
-          <>
+        )}
+      </Group>
+      {isUserGoal ? (
+        <>
+          {prefill?.player_name === undefined && (
             <Select
               {...form.getInputProps("player_name")}
               label="Player"
@@ -162,63 +184,63 @@ export const GoalForm: React.FC<{
               }}
               mb="xs"
             />
-            <Select
-              {...form.getInputProps("assisted_by")}
-              label="Assisted By"
-              placeholder="Select player"
-              data={assistedByOptions}
-              renderOption={({ option }) => {
-                assertType<CapOption>(option);
-                return (
-                  <Group>
-                    <MText size="xs" fw="bold">
-                      {option.pos}
-                    </MText>
-                    <MText size="xs">{option.value}</MText>
-                  </Group>
-                );
-              }}
-              searchable
-              mb="xs"
-            />
-          </>
-        ) : (
-          <>
-            <TextInput
-              {...form.getInputProps("player_name")}
-              label="Player"
-              required
-              mb="xs"
-            />
-            <TextInput
-              {...form.getInputProps("assisted_by")}
-              label="Assisted By"
-              mb="xs"
-            />
-          </>
-        )}
-        <Select
-          {...form.getInputProps("set_piece")}
-          label="Set Piece"
-          data={[
-            { value: "PK", label: "Penalty Kick" },
-            { value: "CK", label: "Corner Kick" },
-            { value: "DFK", label: "Direct Free Kick" },
-            { value: "IFK", label: "Indirect Free Kick" },
-          ]}
-          clearable
-          mb="xs"
-        />
-        <Checkbox
-          checked={form.values.own_goal}
-          {...form.getInputProps("own_goal")}
-          label="Own Goal"
-          mt="md"
-        />
-        <Button type="submit" fullWidth mt="xl">
-          Save
-        </Button>
-      </form>
-    </Modal>
+          )}
+          <Select
+            {...form.getInputProps("assisted_by")}
+            label="Assisted By"
+            placeholder="Select player"
+            data={assistedByOptions}
+            renderOption={({ option }) => {
+              assertType<CapOption>(option);
+              return (
+                <Group>
+                  <MText size="xs" fw="bold">
+                    {option.pos}
+                  </MText>
+                  <MText size="xs">{option.value}</MText>
+                </Group>
+              );
+            }}
+            searchable
+            mb="xs"
+          />
+        </>
+      ) : (
+        <>
+          <TextInput
+            {...form.getInputProps("player_name")}
+            label="Player"
+            required
+            mb="xs"
+          />
+          <TextInput
+            {...form.getInputProps("assisted_by")}
+            label="Assisted By"
+            mb="xs"
+          />
+        </>
+      )}
+      <Select
+        {...form.getInputProps("set_piece")}
+        label="Set Piece"
+        data={[
+          { value: "PK", label: "Penalty Kick" },
+          { value: "CK", label: "Corner Kick" },
+          { value: "DFK", label: "Direct Free Kick" },
+          { value: "IFK", label: "Indirect Free Kick" },
+        ]}
+        clearable
+        mb="xs"
+      />
+      <Checkbox
+        checked={form.values.own_goal}
+        {...form.getInputProps("own_goal")}
+        label="Own Goal"
+        mt="md"
+      />
+      <Button type="submit" fullWidth mt="xl">
+        Save
+      </Button>
+    </form>
   );
 };

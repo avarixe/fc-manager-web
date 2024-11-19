@@ -218,18 +218,6 @@ export const MatchTimeline: React.FC<{
               onSubmit={createGoal}
             />
             <Button
-              onClick={openNewBooking}
-              color="yellow"
-              leftSection={<YellowCardIcon c="white" />}
-            >
-              Booking
-            </Button>
-            <BookingForm
-              opened={newBookingOpened}
-              onClose={closeNewBooking}
-              onSubmit={createBooking}
-            />
-            <Button
               onClick={openNewChange}
               color="green"
               leftSection={<SubstitutionIcon c="white" />}
@@ -241,6 +229,18 @@ export const MatchTimeline: React.FC<{
               onClose={closeNewChange}
               onSubmit={createChange}
               playerOptions={playerOptions}
+            />
+            <Button
+              onClick={openNewBooking}
+              color="yellow"
+              leftSection={<YellowCardIcon c="white" />}
+            >
+              Booking
+            </Button>
+            <BookingForm
+              opened={newBookingOpened}
+              onClose={closeNewBooking}
+              onSubmit={createBooking}
             />
           </Group>
         </Timeline.Item>

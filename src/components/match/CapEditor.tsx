@@ -1,9 +1,9 @@
 import { Cap, Player } from "@/types";
 import {
+  Box,
   ComboboxItem,
   Group,
   LoadingOverlay,
-  Popover,
   Select,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
@@ -13,10 +13,8 @@ type PlayerIdOption = ComboboxItem & PlayerOption;
 
 export const CapEditor: React.FC<{
   cap: Cap;
-  readonly: boolean;
   playerOptions: PlayerOption[];
-  target: React.ReactNode;
-}> = ({ cap, readonly, playerOptions, target }) => {
+}> = ({ cap, playerOptions }) => {
   const [caps, setCaps] = useAtom(capsAtom);
   const [loading, setLoading] = useState(false);
   const supabase = useAtomValue(supabaseAtom);
@@ -64,48 +62,38 @@ export const CapEditor: React.FC<{
   );
 
   return (
-    <Popover
-      width={300}
-      trapFocus
-      withArrow
-      position="bottom"
-      arrowPosition="side"
-      disabled={readonly}
-    >
-      <Popover.Target>{target}</Popover.Target>
-      <Popover.Dropdown p="xs">
-        <LoadingOverlay
-          visible={loading}
-          overlayProps={{ radius: "sm", blur: 2 }}
-        />
-        <Select
-          {...form.getInputProps("playerId")}
-          label="Player"
-          searchable
-          required
-          data={playerIdOptions}
-          renderOption={({ option }) => {
-            assertType<PlayerIdOption>(option);
-            return (
-              <Group>
-                <MText size="xs" fw="bold">
-                  {option.pos}
-                </MText>
-                <MText size="xs">{option.name}</MText>
-              </Group>
-            );
-          }}
-          mb="xs"
-        />
-        <Select
-          {...form.getInputProps("pos")}
-          label="Position"
-          data={matchPositions}
-          searchable
-          required
-          mb="xs"
-        />
-      </Popover.Dropdown>
-    </Popover>
+    <Box>
+      <LoadingOverlay
+        visible={loading}
+        overlayProps={{ radius: "sm", blur: 2 }}
+      />
+      <Select
+        {...form.getInputProps("playerId")}
+        label="Player"
+        searchable
+        required
+        data={playerIdOptions}
+        renderOption={({ option }) => {
+          assertType<PlayerIdOption>(option);
+          return (
+            <Group>
+              <MText size="xs" fw="bold">
+                {option.pos}
+              </MText>
+              <MText size="xs">{option.name}</MText>
+            </Group>
+          );
+        }}
+        mb="xs"
+      />
+      <Select
+        {...form.getInputProps("pos")}
+        label="Position"
+        data={matchPositions}
+        searchable
+        required
+        mb="xs"
+      />
+    </Box>
   );
 };

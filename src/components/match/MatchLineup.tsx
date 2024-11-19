@@ -8,6 +8,7 @@ import {
   NavLink,
   Rating,
 } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 import { orderBy } from "lodash-es";
 
 type PlayerOption = Pick<Player, "id" | "name" | "status" | "pos" | "ovr">;
@@ -33,32 +34,11 @@ export const MatchLineup: React.FC<{
         Players
       </MText>
       {sortedCaps.map((cap) => (
-        <NavLink
+        <MatchLineupItem
           key={cap.id}
-          label={
-            <Group>
-              <CapEditor
-                cap={cap}
-                readonly={readonly}
-                playerOptions={playerOptions}
-                target={
-                  <Button size="compact-sm" variant="transparent" color="gray">
-                    {cap.players.name}
-                  </Button>
-                }
-              />
-              <MatchLineupStats cap={cap} />
-            </Group>
-          }
-          leftSection={
-            <Box w={40} fw={700}>
-              {cap.pos}
-            </Box>
-          }
-          rightSection={<CapRating cap={cap} readonly={readonly} />}
-          classNames={{
-            body: "overflow-visible",
-          }}
+          cap={cap}
+          readonly={readonly}
+          playerOptions={playerOptions}
         />
       ))}
       <MText pl="xs" size="sm" mt="xs" className="opacity-60">
@@ -85,6 +65,48 @@ export const MatchLineup: React.FC<{
         />
       )}
     </>
+  );
+};
+
+const MatchLineupItem: React.FC<{
+  cap: Cap;
+  readonly: boolean;
+  playerOptions: PlayerOption[];
+}> = ({ cap, readonly, playerOptions }) => {
+  const [opened, { open, close }] = useDisclosure();
+
+  return (
+    <NavLink
+      key={cap.id}
+      label={
+        <Group>
+          <Button
+            onClick={open}
+            size="compact-sm"
+            variant="transparent"
+            color="gray"
+          >
+            {cap.players.name}
+          </Button>
+          <CapModal
+            cap={cap}
+            opened={opened}
+            onClose={close}
+            playerOptions={playerOptions}
+          />
+          <MatchLineupStats cap={cap} />
+        </Group>
+      }
+      leftSection={
+        <Box w={40} fw={700}>
+          {cap.pos}
+        </Box>
+      }
+      rightSection={<CapRating cap={cap} readonly={readonly} />}
+      classNames={{
+        body: "overflow-visible",
+      }}
+    />
   );
 };
 
