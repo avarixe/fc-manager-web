@@ -9,7 +9,10 @@ import {
 } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
 
-type PlayerOption = Pick<Player, "id" | "name" | "status" | "pos" | "ovr">;
+type PlayerOption = Pick<
+  Player,
+  "id" | "name" | "status" | "pos" | "ovr" | "kit_no"
+>;
 type PlayerIdOption = ComboboxItem & PlayerOption;
 
 export const CapForm: React.FC<{
@@ -58,6 +61,7 @@ export const CapForm: React.FC<{
         player_id: Number(form.values.playerId),
         pos: form.values.pos,
         ovr: player.ovr,
+        kit_no: player.kit_no,
         start_minute: 0,
         stop_minute: match.extra_time ? 120 : 90,
       })

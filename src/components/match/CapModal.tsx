@@ -1,7 +1,10 @@
 import { Booking, Cap, Change, Goal, Player } from "@/types";
 import { Modal, Tabs } from "@mantine/core";
 
-type PlayerOption = Pick<Player, "id" | "name" | "status" | "pos" | "ovr">;
+type PlayerOption = Pick<
+  Player,
+  "id" | "name" | "status" | "pos" | "ovr" | "kit_no"
+>;
 
 export const CapModal: React.FC<{
   cap: Cap;

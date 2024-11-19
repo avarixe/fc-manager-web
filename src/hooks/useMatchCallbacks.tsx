@@ -100,10 +100,13 @@ export const useMatchCallbacks = () => {
 
       const { data: playerData } = await supabase
         .from("players")
-        .select("id, name, ovr")
+        .select("id, name, ovr, kit_no")
         .eq("team_id", team.id)
         .eq("status", "Active");
-      const playerMap: Record<string, { id: number; ovr: number }> = {};
+      const playerMap: Record<
+        string,
+        { id: number; ovr: number; kit_no: number | null }
+      > = {};
       for (const player of playerData ?? []) {
         playerMap[player.name] = player;
       }
@@ -129,6 +132,7 @@ export const useMatchCallbacks = () => {
           match_id: updatedMatch.id,
           player_id: playerMap[change.in.name]!.id,
           ovr: playerMap[change.in.name]!.ovr,
+          kit_no: playerMap[change.in.name]!.kit_no,
           start_minute: change.minute,
           stop_minute: match.extra_time ? 120 : 90,
           pos: change.in.pos,

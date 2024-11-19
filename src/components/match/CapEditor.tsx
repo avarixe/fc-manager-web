@@ -8,7 +8,10 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 
-type PlayerOption = Pick<Player, "id" | "name" | "status" | "pos" | "ovr">;
+type PlayerOption = Pick<
+  Player,
+  "id" | "name" | "status" | "pos" | "ovr" | "kit_no"
+>;
 type PlayerIdOption = ComboboxItem & PlayerOption;
 
 export const CapEditor: React.FC<{
@@ -29,12 +32,14 @@ export const CapEditor: React.FC<{
       const newCaps = [];
       for (const oldCap of caps) {
         if (oldCap.id === cap.id) {
-          const ovr =
-            playerOptions.find((player) => player.id === Number(playerId))
-              ?.ovr ?? cap.ovr;
+          const player = playerOptions.find(
+            (option) => option.id === Number(playerId),
+          );
+          const ovr = player?.ovr ?? cap.ovr;
+          const kitNo = player?.kit_no ?? cap.kit_no;
           const { data } = await supabase
             .from("caps")
-            .update({ player_id: Number(playerId), pos, ovr })
+            .update({ player_id: Number(playerId), pos, ovr, kit_no: kitNo })
             .eq("id", cap.id)
             .select("*, players(name)")
             .single();

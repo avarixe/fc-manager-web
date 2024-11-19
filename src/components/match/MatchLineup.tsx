@@ -11,7 +11,10 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import { orderBy } from "lodash-es";
 
-type PlayerOption = Pick<Player, "id" | "name" | "status" | "pos" | "ovr">;
+type PlayerOption = Pick<
+  Player,
+  "id" | "name" | "status" | "pos" | "ovr" | "kit_no"
+>;
 
 export const MatchLineup: React.FC<{
   readonly: boolean;
@@ -85,6 +88,7 @@ const MatchLineupItem: React.FC<{
             size="compact-sm"
             variant="transparent"
             color="gray"
+            leftSection={`#${cap.kit_no}`}
           >
             {cap.players.name}
           </Button>

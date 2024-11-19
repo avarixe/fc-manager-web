@@ -15,6 +15,7 @@ export type Database = {
           created_at: string
           id: number
           import_id: number | null
+          kit_no: number | null
           match_id: number
           num_assists: number
           num_goals: number
@@ -35,6 +36,7 @@ export type Database = {
           created_at?: string
           id?: number
           import_id?: number | null
+          kit_no?: number | null
           match_id: number
           num_assists?: number
           num_goals?: number
@@ -55,6 +57,7 @@ export type Database = {
           created_at?: string
           id?: number
           import_id?: number | null
+          kit_no?: number | null
           match_id?: number
           num_assists?: number
           num_goals?: number

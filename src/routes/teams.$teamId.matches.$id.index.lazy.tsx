@@ -17,7 +17,10 @@ import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
 
-type PlayerOption = Pick<Player, "id" | "name" | "status" | "pos" | "ovr">;
+type PlayerOption = Pick<
+  Player,
+  "id" | "name" | "status" | "pos" | "ovr" | "kit_no"
+>;
 
 export const Route = createLazyFileRoute("/teams/$teamId/matches/$id/")({
   component: MatchPage,
@@ -31,6 +34,7 @@ function MatchPage() {
   const [squads, setSquads] = useState<Squad[]>([]);
   const [playerOptions, setPlayerOptions] = useState<PlayerOption[]>([]);
   const playerOvrByIdRef = useRef(new Map<number, number>());
+  const playerKitNoByIdRef = useRef(new Map<number, number | null>());
   const setCaps = useSetAtom(capsAtom);
   const supabase = useAtomValue(supabaseAtom);
   useEffect(() => {
@@ -69,12 +73,13 @@ function MatchPage() {
     const fetchPlayerOvr = async () => {
       const { data } = await supabase
         .from("players")
-        .select("id, name, status, pos, ovr")
+        .select("id, name, status, pos, ovr, kit_no")
         .eq("team_id", teamId)
         .order("pos_order");
       setPlayerOptions(data ?? []);
       data?.forEach((item) => {
         playerOvrByIdRef.current.set(item.id, item.ovr);
+        playerKitNoByIdRef.current.set(item.id, item.kit_no);
       });
     };
 
@@ -191,6 +196,7 @@ function MatchPage() {
           player_id,
           pos,
           ovr: playerOvrByIdRef.current.get(player_id) ?? 0,
+          kit_no: playerKitNoByIdRef.current.get(player_id) ?? 0,
         }),
       );
       const { data, error } = await supabase
