@@ -7,6 +7,7 @@ import {
   Group,
   Menu,
   NumberInput,
+  SegmentedControl,
   Stack,
   Switch,
   Table,
@@ -297,6 +298,8 @@ function MatchPage() {
     teamId,
   ]);
 
+  const [lineupMode, setLineupMode] = useState("formation");
+
   if (!team || !match) {
     return null;
   }
@@ -447,8 +450,29 @@ function MatchPage() {
             )}
           </Group>
         )}
-        <FormationOvr data={formationOvrData} />
-        <MatchLineup readonly={readonly} playerOptions={playerOptions} />
+
+        <SegmentedControl
+          value={lineupMode}
+          onChange={(value) => setLineupMode(value)}
+          data={[
+            {
+              value: "formation",
+              label: <BaseIcon name="i-mdi:vector-polygon" fz="xl" />,
+            },
+            {
+              value: "lineup",
+              label: <BaseIcon name="i-mdi:format-list-bulleted" fz="xl" />,
+            },
+          ]}
+        />
+        <Stack gap="xl">
+          <FormationOvr data={formationOvrData} />
+          {lineupMode === "formation" ? (
+            <MatchFormation readonly={readonly} playerOptions={playerOptions} />
+          ) : (
+            <MatchLineup readonly={readonly} playerOptions={playerOptions} />
+          )}
+        </Stack>
       </Box>
 
       <Box my="lg">

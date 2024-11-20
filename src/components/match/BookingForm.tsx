@@ -89,15 +89,24 @@ export const BaseBookingForm: React.FC<{
   }, [form, onSubmit]);
 
   const { capsAtMinute } = useMatchState(form.values.minute);
-  const capOptions = useMemo(
-    () =>
-      capsAtMinute.map((cap) => ({
-        ...cap,
-        value: cap.players.name,
-        label: `${cap.pos} · ${cap.players.name}`,
-      })),
-    [capsAtMinute],
-  );
+  const caps = useAtomValue(capsAtom);
+  const capOptions = useMemo(() => {
+    const options = [...capsAtMinute];
+    if (record) {
+      const recordCap = caps.find(
+        (cap) => cap.players.name === record.player_name,
+      );
+      if (recordCap && capsAtMinute.every((cap) => cap.id !== recordCap.id)) {
+        options.push(recordCap);
+      }
+    }
+
+    return options.map((cap) => ({
+      ...cap,
+      value: cap.players.name,
+      label: `${cap.pos} · ${cap.players.name}`,
+    }));
+  }, [caps, capsAtMinute, record]);
 
   const team = useAtomValue(teamAtom)!;
   const match = useAtomValue(matchAtom)!;

@@ -12,13 +12,14 @@ function useCapStats(playerId: number) {
   const startMinute = startRole.start_minute;
   const stopMinute = lastRole.stop_minute;
   const match = useAtomValue(matchAtom)!;
-  const subbedOut = stopMinute < (match.extra_time ? 120 : 90);
 
   const numGoals = sumBy(playerRoles, "num_goals");
   const numOwnGoals = sumBy(playerRoles, "num_own_goals");
   const numAssists = sumBy(playerRoles, "num_assists");
   const numYellowCards = sumBy(playerRoles, "num_yellow_cards");
   const numRedCards = sumBy(playerRoles, "num_red_cards");
+  const subbedOut =
+    stopMinute < (match.extra_time ? 120 : 90) && numRedCards === 0;
 
   const injured = useMemo(() => {
     const playerName = startRole.players.name;

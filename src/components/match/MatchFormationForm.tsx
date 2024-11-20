@@ -210,6 +210,16 @@ export const MatchFormationForm: React.FC<{
       }));
   }, [form.values.formation, players]);
 
+  const caps = useAtomValue(capsAtom);
+  const maxPlayers = useMemo(() => {
+    return (
+      11 -
+      caps.filter(
+        (cap) => cap.stop_minute <= form.values.minute && cap.num_red_cards > 0,
+      ).length
+    );
+  }, [caps, form.values.minute]);
+
   const [assigningPlayerId, setAssigningPlayerId] = useState<string | null>(
     null,
   );
@@ -224,7 +234,7 @@ export const MatchFormationForm: React.FC<{
         } else {
           // Skip if formation is full
           if (
-            playersIn.length === 11 &&
+            playersIn.length === maxPlayers &&
             playersIn.every((id) => String(id) !== assigningPlayerId) &&
             playerId === null
           ) {
@@ -248,7 +258,7 @@ export const MatchFormationForm: React.FC<{
         setAssigningPlayerId(playerId);
       }
     },
-    [assigningPlayerId, form],
+    [assigningPlayerId, form, maxPlayers],
   );
 
   return (

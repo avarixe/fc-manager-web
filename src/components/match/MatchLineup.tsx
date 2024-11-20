@@ -1,13 +1,5 @@
 import { Cap, Player } from "@/types";
-import {
-  ActionIcon,
-  Box,
-  Button,
-  Group,
-  Indicator,
-  NavLink,
-  Rating,
-} from "@mantine/core";
+import { Box, Button, Group, NavLink } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { orderBy } from "lodash-es";
 
@@ -32,7 +24,7 @@ export const MatchLineup: React.FC<{
   const team = useAtomValue(teamAtom)!;
   const match = useAtomValue(matchAtom)!;
   return (
-    <>
+    <Box>
       <MText pl="xs" size="sm" className="opacity-60">
         Players
       </MText>
@@ -67,7 +59,7 @@ export const MatchLineup: React.FC<{
           }
         />
       )}
-    </>
+    </Box>
   );
 };
 
@@ -84,7 +76,7 @@ const MatchLineupItem: React.FC<{
       label={
         <Group>
           <Button
-            onClick={open}
+            onClick={readonly ? undefined : open}
             size="compact-sm"
             variant="transparent"
             color="gray"
@@ -98,7 +90,7 @@ const MatchLineupItem: React.FC<{
             onClose={close}
             playerOptions={playerOptions}
           />
-          <MatchLineupStats cap={cap} />
+          <CapSummary cap={cap} />
         </Group>
       }
       leftSection={
@@ -111,154 +103,5 @@ const MatchLineupItem: React.FC<{
         body: "overflow-visible",
       }}
     />
-  );
-};
-
-const CapRating: React.FC<{
-  cap: Cap;
-  readonly: boolean;
-}> = ({ cap, readonly }) => {
-  const [hoverValue, setHoverValue] = useState<number | null>(null);
-  const onHover = useCallback((value: number) => {
-    setHoverValue(value > 0 ? value : null);
-  }, []);
-
-  const color = useMemo(() => {
-    switch (hoverValue || cap.rating) {
-      case 1:
-        return "red";
-      case 2:
-        return "orange";
-      case 3:
-        return "yellow";
-      case 4:
-        return "lime";
-      case 5:
-        return "green";
-    }
-  }, [cap.rating, hoverValue]);
-
-  const supabase = useAtomValue(supabaseAtom);
-  const setCaps = useSetAtom(capsAtom);
-  const onChange = useCallback(
-    async (value: number | null) => {
-      await supabase.from("caps").update({ rating: value }).eq("id", cap.id);
-      setCaps((prev) => {
-        return prev.map((prevCap) => {
-          if (prevCap.player_id === cap.player_id) {
-            return { ...prevCap, rating: value };
-          }
-          return prevCap;
-        });
-      });
-    },
-    [supabase, cap.id, cap.player_id, setCaps],
-  );
-
-  const stopPropagation = useCallback((event: React.MouseEvent<unknown>) => {
-    event.stopPropagation();
-  }, []);
-
-  const clearRating = useCallback(
-    (event: React.MouseEvent<HTMLButtonElement>) => {
-      stopPropagation(event);
-      onChange(null);
-    },
-    [onChange, stopPropagation],
-  );
-
-  return (
-    <Group>
-      {!readonly && cap.rating && (
-        <ActionIcon onClick={clearRating} variant="subtle" c="gray">
-          <BaseIcon name="i-mdi:delete" />
-        </ActionIcon>
-      )}
-      <Rating
-        value={cap.rating ?? undefined}
-        onChange={onChange}
-        onHover={onHover}
-        onClick={stopPropagation}
-        readOnly={readonly}
-        emptySymbol={<BaseIcon name="i-mdi:star-four-points" />}
-        fullSymbol={<BaseIcon name="i-mdi:star-four-points" c={color} />}
-      />
-    </Group>
-  );
-};
-
-const MatchLineupStats: React.FC<{ cap: Cap }> = ({ cap }) => {
-  const {
-    startMinute,
-    stopMinute,
-    numGoals,
-    numOwnGoals,
-    numAssists,
-    numYellowCards,
-    numRedCards,
-    subbedOut,
-    injured,
-  } = useCapStats(cap.player_id);
-
-  return (
-    <Group gap="xs">
-      {startMinute > 0 && (
-        <Indicator
-          label={startMinute}
-          color="transparent"
-          inline
-          position="bottom-end"
-          zIndex={1}
-        >
-          <SubInIcon />
-        </Indicator>
-      )}
-      {numGoals > 0 && (
-        <Indicator
-          label={numGoals}
-          color="transparent"
-          inline
-          position="bottom-end"
-          zIndex={1}
-        >
-          <GoalIcon />
-        </Indicator>
-      )}
-      {numOwnGoals > 0 && (
-        <Indicator
-          label={numOwnGoals}
-          color="transparent"
-          inline
-          position="bottom-end"
-          zIndex={1}
-        >
-          <GoalIcon c="red.9" />
-        </Indicator>
-      )}
-      {numAssists > 0 && (
-        <Indicator
-          label={numAssists}
-          color="transparent"
-          inline
-          position="bottom-end"
-          zIndex={1}
-        >
-          <AssistIcon />
-        </Indicator>
-      )}
-      {numYellowCards > 0 && <YellowCardIcon />}
-      {(numRedCards > 0 || numYellowCards > 1) && <RedCardIcon />}
-      {subbedOut && (
-        <Indicator
-          label={stopMinute}
-          color="transparent"
-          inline
-          position="bottom-end"
-          zIndex={1}
-        >
-          {injured ? <InjuryIcon /> : <SubOutIcon />}
-        </Indicator>
-      )}
-    </Group>
   );
 };

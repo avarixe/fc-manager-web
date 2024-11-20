@@ -1,0 +1,138 @@
+import { Cap, Player } from "@/types";
+import {
+  ActionIcon,
+  Box,
+  Button,
+  Divider,
+  Group,
+  Indicator,
+  Stack,
+} from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
+
+type PlayerOption = Pick<
+  Player,
+  "id" | "name" | "status" | "pos" | "ovr" | "kit_no"
+>;
+
+export const MatchFormation: React.FC<{
+  readonly: boolean;
+  playerOptions: PlayerOption[];
+}> = ({ readonly, playerOptions }) => {
+  const [minute, setMinute] = useState(0);
+  const { activeCaps } = useMatchState(minute);
+
+  const formation = useMemo(() => {
+    return activeCaps.reduce((capFormation: Record<string, Cap>, cap) => {
+      capFormation[cap.pos] = cap;
+      return capFormation;
+    }, {});
+  }, [activeCaps]);
+
+  const caps = useAtomValue(capsAtom);
+  const match = useAtomValue(matchAtom)!;
+  const changeMinutes = useMemo(() => {
+    return [
+      ...new Set([
+        ...caps.map((cap) => cap.start_minute),
+        ...match.bookings
+          .filter((booking) => booking.red_card)
+          .map((booking) => booking.minute),
+      ]),
+    ].sort();
+  }, [caps, match.bookings]);
+
+  useEffect(() => {
+    if (changeMinutes.length > 1) {
+      setMinute(changeMinutes[changeMinutes.length - 1]);
+    }
+  }, [changeMinutes]);
+
+  return (
+    <Stack gap="xs">
+      {changeMinutes.length > 1 && (
+        <Group px="xl">
+          {changeMinutes.map((changeMinute, i) => (
+            <>
+              <ActionIcon
+                onClick={() => setMinute(changeMinute)}
+                key={changeMinute}
+                variant={changeMinute === minute ? "filled" : "light"}
+                size="lg"
+                radius="xl"
+                fz="sm"
+              >
+                {changeMinute}'
+              </ActionIcon>
+              {i !== changeMinutes.length - 1 && (
+                <Divider key={i} style={{ flexGrow: 1 }} />
+              )}
+            </>
+          ))}
+        </Group>
+      )}
+      <FormationGrid
+        cells={formation}
+        renderCell={(position, cap) => (
+          <MatchFormationItem
+            key={position}
+            cap={cap}
+            readonly={readonly}
+            playerOptions={playerOptions}
+          />
+        )}
+        hideEmptyCells
+        renderEmptyCell={() => null}
+      />
+    </Stack>
+  );
+};
+
+const MatchFormationItem: React.FC<{
+  cap: Cap;
+  readonly: boolean;
+  playerOptions: PlayerOption[];
+}> = ({ cap, readonly, playerOptions }) => {
+  const [opened, { open, close }] = useDisclosure();
+
+  const team = useAtomValue(teamAtom)!;
+  const match = useAtomValue(matchAtom)!;
+  const isTeamHome = team.name === match.home_team;
+
+  return (
+    <Stack gap={readonly ? 4 : 0}>
+      <Button
+        onClick={readonly ? undefined : open}
+        variant="transparent"
+        color="gray"
+        h="auto"
+      >
+        <Box>
+          <MText fw="bold">{cap.pos}</MText>
+          <Indicator
+            label={cap.kit_no}
+            color="transparent"
+            position="middle-center"
+            zIndex={1}
+          >
+            <BaseIcon
+              name="i-mdi:tshirt-crew"
+              w="auto"
+              c={isTeamHome ? "cyan.6" : "teal.6"}
+              fz={50}
+            />
+          </Indicator>
+          <MText size="xs">{cap.players.name}</MText>
+        </Box>
+      </Button>
+      <CapRating cap={cap} readonly={readonly} justify="center" gap={2} />
+      <CapSummary cap={cap} justify="center" />
+      <CapModal
+        cap={cap}
+        opened={opened}
+        onClose={close}
+        playerOptions={playerOptions}
+      />
+    </Stack>
+  );
+};

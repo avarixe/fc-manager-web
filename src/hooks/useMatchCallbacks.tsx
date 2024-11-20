@@ -35,8 +35,10 @@ export const useMatchCallbacks = () => {
 
           for (const booking of updatedMatch.bookings) {
             if (booking.player_name === cap.players.name) {
-              newCap[booking.red_card ? "num_red_cards" : "num_yellow_cards"] +=
-                1;
+              newCap[booking.red_card ? "num_red_cards" : "num_yellow_cards"]++;
+              if (booking.red_card) {
+                newCap.stop_minute = booking.minute;
+              }
             }
           }
 

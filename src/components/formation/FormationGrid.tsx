@@ -24,7 +24,7 @@ export const FormationGrid = <T,>({
   return (
     <Stack justify="space-around">
       {positions.map((row, i) => (
-        <Group key={i} grow>
+        <Group key={i} grow align="start">
           {row.map((position, j) => (
             <Box key={j} className="text-center">
               {position &&
