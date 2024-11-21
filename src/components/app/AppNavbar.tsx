@@ -6,6 +6,7 @@ import {
   Group,
   Loader,
   NavLink,
+  ScrollArea,
   Select,
 } from "@mantine/core";
 
@@ -15,116 +16,121 @@ export const AppNavbar = () => {
 
   return (
     <AppShell.Navbar p="md">
-      <NavLink
-        component={Link}
-        label="Home"
-        to="/"
-        leftSection={<div className="i-mdi:home" />}
-      />
-      <NavLink
-        component={Link}
-        label="Teams"
-        to="/teams"
-        activeOptions={{ exact: true }}
-        leftSection={<div className="i-mdi:shield-half-full" />}
-      />
-
-      {team && (
+      <ScrollArea type="scroll">
         <NavLink
-          label={team.name}
-          leftSection={<Avatar src={team.badge_path} />}
-          mt="md"
-          defaultOpened
-        >
-          <TeamDatePicker team={team} />
+          component={Link}
+          label="Home"
+          to="/"
+          leftSection={<div className="i-mdi:home" />}
+        />
+        <NavLink
+          component={Link}
+          label="Teams"
+          to="/teams"
+          activeOptions={{ exact: true }}
+          leftSection={<div className="i-mdi:shield-half-full" />}
+        />
+
+        {team && (
           <NavLink
-            component={Link}
-            to={`/teams/${team.id}`}
-            activeOptions={{ exact: true }}
-            label="Dashboard"
-            leftSection={<div className="i-mdi:view-dashboard" />}
-          />
-          <NavLink label="Players" leftSection={<div className="i-mdi:run" />}>
-            <NavLink
-              component={Link}
-              to={`/teams/${team.id}/players`}
-              label="List"
-              leftSection={<BaseIcon name="i-mdi:view-list" />}
-              activeOptions={{ exact: true }}
-            />
-            <NavLink
-              label={<PlayerSearch />}
-              leftSection={<BaseIcon name="i-mdi:search" />}
-            />
-            <NavLink
-              component={Link}
-              to={`/teams/${team.id}/players/new`}
-              label="New"
-              leftSection={<BaseIcon name="i-mdi:plus-circle-outline" />}
-            />
-            <NavLink
-              component={Link}
-              to={`/teams/${team.id}/players/development`}
-              label="Development"
-              leftSection={<BaseIcon name="i-mdi:trending-up" />}
-            />
-            <NavLink
-              component={Link}
-              to={`/teams/${team.id}/players/statistics`}
-              label="Statistics"
-              leftSection={<BaseIcon name="i-mdi:google-analytics" />}
-            />
-          </NavLink>
-          <NavLink
-            label="Matches"
-            leftSection={<div className="i-mdi:soccer-field" />}
+            label={team.name}
+            leftSection={<Avatar src={team.badge_path} />}
+            mt="md"
+            defaultOpened
           >
+            <TeamDatePicker team={team} />
             <NavLink
               component={Link}
-              to={`/teams/${team.id}/matches`}
-              label="List"
-              leftSection={<BaseIcon name="i-mdi:view-list" />}
+              to={`/teams/${team.id}`}
               activeOptions={{ exact: true }}
+              label="Dashboard"
+              leftSection={<div className="i-mdi:view-dashboard" />}
+            />
+            <NavLink
+              label="Players"
+              leftSection={<div className="i-mdi:run" />}
+            >
+              <NavLink
+                component={Link}
+                to={`/teams/${team.id}/players`}
+                label="List"
+                leftSection={<BaseIcon name="i-mdi:view-list" />}
+                activeOptions={{ exact: true }}
+              />
+              <NavLink
+                label={<PlayerSearch />}
+                leftSection={<BaseIcon name="i-mdi:search" />}
+              />
+              <NavLink
+                component={Link}
+                to={`/teams/${team.id}/players/new`}
+                label="New"
+                leftSection={<BaseIcon name="i-mdi:plus-circle-outline" />}
+              />
+              <NavLink
+                component={Link}
+                to={`/teams/${team.id}/players/development`}
+                label="Development"
+                leftSection={<BaseIcon name="i-mdi:trending-up" />}
+              />
+              <NavLink
+                component={Link}
+                to={`/teams/${team.id}/players/statistics`}
+                label="Statistics"
+                leftSection={<BaseIcon name="i-mdi:google-analytics" />}
+              />
+            </NavLink>
+            <NavLink
+              label="Matches"
+              leftSection={<div className="i-mdi:soccer-field" />}
+            >
+              <NavLink
+                component={Link}
+                to={`/teams/${team.id}/matches`}
+                label="List"
+                leftSection={<BaseIcon name="i-mdi:view-list" />}
+                activeOptions={{ exact: true }}
+              />
+              <NavLink
+                component={Link}
+                to={`/teams/${team.id}/matches/new`}
+                label="New"
+                leftSection={<BaseIcon name="i-mdi:plus-circle-outline" />}
+              />
+            </NavLink>
+            <NavLink
+              label="Competitions"
+              leftSection={<div className="i-mdi:trophy" />}
+            >
+              <NavLink
+                component={Link}
+                to={`/teams/${team.id}/competitions`}
+                label="List"
+                leftSection={<BaseIcon name="i-mdi:view-list" />}
+                activeOptions={{ exact: true }}
+              />
+              <NavLink
+                component={Link}
+                to={`/teams/${team.id}/competitions/new`}
+                label="New"
+                leftSection={<BaseIcon name="i-mdi:plus-circle-outline" />}
+              />
+            </NavLink>
+            <NavLink
+              component={Link}
+              to={`/teams/${team.id}/seasons/${currentSeason}`}
+              label="Current Season"
+              leftSection={<div className="i-mdi:calendar-month" />}
             />
             <NavLink
               component={Link}
-              to={`/teams/${team.id}/matches/new`}
-              label="New"
-              leftSection={<BaseIcon name="i-mdi:plus-circle-outline" />}
+              to={`/teams/${team.id}/squads`}
+              label="Squads"
+              leftSection={<div className="i-mdi:clipboard-text" />}
             />
           </NavLink>
-          <NavLink
-            label="Competitions"
-            leftSection={<div className="i-mdi:trophy" />}
-          >
-            <NavLink
-              component={Link}
-              to={`/teams/${team.id}/competitions`}
-              label="List"
-              leftSection={<BaseIcon name="i-mdi:view-list" />}
-              activeOptions={{ exact: true }}
-            />
-            <NavLink
-              component={Link}
-              to={`/teams/${team.id}/competitions/new`}
-              label="New"
-              leftSection={<BaseIcon name="i-mdi:plus-circle-outline" />}
-            />
-          </NavLink>
-          <NavLink
-            component={Link}
-            to={`/teams/${team.id}/seasons/${currentSeason}`}
-            label="Current Season"
-            leftSection={<div className="i-mdi:calendar-month" />}
-          />
-          <NavLink
-            component={Link}
-            to={`/teams/${team.id}/squads`}
-            label="Squads"
-            leftSection={<div className="i-mdi:clipboard-text" />}
-          />
-        </NavLink>
-      )}
+        )}
+      </ScrollArea>
     </AppShell.Navbar>
   );
 };

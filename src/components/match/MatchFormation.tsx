@@ -118,7 +118,12 @@ export const MatchFormation: React.FC<{
               <>
                 {row.map((cap) => (
                   <Grid.Col span={1} key={cap.id}>
-                    <MatchFormationItem cap={cap} readonly playerOptions={[]} />
+                    <MatchFormationItem
+                      cap={cap}
+                      readonly={readonly}
+                      playerOptions={[]}
+                      bench
+                    />
                   </Grid.Col>
                 ))}
                 {Array.from({ length: 4 - row.length }).map((_, j) => (
@@ -141,7 +146,8 @@ const MatchFormationItem: React.FC<{
   cap: Cap;
   readonly: boolean;
   playerOptions: PlayerOption[];
-}> = ({ cap, readonly, playerOptions }) => {
+  bench?: boolean;
+}> = ({ cap, readonly, playerOptions, bench }) => {
   const [opened, { open, close }] = useDisclosure();
 
   const team = useAtomValue(teamAtom)!;
@@ -151,7 +157,7 @@ const MatchFormationItem: React.FC<{
   return (
     <Stack gap={readonly ? 4 : 0}>
       <Button
-        onClick={readonly ? undefined : open}
+        onClick={readonly || bench ? undefined : open}
         variant="transparent"
         color="gray"
         h="auto"
