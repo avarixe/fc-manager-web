@@ -4,11 +4,13 @@ import {
   Box,
   Button,
   Divider,
+  Grid,
   Group,
   Indicator,
   Stack,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { chunk } from "lodash-es";
 
 type PlayerOption = Pick<
   Player,
@@ -30,23 +32,47 @@ export const MatchFormation: React.FC<{
   }, [activeCaps]);
 
   const caps = useAtomValue(capsAtom);
+  const benchCaps = useMemo(() => {
+    const processed = activeCaps.map((activeCap) => activeCap.player_id);
+
+    const bench: Cap[] = [];
+    for (const cap of caps) {
+      if (!processed.includes(cap.player_id)) {
+        bench.push(cap);
+        processed.push(cap.player_id);
+      }
+    }
+    return bench;
+  }, [activeCaps, caps]);
+
+  const benchRows = useMemo(() => {
+    return chunk(benchCaps, 4);
+  }, [benchCaps]);
+
   const match = useAtomValue(matchAtom)!;
+  const team = useAtomValue(teamAtom)!;
+  const isTeamHome = useMemo(
+    () => team.name === match.home_team,
+    [match.home_team, team.name],
+  );
   const changeMinutes = useMemo(() => {
     return [
       ...new Set([
         ...caps.map((cap) => cap.start_minute),
         ...match.bookings
-          .filter((booking) => booking.red_card)
+          .filter((booking) => booking.red_card && isTeamHome === booking.home)
           .map((booking) => booking.minute),
       ]),
     ].sort();
-  }, [caps, match.bookings]);
+  }, [caps, isTeamHome, match.bookings]);
 
   useEffect(() => {
     if (changeMinutes.length > 1) {
       setMinute(changeMinutes[changeMinutes.length - 1]);
     }
   }, [changeMinutes]);
+
+  const opponent = isTeamHome ? match.away_team : match.home_team;
 
   return (
     <Stack gap="xs">
@@ -84,6 +110,29 @@ export const MatchFormation: React.FC<{
         hideEmptyCells
         renderEmptyCell={() => null}
       />
+      <Grid columns={5} mt="xs">
+        <Grid.Col span={4} fz="sm">
+          Bench
+          <Grid columns={4}>
+            {benchRows.map((row, i) => (
+              <>
+                {row.map((cap) => (
+                  <Grid.Col span={1} key={cap.id}>
+                    <MatchFormationItem cap={cap} readonly playerOptions={[]} />
+                  </Grid.Col>
+                ))}
+                {Array.from({ length: 4 - row.length }).map((_, j) => (
+                  <Grid.Col span={1} key={`${i}-${j}`} />
+                ))}
+              </>
+            ))}
+          </Grid>
+        </Grid.Col>
+        <Grid.Col span={1} fz="sm">
+          vs
+          <Box mt="xs">{opponent}</Box>
+        </Grid.Col>
+      </Grid>
     </Stack>
   );
 };

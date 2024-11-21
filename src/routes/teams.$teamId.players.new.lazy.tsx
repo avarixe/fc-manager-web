@@ -84,11 +84,12 @@ const PlayerForm: React.FC<{ team: Tables<"teams"> }> = ({ team }) => {
 
   const supabase = useAtomValue(supabaseAtom);
   const navigate = useNavigate();
+  const { updatePlayerStatus } = usePlayerCallbacks();
   const handleSubmit = useCallback(
     async (values: typeof form.values) => {
       const { data, error } = await supabase
         .from("players")
-        .upsert({
+        .insert({
           ...values,
           history: {
             [team.currently_on]: {
@@ -98,14 +99,17 @@ const PlayerForm: React.FC<{ team: Tables<"teams"> }> = ({ team }) => {
           },
           injuries: [],
         })
-        .select();
+        .select()
+        .single();
       if (data) {
-        navigate({ to: `/teams/${team.id}/players/${data[0].id}` });
+        assertType<Player>(data);
+        updatePlayerStatus(data, team.currently_on);
+        navigate({ to: `/teams/${team.id}/players/${data.id}` });
       } else {
         console.error(error);
       }
     },
-    [form, navigate, supabase, team.currently_on, team.id],
+    [form, navigate, supabase, team.currently_on, team.id, updatePlayerStatus],
   );
 
   const addContract = useCallback(() => {
