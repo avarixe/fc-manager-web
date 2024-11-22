@@ -34,7 +34,11 @@ export const AppNavbar = () => {
         {team && (
           <NavLink
             label={team.name}
-            leftSection={<Avatar src={team.badge_path} />}
+            leftSection={
+              <Avatar src={team.badge_path}>
+                <BaseIcon name="i-mdi:shield-half-full" fz={20} />
+              </Avatar>
+            }
             mt="md"
             defaultOpened
           >

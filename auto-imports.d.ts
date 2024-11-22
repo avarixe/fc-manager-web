@@ -61,6 +61,7 @@ declare global {
   const SubOutIcon: typeof import('./src/components/base/CommonIcons')['SubOutIcon']
   const SubstitutionIcon: typeof import('./src/components/base/CommonIcons')['SubstitutionIcon']
   const TeamAutocomplete: typeof import('./src/components/team/TeamAutocomplete')['TeamAutocomplete']
+  const TeamBadgeUploader: typeof import('./src/components/team/TeamBadgeUploader')['TeamBadgeUploader']
   const TeamDatePicker: typeof import('./src/components/team/TeamDatePicker')['TeamDatePicker']
   const TeamForm: typeof import('./src/components/team/TeamForm')['TeamForm']
   const TransferForm: typeof import('./src/components/player/TransferForm')['TransferForm']

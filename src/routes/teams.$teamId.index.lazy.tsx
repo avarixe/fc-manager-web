@@ -1,6 +1,17 @@
 import { Tables } from "@/database-generated.types";
 import { Player } from "@/types";
-import { Box, Button, Card, Group, Stack, Table, Title } from "@mantine/core";
+import {
+  Avatar,
+  Box,
+  Button,
+  Card,
+  Group,
+  Indicator,
+  Stack,
+  Table,
+  Title,
+} from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
 
 type CompetitionInfo = Pick<Tables<"competitions">, "id" | "name" | "champion">;
@@ -175,6 +186,9 @@ function TeamPage() {
     ]);
   }, [setBreadcrumbs, team?.name, teamId]);
 
+  const [badgeFormOpened, { open: openBadgeForm, close: closeBadgeForm }] =
+    useDisclosure();
+
   if (!team) {
     return null;
   }
@@ -182,9 +196,30 @@ function TeamPage() {
   return (
     <Stack>
       <Box mb="xl">
-        <Title fw="lighter">{team.name}</Title>
-        <Title order={6}>Manager: {team.manager_name}</Title>
-        <Title order={6}>Game: {team.game}</Title>
+        <Group>
+          <Indicator
+            onClick={openBadgeForm}
+            label={<BaseIcon name="i-mdi:circle-edit-outline" fz={15} />}
+            color="transparent"
+            inline
+            position="top-end"
+            zIndex={1}
+            className="cursor-pointer"
+          >
+            <Avatar src={team.badge_path}>
+              <BaseIcon name="i-mdi:shield-half-full" fz={20} />
+            </Avatar>
+          </Indicator>
+          <TeamBadgeUploader
+            opened={badgeFormOpened}
+            onClose={closeBadgeForm}
+          />
+          <Box>
+            <Title fw="lighter">{team.name}</Title>
+            <Title order={6}>Manager: {team.manager_name}</Title>
+            <Title order={6}>Game: {team.game}</Title>
+          </Box>
+        </Group>
       </Box>
       <Group>
         <Button component={Link} to={`/teams/${team.id}/edit`}>

@@ -1,12 +1,12 @@
 import { Tables } from "@/database-generated.types";
 import {
   ActionIcon,
+  Avatar,
   Box,
   Button,
   Card,
   Divider,
   Group,
-  Image,
   Stack,
   Title,
 } from "@mantine/core";
@@ -67,7 +67,9 @@ function HomePage() {
       {currentTeam && (
         <Card>
           <Group>
-            <Image src={currentTeam.badge_path} h={200} fit="contain" p="xs" />
+            <Avatar src={currentTeam.badge_path} size={200}>
+              <BaseIcon name="i-mdi:shield-half-full" fz={120} />
+            </Avatar>
             <Box flex={1}>
               <Group w="100%">
                 <Title order={1}>{currentTeam.name}</Title>
@@ -183,7 +185,9 @@ function HomePage() {
                 return (
                   <Card key={teamId} w={300}>
                     <Group>
-                      <Image src={team.badge_path} h={60} fit="contain" p={4} />
+                      <Avatar src={team.badge_path} size={60}>
+                        <BaseIcon name="i-mdi:shield-half-full" fz={40} />
+                      </Avatar>
                       <Box>
                         <Button
                           component={Link}
