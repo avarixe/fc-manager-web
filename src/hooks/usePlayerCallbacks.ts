@@ -65,18 +65,26 @@ export const usePlayerCallbacks = () => {
               kit_no: null,
             });
           } else {
-            return await savePlayerStatus(player, { status: "Active" });
+            return await savePlayerStatus(player, {
+              status: "Active",
+              wage: lastContract.wage,
+              contract_ends_on: lastContract.ended_on,
+            });
           }
         } else {
           return await savePlayerStatus(player, {
             status: null,
             kit_no: null,
+            wage: null,
+            contract_ends_on: null,
           });
         }
       } else {
         return await savePlayerStatus(player, {
           status: null,
           kit_no: null,
+          wage: null,
+          contract_ends_on: null,
         });
       }
     },

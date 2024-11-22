@@ -328,7 +328,12 @@ function CompetitionPage() {
         </Title>
         <Divider my="xs" />
 
-        <MatchTable filters={{ competition: competition.name }} />
+        <MatchTable
+          filters={{
+            competition: competition.name,
+            season: String(competition.season),
+          }}
+        />
       </Box>
     </Stack>
   );

@@ -51,12 +51,14 @@ export const ContractForm: React.FC<{
   const team = useAtomValue(teamAtom)!;
   const { currentSeason } = useTeamHelpers(team);
   useEffect(() => {
-    form.setFieldValue(
-      "ended_on",
-      dayjs(team.started_on)
-        .add(numSeasons + currentSeason, "year")
-        .format("YYYY-MM-DD"),
-    );
+    if (!record) {
+      form.setFieldValue(
+        "ended_on",
+        dayjs(team.started_on)
+          .add(numSeasons + currentSeason, "year")
+          .format("YYYY-MM-DD"),
+      );
+    }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentSeason, numSeasons, team.started_on, opened]);
