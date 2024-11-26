@@ -22,6 +22,7 @@ const columns = [
         </Button>
       );
     },
+    meta: { sortable: true },
   }),
   columnHelper.accessor("started_on", {
     header: "Start Date",
@@ -29,6 +30,7 @@ const columns = [
       const value = info.getValue();
       return formatDate(value);
     },
+    meta: { align: "center", sortable: true },
   }),
   columnHelper.accessor("currently_on", {
     header: "Current Date",
@@ -36,52 +38,31 @@ const columns = [
       const value = info.getValue();
       return formatDate(value);
     },
+    meta: { align: "center", sortable: true },
   }),
   columnHelper.accessor("manager_name", {
     header: "Manager Name",
+    meta: { align: "center", sortable: true },
   }),
   columnHelper.accessor("game", {
     header: "Game",
+    meta: { align: "center", sortable: true },
   }),
 ];
 
 function TeamsPage() {
   const supabase = useAtomValue(supabaseAtom);
   const [teams, setTeams] = useState<Tables<"teams">[]>([]);
-  const [tableState, setTableState] = useState({
-    pageIndex: 0,
-    pageSize: 10,
-    rowCount: 0,
-  });
   useEffect(() => {
-    const fetchPage = async () => {
-      const pageQuery = supabase
-        .from("teams")
-        .select()
-        .range(
-          tableState.pageSize * tableState.pageIndex,
-          tableState.pageSize * (tableState.pageIndex + 1) - 1,
-        );
-
-      pageQuery.order("id", { ascending: false });
-
-      const { count } = await supabase
-        .from("teams")
-        .select("id", { count: "exact", head: true });
-      const { data, error } = await pageQuery;
-      if (error) {
-        console.error(error);
-      } else {
+    const fetchTeams = async () => {
+      const { data } = await supabase.from("teams").select();
+      if (data) {
         setTeams(data);
-        setTableState((prev) => ({
-          ...prev,
-          rowCount: count ?? 0,
-        }));
       }
     };
 
-    fetchPage();
-  }, [supabase, tableState.pageIndex, tableState.pageSize]);
+    fetchTeams();
+  }, [supabase]);
 
   const setBreadcrumbs = useSetAtom(breadcrumbsAtom);
   useEffect(() => {
@@ -106,12 +87,7 @@ function TeamsPage() {
         </Button>
       </Group>
 
-      <DataTable
-        data={teams}
-        columns={columns}
-        tableState={tableState}
-        setTableState={setTableState}
-      />
+      <LocalDataTable data={teams} columns={columns} sortBy="started_on" />
     </Stack>
   );
 }
