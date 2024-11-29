@@ -12,7 +12,7 @@ import { useForm } from "@mantine/form";
 import { keyBy } from "lodash-es";
 
 interface FormationChange {
-  minute: number;
+  minute: number | string;
   stoppage_time?: number;
   formation: Record<string, number>;
 }
@@ -30,7 +30,7 @@ export const MatchFormationForm: React.FC<{
 }> = ({ opened, onClose }) => {
   const form = useForm<FormationChange>({
     initialValues: {
-      minute: 1,
+      minute: "",
       stoppage_time: undefined,
       formation: {},
     },
@@ -68,7 +68,9 @@ export const MatchFormationForm: React.FC<{
   const [loading, setLoading] = useState(false);
   const [match, setMatch] = useAtom(matchAtom)!;
   const { resolveFormationChanges } = useMatchCallbacks();
-  const { capsAtMinute } = useMatchState(form.values.minute);
+  const { capsAtMinute, inStoppageTime } = useMatchState(
+    Number(form.values.minute),
+  );
   const handleSubmit = useCallback(async () => {
     if (!form.isValid()) {
       return;
@@ -111,7 +113,7 @@ export const MatchFormationForm: React.FC<{
         const oldItem = oldItems[oldItemIndex];
         changes.push({
           timestamp,
-          minute: form.values.minute,
+          minute: Number(form.values.minute),
           stoppage_time: form.values.stoppage_time,
           injured: false,
           out: {
@@ -136,7 +138,7 @@ export const MatchFormationForm: React.FC<{
         const oldItem = oldItems[oldItemIndex];
         changes.push({
           timestamp,
-          minute: form.values.minute,
+          minute: Number(form.values.minute),
           stoppage_time: form.values.stoppage_time,
           injured: false,
           out: {
@@ -159,7 +161,7 @@ export const MatchFormationForm: React.FC<{
       const oldItem = oldItems[i];
       changes.push({
         timestamp,
-        minute: form.values.minute,
+        minute: Number(form.values.minute),
         stoppage_time: form.values.stoppage_time,
         injured: false,
         out: {
@@ -215,7 +217,9 @@ export const MatchFormationForm: React.FC<{
     return (
       11 -
       caps.filter(
-        (cap) => cap.stop_minute <= form.values.minute && cap.num_red_cards > 0,
+        (cap) =>
+          cap.stop_minute <= Number(form.values.minute) &&
+          cap.num_red_cards > 0,
       ).length
     );
   }, [caps, form.values.minute]);
@@ -302,7 +306,7 @@ export const MatchFormationForm: React.FC<{
             min={1}
             max={match!.extra_time ? 120 : 90}
           />
-          {[45, 90, 105, 120].includes(form.values.minute) && (
+          {inStoppageTime && (
             <NumberInput
               {...form.getInputProps("stoppage_time")}
               label="Stoppage Time"

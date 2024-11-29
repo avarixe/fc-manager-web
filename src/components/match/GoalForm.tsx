@@ -49,10 +49,10 @@ export const BaseGoalForm: React.FC<{
   opened: boolean;
   onSubmit: (goal: Goal) => Promise<void>;
 }> = ({ record, prefill, opened, onSubmit }) => {
-  const form = useForm<Goal>({
+  const form = useForm({
     initialValues: {
       timestamp: record?.timestamp ?? new Date().valueOf(),
-      minute: record?.minute ?? 1,
+      minute: record?.minute ?? "",
       stoppage_time: record?.stoppage_time,
       player_name: record?.player_name ?? prefill?.player_name ?? "",
       assisted_by: record?.assisted_by ?? null,
@@ -100,11 +100,14 @@ export const BaseGoalForm: React.FC<{
     }
 
     setLoading(true);
+    assertType<Goal>(form.values);
     await onSubmit(form.values);
     setLoading(false);
   }, [form, onSubmit]);
 
-  const { capsAtMinute } = useMatchState(form.values.minute);
+  const { capsAtMinute, inStoppageTime } = useMatchState(
+    Number(form.values.minute),
+  );
   const capOptions = useMemo(
     () =>
       capsAtMinute.map((cap) => ({
@@ -152,7 +155,7 @@ export const BaseGoalForm: React.FC<{
           min={1}
           max={match.extra_time ? 120 : 90}
         />
-        {[45, 90, 105, 120].includes(form.values.minute) && (
+        {inStoppageTime && (
           <NumberInput
             {...form.getInputProps("stoppage_time")}
             label="Stoppage Time"

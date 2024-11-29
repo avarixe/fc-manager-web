@@ -22,10 +22,16 @@ export default (minute: number) => {
     [capsAtMinute, minute],
   );
 
+  const inStoppageTime = useMemo(
+    () => [45, 90, 105, 120].includes(minute),
+    [minute],
+  );
+
   return {
     minute,
     sortedCaps,
     activeCaps,
     capsAtMinute,
+    inStoppageTime,
   };
 };

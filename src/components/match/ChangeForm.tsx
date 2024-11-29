@@ -59,7 +59,7 @@ export const BaseChangeForm: React.FC<{
   const form = useForm({
     initialValues: {
       timestamp: record?.timestamp ?? new Date().valueOf(),
-      minute: record?.minute ?? 1,
+      minute: record?.minute ?? "",
       stoppage_time: record?.stoppage_time,
       injured: record?.injured ?? false,
       out: {
@@ -110,11 +110,14 @@ export const BaseChangeForm: React.FC<{
     }
 
     setLoading(true);
+    assertType<Change>(form.values);
     await onSubmit(form.values);
     setLoading(false);
   }, [form, onSubmit]);
 
-  const { capsAtMinute } = useMatchState(form.values.minute);
+  const { capsAtMinute, inStoppageTime } = useMatchState(
+    Number(form.values.minute),
+  );
   const caps = useAtomValue(capsAtom);
   const capOptions = useMemo(() => {
     const options = [...capsAtMinute];
@@ -161,7 +164,7 @@ export const BaseChangeForm: React.FC<{
           min={1}
           max={match.extra_time ? 120 : 90}
         />
-        {[45, 90, 105, 120].includes(form.values.minute) && (
+        {inStoppageTime && (
           <NumberInput
             {...form.getInputProps("stoppage_time")}
             label="Stoppage Time"

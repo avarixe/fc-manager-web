@@ -53,10 +53,10 @@ export const BaseBookingForm: React.FC<{
   opened: boolean;
   onSubmit: (booking: Booking) => Promise<void>;
 }> = ({ record, prefill, opened, onSubmit }) => {
-  const form = useForm<Booking>({
+  const form = useForm({
     initialValues: {
       timestamp: record?.timestamp ?? new Date().valueOf(),
-      minute: record?.minute ?? 1,
+      minute: record?.minute ?? "",
       stoppage_time: record?.stoppage_time,
       player_name: record?.player_name ?? prefill?.player_name ?? "",
       home: record?.home ?? prefill?.home ?? true,
@@ -84,11 +84,14 @@ export const BaseBookingForm: React.FC<{
     }
 
     setLoading(true);
+    assertType<Booking>(form.values);
     await onSubmit(form.values);
     setLoading(false);
   }, [form, onSubmit]);
 
-  const { capsAtMinute } = useMatchState(form.values.minute);
+  const { capsAtMinute, inStoppageTime } = useMatchState(
+    Number(form.values.minute),
+  );
   const caps = useAtomValue(capsAtom);
   const capOptions = useMemo(() => {
     const options = [...capsAtMinute];
@@ -150,7 +153,7 @@ export const BaseBookingForm: React.FC<{
           min={1}
           max={match.extra_time ? 120 : 90}
         />
-        {[45, 90, 105, 120].includes(form.values.minute) && (
+        {inStoppageTime && (
           <NumberInput
             {...form.getInputProps("stoppage_time")}
             label="Stoppage Time"
