@@ -102,9 +102,7 @@ export const LoanForm: React.FC<{
           label="Return Date"
           rightSection={
             <ActionIcon
-              onClick={() =>
-                form.setFieldValue("started_on", team.currently_on)
-              }
+              onClick={() => form.setFieldValue("ended_on", team.currently_on)}
               variant="transparent"
               color="gray"
             >
