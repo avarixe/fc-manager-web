@@ -289,6 +289,7 @@ function CompetitionPage() {
         <Divider my="xs" />
 
         <Accordion
+          key={competition.id}
           defaultValue={[StageType.Group, StageType.Knockout]}
           multiple
         >
