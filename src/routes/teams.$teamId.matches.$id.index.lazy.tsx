@@ -312,6 +312,7 @@ function MatchPage() {
         </Title>
         <Title order={4} fw="bolder">
           {match.competition} {match.stage}
+          {match.friendly ? " (Friendly)" : null}
         </Title>
         <Title order={6}>{formatDate(match.played_on)}</Title>
       </Box>
