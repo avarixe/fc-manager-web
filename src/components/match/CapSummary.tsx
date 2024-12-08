@@ -21,7 +21,7 @@ export const CapSummary: React.FC<GroupProps & { cap: Cap }> = ({
     <Group gap="xs" {...rest}>
       {startMinute > 0 && (
         <Indicator
-          label={startMinute}
+          label={`${startMinute}'`}
           color="transparent"
           inline
           position="bottom-end"
@@ -67,13 +67,13 @@ export const CapSummary: React.FC<GroupProps & { cap: Cap }> = ({
       {(numRedCards > 0 || numYellowCards > 1) && <RedCardIcon />}
       {subbedOut && (
         <Indicator
-          label={stopMinute}
+          label={`${stopMinute}'`}
           color="transparent"
           inline
           position="bottom-end"
           zIndex={1}
         >
-          {injured ? <InjuryIcon /> : <SubOutIcon />}
+          {injured ? <MatchInjuryIcon /> : <SubOutIcon />}
         </Indicator>
       )}
     </Group>

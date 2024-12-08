@@ -2,7 +2,9 @@ import { Cap, Booking, Goal, Match, Player, Change } from "@/types";
 import {
   Box,
   Button,
+  Divider,
   Group,
+  RingProgress,
   Stack,
   Switch,
   ThemeIcon,
@@ -79,62 +81,19 @@ export const MatchTimeline: React.FC<{
     );
   }, [match.changes, match.goals, match.bookings, match.home_team, team.name]);
 
+  const firstHalfItems = useMemo(() => {
+    return items.filter((item) => item.minute <= 45);
+  }, [items]);
+  const secondHalfItems = useMemo(() => {
+    return items.filter((item) => 45 < item.minute && item.minute <= 90);
+  }, [items]);
+  const extraTimeItems = useMemo(() => {
+    return items.filter((item) => 90 < item.minute && item.minute <= 120);
+  }, [items]);
+
   const { createGoal, updateGoal, removeGoal } = useManageGoals();
   const { createBooking, updateBooking, removeBooking } = useManageBookings();
   const { createChange, updateChange, removeChange } = useManageChanges();
-
-  const renderItem = useCallback(
-    (item: MatchEvent) => {
-      switch (item.type) {
-        case MatchEventType.Goal:
-          assertType<Goal>(item);
-          return (
-            <GoalEvent
-              goal={item}
-              readonly={readonly}
-              onSubmit={(goal) => updateGoal(item.index, goal)}
-              onRemove={() => removeGoal(item.index)}
-            />
-          );
-        case MatchEventType.Booking:
-          assertType<Booking>(item);
-          return (
-            <BookingEvent
-              booking={item}
-              readonly={readonly}
-              onSubmit={(booking) => updateBooking(item.index, booking)}
-              onRemove={() => removeBooking(item.index)}
-            />
-          );
-        case MatchEventType.Change:
-          assertType<{ changes: Change[] }>(item);
-          return (
-            <Stack>
-              {item.changes.map((itemChange, i) => (
-                <ChangeEvent
-                  key={i}
-                  change={itemChange}
-                  playerOptions={playerOptions}
-                  readonly={readonly}
-                  onSubmit={(change) => updateChange(itemChange.index, change)}
-                  onRemove={() => removeChange(itemChange.index)}
-                />
-              ))}
-            </Stack>
-          );
-      }
-    },
-    [
-      playerOptions,
-      readonly,
-      removeBooking,
-      removeChange,
-      removeGoal,
-      updateBooking,
-      updateChange,
-      updateGoal,
-    ],
-  );
 
   const [newGoalOpened, { open: openNewGoal, close: closeNewGoal }] =
     useDisclosure();
@@ -146,6 +105,15 @@ export const MatchTimeline: React.FC<{
     penaltyShootoutOpened,
     { open: openPenaltyShootout, close: closePenaltyShootout },
   ] = useDisclosure();
+
+  const scoreAtMinute = useCallback(
+    (minute: number) => {
+      const goals = match.goals.filter((goal) => goal.minute <= minute);
+      const home = goals.filter((goal) => goal.home !== goal.own_goal).length;
+      return `${home} - ${goals.length - home}`;
+    },
+    [match.goals],
+  );
 
   const supabase = useAtomValue(supabaseAtom);
   const updateMatch = useCallback(
@@ -192,6 +160,89 @@ export const MatchTimeline: React.FC<{
       setCaps(newCaps);
     },
     [caps, getUnsubbedCaps, setCaps, supabase, updateMatch],
+  );
+
+  const renderMatchEvent = useCallback(
+    (item: MatchEvent) => {
+      switch (item.type) {
+        case MatchEventType.Goal:
+          assertType<Goal>(item);
+          return (
+            <GoalEvent
+              goal={item}
+              goalIndex={item.index}
+              readonly={readonly}
+              onSubmit={(goal) => updateGoal(item.index, goal)}
+              onRemove={() => removeGoal(item.index)}
+            />
+          );
+        case MatchEventType.Booking:
+          assertType<Booking>(item);
+          return (
+            <BookingEvent
+              booking={item}
+              readonly={readonly}
+              onSubmit={(booking) => updateBooking(item.index, booking)}
+              onRemove={() => removeBooking(item.index)}
+            />
+          );
+        case MatchEventType.Change:
+          assertType<{ changes: Change[] }>(item);
+          return (
+            <Stack>
+              {item.changes.map((itemChange, i) => (
+                <ChangeEvent
+                  key={i}
+                  change={itemChange}
+                  playerOptions={playerOptions}
+                  readonly={readonly}
+                  onSubmit={(change) => updateChange(itemChange.index, change)}
+                  onRemove={() => removeChange(itemChange.index)}
+                />
+              ))}
+            </Stack>
+          );
+      }
+    },
+    [
+      playerOptions,
+      readonly,
+      removeBooking,
+      removeChange,
+      removeGoal,
+      updateBooking,
+      updateChange,
+      updateGoal,
+    ],
+  );
+
+  const renderItem = useCallback(
+    (item: MatchEvent, index: number) => {
+      return (
+        <Timeline.Item
+          key={index}
+          bullet={
+            <ThemeIcon
+              size="md"
+              radius="xl"
+              color={item.home ? "cyan" : "teal"}
+            >
+              <Box ta="center" fz={12} size="xs">
+                {item.minute}'
+                {item.stoppage_time ? <Box>+{item.stoppage_time}</Box> : null}
+              </Box>
+            </ThemeIcon>
+          }
+          mt="sm"
+        >
+          <MText size="xs" c={item.home ? "cyan" : "teal"}>
+            {item.home ? match.home_team : match.away_team}
+          </MText>
+          {renderMatchEvent(item)}
+        </Timeline.Item>
+      );
+    },
+    [match.away_team, match.home_team, renderMatchEvent],
   );
 
   return (
@@ -246,61 +297,142 @@ export const MatchTimeline: React.FC<{
         </Timeline.Item>
       )}
 
-      {items.map((item, index) => (
-        <Timeline.Item
-          key={index}
-          bullet={
-            <ThemeIcon
-              size="md"
-              radius="xl"
-              color={item.home ? "cyan" : "teal"}
-            >
-              <Box ta="center" fz={12} size="xs">
-                {item.minute}'
-                {item.stoppage_time ? <Box>+{item.stoppage_time}</Box> : null}
-              </Box>
-            </ThemeIcon>
-          }
-        >
-          <MText size="xs" c={item.home ? "cyan" : "teal"}>
-            {item.home ? match.home_team : match.away_team}
-          </MText>
-          {renderItem(item)}
-        </Timeline.Item>
-      ))}
+      {firstHalfItems.map((item, index) => renderItem(item, index))}
       <Timeline.Item
         bullet={
           <ThemeIcon size="md" radius="xl" color="transparent">
-            <Box className="i-mdi:timer-outline h-6 w-6" />
+            <RingProgress
+              label={
+                <MText size="xs" ta="center">
+                  HT
+                </MText>
+              }
+              size={32}
+              thickness={3}
+              sections={[
+                { value: 50, color: "white" },
+                { value: 50, color: "gray.6" },
+              ]}
+            />
           </ThemeIcon>
         }
+        mt="sm"
       >
-        End of Match
-        {!readonly && (
-          <>
-            <Switch
-              label="After Extra Time"
-              checked={match.extra_time}
-              onChange={(event) =>
-                onChangeExtraTime(event.currentTarget.checked)
-              }
-              my="xs"
-            />
-            {!(match.home_penalty_score || match.away_penalty_score) && (
-              <>
-                <Button onClick={openPenaltyShootout} color="grape">
-                  Penalty Shootout
-                </Button>
-                <PenaltyShootoutForm
-                  opened={penaltyShootoutOpened}
-                  onClose={closePenaltyShootout}
-                  onSubmit={updateMatch}
-                />
-              </>
-            )}
-          </>
-        )}
+        <Group>
+          <Divider style={{ flexGrow: 1 }} />
+          <Box ta="center">
+            <Box fz="xs" h="sm">
+              Half-Time
+            </Box>
+            <Box fw="bold">{scoreAtMinute(45)}</Box>
+          </Box>
+          <Divider style={{ flexGrow: 1 }} />
+        </Group>
       </Timeline.Item>
+      {secondHalfItems.map((item, index) => renderItem(item, index))}
+      <Timeline.Item
+        bullet={
+          <ThemeIcon size="md" radius="xl" color="transparent">
+            <RingProgress
+              label={
+                <MText size="xs" ta="center">
+                  FT
+                </MText>
+              }
+              size={32}
+              thickness={3}
+              sections={[{ value: 100, color: "white" }]}
+            />
+          </ThemeIcon>
+        }
+        mt="sm"
+      >
+        <Stack gap={1} align="center">
+          <Group w="100%">
+            <Divider style={{ flexGrow: 1 }} />
+            <Box ta="center">
+              <Box fz="xs" h="sm">
+                Full-Time
+              </Box>
+              <Box fw="bold">{scoreAtMinute(90)}</Box>
+            </Box>
+            <Divider style={{ flexGrow: 1 }} />
+          </Group>
+          {!readonly && (
+            <>
+              <Switch
+                label="Extra Time"
+                checked={match.extra_time}
+                onChange={(event) =>
+                  onChangeExtraTime(event.currentTarget.checked)
+                }
+                my="xs"
+              />
+              {!(match.home_penalty_score || match.away_penalty_score) &&
+                !match.extra_time && (
+                  <>
+                    <Button onClick={openPenaltyShootout} color="grape">
+                      Penalty Shootout
+                    </Button>
+                    <PenaltyShootoutForm
+                      opened={penaltyShootoutOpened}
+                      onClose={closePenaltyShootout}
+                      onSubmit={updateMatch}
+                    />
+                  </>
+                )}
+            </>
+          )}
+        </Stack>
+      </Timeline.Item>
+      {extraTimeItems.map((item, index) => renderItem(item, index))}
+      {match.extra_time && (
+        <Timeline.Item
+          bullet={
+            <ThemeIcon size="md" radius="xl" color="transparent">
+              <RingProgress
+                label={
+                  <MText size="xs" ta="center">
+                    AET
+                  </MText>
+                }
+                size={32}
+                thickness={3}
+                sections={[{ value: 100, color: "white" }]}
+              />
+            </ThemeIcon>
+          }
+          mt="sm"
+        >
+          <Stack gap={1} align="center">
+            <Group w="100%">
+              <Divider style={{ flexGrow: 1 }} />
+              <Box ta="center">
+                <Box fz="xs" h="sm">
+                  After Extra-Time
+                </Box>
+                <Box fw="bold">
+                  {match.home_score} - {match.away_score}
+                </Box>
+              </Box>
+              <Divider style={{ flexGrow: 1 }} />
+            </Group>
+            {!readonly &&
+              !(match.home_penalty_score || match.away_penalty_score) && (
+                <>
+                  <Button onClick={openPenaltyShootout} color="grape" mt="xs">
+                    Penalty Shootout
+                  </Button>
+                  <PenaltyShootoutForm
+                    opened={penaltyShootoutOpened}
+                    onClose={closePenaltyShootout}
+                    onSubmit={updateMatch}
+                  />
+                </>
+              )}
+          </Stack>
+        </Timeline.Item>
+      )}
       {Boolean(match.home_penalty_score || match.away_penalty_score) && (
         <PenaltyShootoutEvent onSubmit={updateMatch} readonly={readonly} />
       )}
@@ -310,27 +442,71 @@ export const MatchTimeline: React.FC<{
 
 const GoalEvent: React.FC<{
   goal: Goal;
+  goalIndex: number;
   readonly: boolean;
   onSubmit: (goal: Goal) => Promise<void>;
   onRemove: () => Promise<void>;
-}> = ({ goal, readonly, onSubmit, onRemove }) => {
+}> = ({ goal, goalIndex, readonly, onSubmit, onRemove }) => {
   const [opened, { open, close }] = useDisclosure();
 
+  const setPiece = useMemo(() => {
+    switch (goal.set_piece) {
+      case "DFK":
+        return "Direct Free Kick";
+      case "IFK":
+        return "Indirect Free Kick";
+      case "PK":
+        return "Penalty";
+      case "CK":
+        return "Corner";
+      default:
+        return null;
+    }
+  }, [goal.set_piece]);
+
+  const match = useAtomValue(matchAtom)!;
+  const scores = useMemo(() => {
+    return match.goals.slice(0, goalIndex + 1).reduce(
+      (goals, matchGoal) => {
+        goals[matchGoal.home !== matchGoal.own_goal ? 0 : 1] += 1;
+        return goals;
+      },
+      [0, 0],
+    );
+  }, [goalIndex, match.goals]);
+
   return (
-    <div>
-      <div className="flex items-center flex-gap-1">
-        <GoalIcon c={goal.own_goal ? "red.9" : "blue"} />
-        {goal.player_name}
-        {goal.set_piece ? ` (${goal.set_piece})` : null}
+    <Group>
+      <div>
+        <Group gap="xs" fz="sm">
+          <GoalIcon c={goal.own_goal ? "red.9" : "blue"} />
+          {goal.player_name}
+          <Box fw="bold">
+            (
+            <Box component="span" c={goal.home ? "green" : undefined}>
+              {scores[0]}
+            </Box>
+            &nbsp;-&nbsp;
+            <Box component="span" c={goal.home ? undefined : "green"}>
+              {scores[1]}
+            </Box>
+            )
+          </Box>
+        </Group>
         {goal.assisted_by && (
-          <>
+          <Group gap="xs" fz="xs">
             <AssistIcon />
             {goal.assisted_by}
-          </>
+          </Group>
+        )}
+        {setPiece && (
+          <Box fz="xs" c="grey">
+            {setPiece}
+          </Box>
         )}
       </div>
       {!readonly && (
-        <Group mt="sm">
+        <Group ml="sm">
           <Button
             onClick={open}
             variant="subtle"
@@ -355,7 +531,7 @@ const GoalEvent: React.FC<{
           </Button>
         </Group>
       )}
-    </div>
+    </Group>
   );
 };
 
@@ -368,13 +544,13 @@ const BookingEvent: React.FC<{
   const [opened, { open, close }] = useDisclosure();
 
   return (
-    <div>
-      <div className="flex items-center flex-gap-1">
+    <Group>
+      <Group fz="sm">
         {booking.red_card ? <RedCardIcon /> : <YellowCardIcon />}
         {booking.player_name}
-      </div>
+      </Group>
       {!readonly && (
-        <Group mt="sm">
+        <Group ml="sm">
           <Button
             onClick={open}
             variant="subtle"
@@ -399,7 +575,7 @@ const BookingEvent: React.FC<{
           </Button>
         </Group>
       )}
-    </div>
+    </Group>
   );
 };
 
@@ -412,27 +588,43 @@ const ChangeEvent: React.FC<{
 }> = ({ change, playerOptions, readonly, onSubmit, onRemove }) => {
   const [opened, { open, close }] = useDisclosure();
 
+  const isSamePlayer = change.out.name === change.in.name;
+
   return (
-    <div>
-      <div className="flex items-center flex-gap-1">
-        <Box
-          className={
-            change.injured ? "i-mdi:ambulance" : "i-mdi:arrow-left-bottom"
-          }
-          c={change.injured ? "pink" : "red"}
-        />
-        {change.out.name}
-        <MText component="span" fw="bold">
-          {change.out.pos}
-        </MText>
-        <Box className="i-mdi:arrow-right-bottom" c="green" />
-        {change.in.name}
-        <MText component="span" fw="bold">
-          {change.in.pos}
-        </MText>
-      </div>
+    <Group>
+      <Box fz="sm">
+        <Group h="lg">
+          {isSamePlayer ? (
+            <BaseIcon name="i-mdi:vector-polyline" c="orange" />
+          ) : (
+            <SubOutIcon />
+          )}
+          {change.injured && <MatchInjuryIcon />}
+          {change.out.name}
+          <MText component="span" fw="bold">
+            {change.out.pos}
+          </MText>
+          {isSamePlayer && (
+            <>
+              <BaseIcon name="i-mdi:arrow-right" />
+              <MText component="span" fw="bold">
+                {change.in.pos}
+              </MText>
+            </>
+          )}
+        </Group>
+        {!isSamePlayer && (
+          <Group h="lg">
+            <SubInIcon />
+            {change.in.name}
+            <MText component="span" fw="bold">
+              {change.in.pos}
+            </MText>
+          </Group>
+        )}
+      </Box>
       {!readonly && (
-        <Group mt="sm">
+        <Group ml="sm">
           <Button
             onClick={open}
             variant="subtle"
@@ -458,7 +650,7 @@ const ChangeEvent: React.FC<{
           </Button>
         </Group>
       )}
-    </div>
+    </Group>
   );
 };
 
@@ -493,55 +685,61 @@ const PenaltyShootoutEvent: React.FC<{
   return (
     <Timeline.Item
       bullet={
-        <ThemeIcon size="md" radius="xl" color="grape">
-          <MText size="xs">PS</MText>
+        <ThemeIcon size="md" radius="xl" color="transparent">
+          <RingProgress
+            label={
+              <MText size="xs" ta="center">
+                PS
+              </MText>
+            }
+            size={32}
+            thickness={3}
+            sections={[{ value: 100, color: "white" }]}
+          />
         </ThemeIcon>
       }
+      mt="sm"
     >
-      <MText
-        fw={
-          Number(match.home_penalty_score) > Number(match.away_penalty_score)
-            ? "bold"
-            : undefined
-        }
-      >
-        {match.home_penalty_score} - {match.home_team}
-      </MText>
-      <MText
-        fw={
-          Number(match.home_penalty_score) < Number(match.away_penalty_score)
-            ? "bold"
-            : undefined
-        }
-      >
-        {match.away_penalty_score} - {match.away_team}
-      </MText>
-
-      {!readonly && (
-        <Group mt="sm">
-          <Button
-            onClick={open}
-            variant="subtle"
-            size="compact-sm"
-            color="orange"
-          >
-            Edit
-          </Button>
-          <PenaltyShootoutForm
-            opened={opened}
-            onClose={close}
-            onSubmit={onSubmit}
-          />
-          <Button
-            onClick={removePenaltyShootout}
-            variant="subtle"
-            size="compact-sm"
-            color="gray"
-          >
-            Delete
-          </Button>
+      <Stack gap={1} align="center">
+        <Group w="100%">
+          <Divider style={{ flexGrow: 1 }} />
+          <Box ta="center">
+            <Box fz="xs" h="sm">
+              Penalty Shootout
+            </Box>
+            <Box fw="bold">
+              {match.home_penalty_score} - {match.away_penalty_score}
+            </Box>
+          </Box>
+          <Divider style={{ flexGrow: 1 }} />
         </Group>
-      )}
+
+        {!readonly && (
+          <Group>
+            <Button
+              onClick={open}
+              variant="subtle"
+              size="compact-sm"
+              color="orange"
+            >
+              Edit
+            </Button>
+            <PenaltyShootoutForm
+              opened={opened}
+              onClose={close}
+              onSubmit={onSubmit}
+            />
+            <Button
+              onClick={removePenaltyShootout}
+              variant="subtle"
+              size="compact-sm"
+              color="gray"
+            >
+              Delete
+            </Button>
+          </Group>
+        )}
+      </Stack>
     </Timeline.Item>
   );
 };

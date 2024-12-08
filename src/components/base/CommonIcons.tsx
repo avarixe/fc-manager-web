@@ -53,7 +53,11 @@ export const SubInIcon: React.FC<BoxProps> = (props) => (
 );
 
 export const SubOutIcon: React.FC<BoxProps> = (props) => (
-  <BaseIcon name="i-mdi:arrow-left-bottom" c="red" {...props} />
+  <BaseIcon name="i-mdi:arrow-left-bottom" c="red.5" {...props} />
+);
+
+export const MatchInjuryIcon: React.FC<BoxProps> = (props) => (
+  <BaseIcon name="i-mdi:bandage" c="pink" {...props} />
 );
 
 export const SubstitutionIcon: React.FC<BoxProps> = (props) => (

@@ -598,13 +598,22 @@ const MatchInfo: React.FC<{
         </Table.Tr>
         <Table.Tr>
           <Table.Td ta="end" fz="xl" fw={1000} c={scoreColor}>
-            {match.home_score}{" "}
-            {match.home_penalty_score ? `(${match.home_penalty_score})` : null}
+            {match.home_score}
+            {match.home_penalty_score ? ` (${match.home_penalty_score})` : null}
           </Table.Td>
-          <Table.Td ta="center">Score</Table.Td>
+          <Table.Td ta="center">
+            <div>Score</div>
+            {match.extra_time && (
+              <Box c="grey" fz="xs">
+                After Extra Time
+              </Box>
+            )}
+          </Table.Td>
           <Table.Td fz="xl" fw={1000} c={scoreColor}>
-            {match.away_score}{" "}
-            {match.away_penalty_score ? `(${match.away_penalty_score})` : null}
+            {match.away_score}
+            {match.away_penalty_score !== null
+              ? ` (${match.away_penalty_score})`
+              : null}
           </Table.Td>
         </Table.Tr>
         {((match.home_xg !== null && match.away_xg !== null) || !readonly) && (

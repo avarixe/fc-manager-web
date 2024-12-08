@@ -41,6 +41,7 @@ declare global {
   const MatchForm: typeof import('./src/components/match/MatchForm')['MatchForm']
   const MatchFormation: typeof import('./src/components/match/MatchFormation')['MatchFormation']
   const MatchFormationForm: typeof import('./src/components/match/MatchFormationForm')['MatchFormationForm']
+  const MatchInjuryIcon: typeof import('./src/components/base/CommonIcons')['MatchInjuryIcon']
   const MatchLineup: typeof import('./src/components/match/MatchLineup')['MatchLineup']
   const MatchPosType: typeof import('./src/constants/index')['MatchPosType']
   const MatchTable: typeof import('./src/components/match/MatchTable')['MatchTable']

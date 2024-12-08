@@ -11,7 +11,7 @@ export function matchScore(
     score += ` (${match.home_penalty_score})`;
   }
   score += ` - ${match.away_score}`;
-  if (match.away_penalty_score) {
+  if (match.away_penalty_score !== null) {
     score += ` (${match.away_penalty_score})`;
   }
   return score;
