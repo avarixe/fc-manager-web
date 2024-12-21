@@ -11,6 +11,7 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { chunk } from "lodash-es";
+import React from "react";
 
 type PlayerOption = Pick<
   Player,
@@ -33,7 +34,7 @@ export const MatchFormation: React.FC<{
 
   const caps = useAtomValue(capsAtom);
   const benchCaps = useMemo(() => {
-    const processed = activeCaps.map((activeCap) => activeCap.player_id);
+    const processed = activeCaps.map((cap) => cap.player_id);
 
     const bench: Cap[] = [];
     for (const cap of caps) {
@@ -79,10 +80,10 @@ export const MatchFormation: React.FC<{
       {changeMinutes.length > 1 && (
         <Group px="xl">
           {changeMinutes.map((changeMinute, i) => (
-            <>
+            <React.Fragment key={`changeMinute-${i}`}>
               <ActionIcon
                 onClick={() => setMinute(changeMinute)}
-                key={changeMinute}
+                key={`setMinute-${changeMinute}`}
                 variant={changeMinute === minute ? "filled" : "light"}
                 size="lg"
                 radius="xl"
@@ -91,9 +92,9 @@ export const MatchFormation: React.FC<{
                 {changeMinute}'
               </ActionIcon>
               {i !== changeMinutes.length - 1 && (
-                <Divider key={i} style={{ flexGrow: 1 }} />
+                <Divider key={`divider-${i}`} style={{ flexGrow: 1 }} />
               )}
-            </>
+            </React.Fragment>
           ))}
         </Group>
       )}
@@ -115,7 +116,7 @@ export const MatchFormation: React.FC<{
           Bench
           <Grid columns={4}>
             {benchRows.map((row, i) => (
-              <>
+              <React.Fragment key={`benchRow-${i}`}>
                 {row.map((cap) => (
                   <Grid.Col span={1} key={cap.id}>
                     <MatchFormationItem
@@ -129,7 +130,7 @@ export const MatchFormation: React.FC<{
                 {Array.from({ length: 4 - row.length }).map((_, j) => (
                   <Grid.Col span={1} key={`${i}-${j}`} />
                 ))}
-              </>
+              </React.Fragment>
             ))}
           </Grid>
         </Grid.Col>

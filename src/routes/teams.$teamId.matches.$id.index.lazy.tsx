@@ -626,6 +626,8 @@ const MatchInfo: React.FC<{
                 hideControls
                 allowNegative={false}
                 readOnly={readonly}
+                fixedDecimalScale={readonly}
+                decimalScale={readonly ? 1 : undefined}
                 classNames={{ input: "text-right" }}
               />
             </Table.Td>
@@ -637,6 +639,8 @@ const MatchInfo: React.FC<{
                 hideControls
                 allowNegative={false}
                 readOnly={readonly}
+                fixedDecimalScale={readonly}
+                decimalScale={readonly ? 1 : undefined}
               />
             </Table.Td>
           </Table.Tr>

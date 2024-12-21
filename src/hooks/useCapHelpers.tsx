@@ -21,26 +21,28 @@ export const useCapHelpers = () => {
     return firstCaps;
   }, [caps]);
 
+  const match = useAtomValue(matchAtom)!;
   const getUnsubbedCaps = useCallback(() => {
+    const subbedOutPlayerNames = match.changes
+      .filter((change) => change.out.name !== change.in.name)
+      .map((change) => change.out.name);
     const unsubbed: Cap[] = [];
-    const subbedOut: number[] = [];
-    for (const cap of orderBy(caps, ["start_minute"])) {
-      if (subbedOut.includes(cap.player_id)) {
-        continue;
-      }
 
+    for (const cap of orderBy(caps, ["start_minute"])) {
       const index = unsubbed.findIndex(
         (firstCap) => firstCap.player_id === cap.player_id,
       );
-      if (index < 0) {
-        unsubbed.push(cap);
+      if (subbedOutPlayerNames.includes(cap.players.name)) {
+        // Player has been subbed out
       } else {
-        subbedOut.push(cap.player_id);
-        unsubbed.splice(index, 1);
+        if (index >= 0) {
+          unsubbed.splice(index, 1);
+        }
+        unsubbed.push(cap);
       }
     }
     return unsubbed;
-  }, [caps]);
+  }, [caps, match.changes]);
 
   return {
     sortedCaps,
