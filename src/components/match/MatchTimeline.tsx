@@ -483,11 +483,17 @@ const GoalEvent: React.FC<{
           {goal.player_name}
           <Box fw="bold">
             (
-            <Box component="span" c={goal.home ? "green" : undefined}>
+            <Box
+              component="span"
+              c={goal.home !== goal.own_goal ? "green" : undefined}
+            >
               {scores[0]}
             </Box>
             &nbsp;-&nbsp;
-            <Box component="span" c={goal.home ? undefined : "green"}>
+            <Box
+              component="span"
+              c={goal.home !== goal.own_goal ? undefined : "green"}
+            >
               {scores[1]}
             </Box>
             )
@@ -498,6 +504,11 @@ const GoalEvent: React.FC<{
             <AssistIcon />
             {goal.assisted_by}
           </Group>
+        )}
+        {goal.own_goal && (
+          <Box fz="xs" c="grey">
+            Own Goal
+          </Box>
         )}
         {setPiece && (
           <Box fz="xs" c="grey">
