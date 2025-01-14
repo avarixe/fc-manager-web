@@ -213,7 +213,11 @@ export const PlayerValue: React.FC<{
 
   const step = useMemo(() => {
     const magnitude = field.getValue().toString().length - 1;
-    return magnitude > 1 ? Math.pow(10, magnitude - 1) : 1;
+    if (magnitude > 6) {
+      return 500_000;
+    } else {
+      return magnitude > 1 ? Math.pow(10, magnitude - 1) : 1;
+    }
   }, [field]);
 
   return (
