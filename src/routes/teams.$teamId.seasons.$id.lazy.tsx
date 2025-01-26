@@ -564,11 +564,19 @@ const TransferActivity: React.FC<{
           seasonStart <= contract.ended_on &&
           contract.ended_on <= seasonEnd &&
           !["Renewed", "Transferred"].includes(contract.conclusion ?? "") &&
+          // Exclude loaned out players that triggered Buy-out clauses.
           !loanItems.some(
             (loan) =>
               loan.playerId === player.id &&
               loan.date === contract.ended_on &&
               loan.icon.color === TransferActivityColor.LoanOut,
+          ) &&
+          // Exclude loaned in players that triggered Buy-out clauses.
+          !transferItems.some(
+            (transfer) =>
+              transfer.playerId === player.id &&
+              transfer.date === contract.ended_on &&
+              transfer.icon.color === TransferActivityColor.TransferIn,
           )
         ) {
           const playerValue = playerValueAt(player, contract.ended_on);
@@ -589,7 +597,7 @@ const TransferActivity: React.FC<{
       });
       return departures;
     }, []);
-  }, [loanItems, players, seasonEnd, seasonStart]);
+  }, [loanItems, players, seasonEnd, seasonStart, transferItems]);
 
   const [showUpcoming, setShowUpcoming] = useState(false);
   const items = useMemo(() => {

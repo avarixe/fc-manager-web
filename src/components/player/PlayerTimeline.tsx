@@ -33,7 +33,7 @@ export const PlayerTimeline: React.FC<{
           ...player.contracts.map((contract, index) => ({
             type: PlayerEventType.Contract,
             date: contract.started_on,
-            priority: 1,
+            priority: 2,
             index,
             ...contract,
           })),
@@ -47,7 +47,7 @@ export const PlayerTimeline: React.FC<{
           ...player.loans.map((loan, index) => ({
             type: PlayerEventType.Loan,
             date: loan.started_on,
-            priority: loan.destination === team.name ? 2 : 4,
+            priority: loan.destination === team.name ? 1 : 4,
             index,
             ...loan,
           })),
