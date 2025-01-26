@@ -13,6 +13,7 @@ export const useMatchCallbacks = () => {
   const resolvePlayerStats = useCallback(
     async (updatedMatch?: Match) => {
       updatedMatch = updatedMatch ?? match;
+      const isTeamHome = team.name === updatedMatch.home_team;
 
       const firstCaps = getFirstCaps();
       const newCaps = await Promise.all(
@@ -34,7 +35,10 @@ export const useMatchCallbacks = () => {
               : updatedMatch.home_score === 0;
 
           for (const booking of updatedMatch.bookings) {
-            if (booking.player_name === cap.players.name) {
+            if (
+              booking.player_name === cap.players.name &&
+              booking.home === isTeamHome
+            ) {
               newCap[booking.red_card ? "num_red_cards" : "num_yellow_cards"]++;
               if (booking.red_card) {
                 newCap.stop_minute = booking.minute;
@@ -43,12 +47,14 @@ export const useMatchCallbacks = () => {
           }
 
           for (const goal of updatedMatch.goals) {
-            switch (cap.players.name) {
-              case goal.player_name:
-                newCap[goal.own_goal ? "num_own_goals" : "num_goals"] += 1;
-                break;
-              case goal.assisted_by:
-                newCap.num_assists += 1;
+            if (goal.home === isTeamHome) {
+              switch (cap.players.name) {
+                case goal.player_name:
+                  newCap[goal.own_goal ? "num_own_goals" : "num_goals"] += 1;
+                  break;
+                case goal.assisted_by:
+                  newCap.num_assists += 1;
+              }
             }
           }
 
