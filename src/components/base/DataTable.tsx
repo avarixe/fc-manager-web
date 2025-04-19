@@ -26,11 +26,11 @@ export interface DataTableProps<TData extends RowData>
   setTableState: StateSetter<TableState>;
 }
 
-interface TableState {
+export interface TableState {
   pageIndex: number;
   pageSize: number;
   rowCount: number;
-  sorting?: ColumnSort;
+  sorting: ColumnSort;
 }
 
 export const DataTable = <TData extends RowData>({
@@ -140,11 +140,18 @@ export const DataTable = <TData extends RowData>({
           w={100}
         />
 
+        <MText size="xs" className="ml-auto">
+          Showing {tableState.pageSize * tableState.pageIndex + 1}-
+          {Math.min(
+            tableState.pageSize * (tableState.pageIndex + 1),
+            tableState.rowCount,
+          )}{" "}
+          of {tableState.rowCount}
+        </MText>
         <Pagination
           value={tableState.pageIndex + 1}
           total={totalPages}
           onChange={onChangePagination}
-          className="ml-auto"
         />
       </Group>
     </>

@@ -1,7 +1,6 @@
 import { Autocomplete, Button, Checkbox, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { Tables } from "@/database-generated.types";
-import { Stage } from "@/types";
 
 export function CompetitionForm({
   record,
@@ -37,7 +36,6 @@ export function CompetitionForm({
         const { data } = await supabase
           .from("competitions")
           .select("stages")
-          .eq("team_id", team.id)
           .eq("name", values.name)
           .order("id", { ascending: false })
           .limit(1)

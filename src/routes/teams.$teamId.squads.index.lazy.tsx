@@ -1,4 +1,3 @@
-import { Player, Squad } from "@/types";
 import {
   ActionIcon,
   Box,
@@ -34,7 +33,7 @@ function SquadsPage() {
       const { data, error } = await supabase
         .from("squads")
         .select()
-        .eq("team_id", teamId)
+        .eq("team_id", Number(teamId))
         .order("id");
       if (error) {
         console.error(error);
@@ -47,7 +46,7 @@ function SquadsPage() {
       const { data, error } = await supabase
         .from("players")
         .select("id, name, status, pos, ovr")
-        .eq("team_id", teamId)
+        .eq("team_id", Number(teamId))
         .order("pos_order");
       if (error) {
         console.error(error);

@@ -1,4 +1,3 @@
-import { Goal, Match } from "@/types";
 import { modals } from "@mantine/modals";
 
 function useManageGoals() {

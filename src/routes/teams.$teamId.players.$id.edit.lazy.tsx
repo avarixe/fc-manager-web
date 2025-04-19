@@ -30,8 +30,8 @@ function EditPlayerPage() {
       const { data, error } = await supabase
         .from("players")
         .select()
-        .eq("team_id", teamId)
-        .eq("id", id)
+        .eq("team_id", Number(teamId))
+        .eq("id", Number(id))
         .single();
       if (error) {
         console.error(error);

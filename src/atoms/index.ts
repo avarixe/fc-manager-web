@@ -1,7 +1,5 @@
 import { createClient, Session, SupabaseClient } from "@supabase/supabase-js";
-import { atom } from "jotai";
 import { Database, Tables } from "@/database-generated.types";
-import { BreadcrumbItem, Cap, Competition, Match } from "@/types";
 
 export const supabaseAtom = atom<SupabaseClient<Database>>(
   createClient<Database>(

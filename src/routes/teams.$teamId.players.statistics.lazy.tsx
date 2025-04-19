@@ -1,4 +1,3 @@
-import { Player } from "@/types";
 import {
   Button,
   Checkbox,
@@ -50,7 +49,7 @@ function PlayerStatisticsPage() {
       const { data } = await supabase
         .from("players")
         .select("id, name, nationality, status, pos, pos_order, youth")
-        .eq("team_id", teamId)
+        .eq("team_id", Number(teamId))
         .order("pos_order");
       assertType<PlayerData[]>(data);
       setPlayers(data);

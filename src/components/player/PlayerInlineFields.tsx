@@ -1,4 +1,3 @@
-import { Player } from "@/types";
 import {
   Box,
   Indicator,
@@ -212,11 +211,15 @@ export const PlayerValue: React.FC<{
   ]);
 
   const step = useMemo(() => {
-    const magnitude = field.getValue().toString().length - 1;
-    if (magnitude > 6) {
+    const value = field.getValue();
+    if (value >= 10_000_000) {
       return 500_000;
+    } else if (value >= 1_000_000) {
+      return 100_000;
+    } else if (value >= 300_000) {
+      return 25_000;
     } else {
-      return magnitude > 1 ? Math.pow(10, magnitude - 1) : 1;
+      return 10_000;
     }
   }, [field]);
 

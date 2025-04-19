@@ -1,4 +1,3 @@
-import { Cap, Booking, Goal, Match, Player, Change } from "@/types";
 import {
   Box,
   Button,

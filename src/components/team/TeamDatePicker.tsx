@@ -1,5 +1,4 @@
 import { Tables } from "@/database-generated.types";
-import { Player } from "@/types";
 import { NavLink, Popover } from "@mantine/core";
 import { Calendar } from "@mantine/dates";
 

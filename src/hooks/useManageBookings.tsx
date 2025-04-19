@@ -1,4 +1,3 @@
-import { Booking, Match } from "@/types";
 import { modals } from "@mantine/modals";
 
 function useManageBookings() {

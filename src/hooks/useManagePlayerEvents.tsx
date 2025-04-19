@@ -1,5 +1,3 @@
-import { TablesUpdate } from "@/database-generated.types";
-import { Contract, Injury, Loan, Player, PlayerEvent, Transfer } from "@/types";
 import { modals } from "@mantine/modals";
 
 interface UsePlayerEventsReturnType<T extends PlayerEvent> {
@@ -9,8 +7,8 @@ interface UsePlayerEventsReturnType<T extends PlayerEvent> {
 }
 
 interface PlayerEventCallbacks<T extends PlayerEvent> {
-  beforeCreate?: (events: T[]) => TablesUpdate<"players">;
-  beforeUpdate?: (events: T[]) => TablesUpdate<"players">;
+  beforeCreate?: (events: T[]) => Partial<Player>;
+  beforeUpdate?: (events: T[]) => Partial<Player>;
 }
 
 const eventNamesByKey: Record<PlayerEventKey, PlayerEventType> = {
@@ -22,31 +20,31 @@ const eventNamesByKey: Record<PlayerEventKey, PlayerEventType> = {
 
 function useManagePlayerEvents(
   player: Player,
-  setPlayer: StateSetter<Player>,
+  setPlayer: StateSetter<Player | null>,
   key: PlayerEventKey.Contract,
   callbacks?: PlayerEventCallbacks<Contract>,
 ): UsePlayerEventsReturnType<Contract>;
 function useManagePlayerEvents(
   player: Player,
-  setPlayer: StateSetter<Player>,
+  setPlayer: StateSetter<Player | null>,
   key: PlayerEventKey.Injury,
   callbacks?: PlayerEventCallbacks<Injury>,
 ): UsePlayerEventsReturnType<Injury>;
 function useManagePlayerEvents(
   player: Player,
-  setPlayer: StateSetter<Player>,
+  setPlayer: StateSetter<Player | null>,
   key: PlayerEventKey.Loan,
   callbacks?: PlayerEventCallbacks<Loan>,
 ): UsePlayerEventsReturnType<Loan>;
 function useManagePlayerEvents(
   player: Player,
-  setPlayer: StateSetter<Player>,
+  setPlayer: StateSetter<Player | null>,
   key: PlayerEventKey.Transfer,
   callbacks?: PlayerEventCallbacks<Transfer>,
 ): UsePlayerEventsReturnType<Transfer>;
 function useManagePlayerEvents<T extends PlayerEvent>(
   player: Player,
-  setPlayer: StateSetter<Player>,
+  setPlayer: StateSetter<Player | null>,
   key: PlayerEventKey,
   callbacks: PlayerEventCallbacks<T> = {},
 ) {
@@ -73,11 +71,15 @@ function useManagePlayerEvents<T extends PlayerEvent>(
           { ...player, [key]: events },
           team.currently_on,
         );
-        setPlayer((prev: Player) => ({
-          ...prev,
-          ...statusUpdates,
-          [key]: events,
-        }));
+        setPlayer((prev) =>
+          prev
+            ? {
+                ...prev,
+                ...statusUpdates,
+                [key]: events,
+              }
+            : null,
+        );
       }
     },
     [callbacks, key, player, setPlayer, supabase, team, updatePlayerStatus],
@@ -102,11 +104,15 @@ function useManagePlayerEvents<T extends PlayerEvent>(
           { ...player, [key]: events },
           team.currently_on,
         );
-        setPlayer((prev: Player) => ({
-          ...prev,
-          ...statusUpdates,
-          [key]: events,
-        }));
+        setPlayer((prev) =>
+          prev
+            ? {
+                ...prev,
+                ...statusUpdates,
+                [key]: events,
+              }
+            : null,
+        );
       }
     },
     [
@@ -151,11 +157,15 @@ function useManagePlayerEvents<T extends PlayerEvent>(
               { ...player, [key]: events },
               team.currently_on,
             );
-            setPlayer((prev: Player) => ({
-              ...prev,
-              ...updates,
-              [key]: events,
-            }));
+            setPlayer((prev) =>
+              prev
+                ? {
+                    ...prev,
+                    ...updates,
+                    [key]: events,
+                  }
+                : null,
+            );
           }
         },
       });

@@ -1,4 +1,3 @@
-import { Cap, Match, Player, Squad } from "@/types";
 import {
   ActionIcon,
   Box,
@@ -43,8 +42,8 @@ function MatchPage() {
       const { data, error } = await supabase
         .from("matches")
         .select("*, caps(*, players(name))")
-        .eq("team_id", teamId)
-        .eq("id", id)
+        .eq("team_id", Number(teamId))
+        .eq("id", Number(id))
         .single();
       if (error) {
         console.error(error);
@@ -61,7 +60,7 @@ function MatchPage() {
       const { data, error } = await supabase
         .from("squads")
         .select()
-        .eq("team_id", teamId)
+        .eq("team_id", Number(teamId))
         .order("id");
       if (error) {
         console.error(error);
@@ -75,7 +74,7 @@ function MatchPage() {
       const { data } = await supabase
         .from("players")
         .select("id, name, status, pos, ovr, kit_no")
-        .eq("team_id", teamId)
+        .eq("team_id", Number(teamId))
         .order("pos_order");
       setPlayerOptions(data ?? []);
       data?.forEach((item) => {
@@ -96,7 +95,7 @@ function MatchPage() {
       const { data: prev } = await supabase
         .from("matches")
         .select("id")
-        .eq("team_id", teamId)
+        .eq("team_id", Number(teamId))
         .lt("played_on", match?.played_on)
         .order("played_on", { ascending: false })
         .limit(1)
@@ -108,7 +107,7 @@ function MatchPage() {
       const { data: next } = await supabase
         .from("matches")
         .select("id")
-        .eq("team_id", teamId)
+        .eq("team_id", Number(teamId))
         .gt("played_on", match?.played_on)
         .order("played_on")
         .limit(1)
@@ -142,7 +141,7 @@ function MatchPage() {
       onConfirm: async () => {
         try {
           setAppLoading(true);
-          await supabase.from("matches").delete().eq("id", id);
+          await supabase.from("matches").delete().eq("id", Number(id));
           navigate({ to: `/teams/${teamId}/matches/` });
         } catch (error) {
           console.error(error);
@@ -181,7 +180,7 @@ function MatchPage() {
         home_penalty_score: null,
         away_penalty_score: null,
       };
-      await supabase.from("matches").update(matchChanges).eq("id", id);
+      await supabase.from("matches").update(matchChanges).eq("id", Number(id));
       setMatch((prev) => {
         if (!prev) {
           return prev;

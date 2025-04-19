@@ -1,5 +1,4 @@
 import { Tables } from "@/database-generated.types";
-import { Player } from "@/types";
 import {
   Avatar,
   Box,
@@ -51,7 +50,7 @@ function TeamPage() {
       const { data, error } = await supabase
         .from("competitions")
         .select("id, name, champion")
-        .eq("team_id", teamId)
+        .eq("team_id", Number(teamId))
         .eq("season", currentSeason)
         .order("id", { ascending: true });
       if (error) {
@@ -72,7 +71,7 @@ function TeamPage() {
         .select(
           "id, home_team, away_team, home_score, away_score, home_penalty_score, away_penalty_score, competition, stage, played_on",
         )
-        .eq("team_id", teamId)
+        .eq("team_id", Number(teamId))
         .order("played_on", { ascending: false })
         .limit(1)
         .single();
@@ -92,7 +91,7 @@ function TeamPage() {
       const { data, error } = await supabase
         .from("players")
         .select("id, name, pos, injuries")
-        .eq("team_id", teamId)
+        .eq("team_id", Number(teamId))
         .eq("status", "Injured");
       if (error) {
         console.error(error);
@@ -111,7 +110,7 @@ function TeamPage() {
       const { data, error } = await supabase
         .from("players")
         .select("id, name, pos, value, loans")
-        .eq("team_id", teamId)
+        .eq("team_id", Number(teamId))
         .eq("status", "Loaned");
       if (error) {
         console.error(error);
@@ -132,7 +131,7 @@ function TeamPage() {
       const { data, error } = await supabase
         .from("players")
         .select("id, name, pos, value, wage")
-        .eq("team_id", teamId)
+        .eq("team_id", Number(teamId))
         .lte("contract_ends_on", endOfCurrentSeason)
         .neq("status", null);
       if (error) {
@@ -165,7 +164,7 @@ function TeamPage() {
       onConfirm: async () => {
         try {
           setAppLoading(true);
-          await supabase.from("teams").delete().eq("id", teamId);
+          await supabase.from("teams").delete().eq("id", Number(teamId));
           setTeam(null);
           navigate({ to: "/teams" });
         } catch (error) {

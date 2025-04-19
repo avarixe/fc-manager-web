@@ -1,4 +1,3 @@
-import { Loan } from "@/types";
 import {
   ActionIcon,
   Button,

@@ -1,4 +1,3 @@
-import { Competition } from "@/types";
 import { Stack, Title } from "@mantine/core";
 
 export const Route = createLazyFileRoute(
@@ -18,8 +17,8 @@ function EditCompetitionPage() {
       const { data, error } = await supabase
         .from("competitions")
         .select()
-        .eq("team_id", teamId)
-        .eq("id", id)
+        .eq("team_id", Number(teamId))
+        .eq("id", Number(id))
         .single();
       if (error) {
         console.error(error);

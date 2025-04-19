@@ -1,4 +1,3 @@
-import { Cap } from "@/types";
 import { ActionIcon, Group, GroupProps, Rating } from "@mantine/core";
 
 export const CapRating: React.FC<

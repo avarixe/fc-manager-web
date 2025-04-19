@@ -1,4 +1,3 @@
-import { Cap } from "@/types";
 import { orderBy } from "lodash-es";
 
 export const useCapHelpers = () => {

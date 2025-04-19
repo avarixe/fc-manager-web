@@ -1,5 +1,3 @@
-import { Match } from "@/types";
-
 export function matchScore(
   match: Pick<
     Match,
