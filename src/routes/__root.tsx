@@ -7,10 +7,12 @@ import {
   AppShell,
   Burger,
   Container,
+  Image,
   Group,
   LoadingOverlay,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import logo from "@/assets/logo.png";
 
 export const Route = createRootRoute({
   component: App,
@@ -52,7 +54,10 @@ function App() {
       <AppShell.Header>
         <Group h="100%" px="md">
           <Burger opened={opened} onClick={toggle} hiddenFrom="md" size="sm" />
-          <div>MyFC Manager</div>
+          <Group gap="xs">
+            <Image src={logo} alt="logo" width={48} height={48} />
+            <MText size="xl">MyFC Manager</MText>
+          </Group>
         </Group>
       </AppShell.Header>
       <AppNavbar />
