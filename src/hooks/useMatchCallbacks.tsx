@@ -1,5 +1,4 @@
 import { TablesInsert } from "@/database-generated.types";
-import { Cap, Match } from "@/types";
 import { keyBy, omit, orderBy } from "lodash-es";
 
 export const useMatchCallbacks = () => {

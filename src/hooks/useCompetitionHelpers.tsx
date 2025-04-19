@@ -1,4 +1,3 @@
-import { StageFixtureData } from "@/types";
 import { orderBy } from "lodash-es";
 
 export const useCompetitionHelpers = () => {

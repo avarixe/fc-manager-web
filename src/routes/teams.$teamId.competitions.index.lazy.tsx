@@ -22,7 +22,7 @@ function CompetitionsPage() {
       const { data, error } = await supabase
         .from("competitions")
         .select("id, name, season, champion")
-        .eq("team_id", teamId)
+        .eq("team_id", Number(teamId))
         .order("id", { ascending: true });
       if (error) {
         console.error(error);

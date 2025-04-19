@@ -8,7 +8,6 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { Tables } from "@/database-generated.types";
-import { Competition } from "@/types";
 
 type CompetitionOption = Pick<Competition, "name" | "stages">;
 

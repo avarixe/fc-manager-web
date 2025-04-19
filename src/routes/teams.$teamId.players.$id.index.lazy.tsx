@@ -14,7 +14,6 @@ import {
   ChartTooltipProps,
   getFilteredChartTooltipPayload,
 } from "@mantine/charts";
-import { Player } from "@/types";
 import { modals } from "@mantine/modals";
 import { round } from "lodash-es";
 
@@ -49,8 +48,8 @@ function PlayerPage() {
       const { data, error } = await supabase
         .from("players")
         .select()
-        .eq("team_id", teamId)
-        .eq("id", id)
+        .eq("team_id", Number(teamId))
+        .eq("id", Number(id))
         .single();
       if (error) {
         console.error(error);
@@ -111,7 +110,7 @@ function PlayerPage() {
       onConfirm: async () => {
         try {
           setAppLoading(true);
-          await supabase.from("players").delete().eq("id", id);
+          await supabase.from("players").delete().eq("id", Number(id));
           navigate({ to: `/teams/${teamId}/players/` });
         } catch (error) {
           console.error(error);

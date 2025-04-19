@@ -1,4 +1,3 @@
-import { Booking, Cap, Change, Goal, Player } from "@/types";
 import { Modal, Tabs } from "@mantine/core";
 
 type PlayerOption = Pick<

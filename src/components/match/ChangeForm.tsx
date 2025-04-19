@@ -1,4 +1,3 @@
-import { Cap, Change, Player } from "@/types";
 import {
   Button,
   Checkbox,

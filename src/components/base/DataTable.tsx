@@ -26,11 +26,11 @@ export interface DataTableProps<TData extends RowData>
   setTableState: StateSetter<TableState>;
 }
 
-interface TableState {
+export interface TableState {
   pageIndex: number;
   pageSize: number;
   rowCount: number;
-  sorting?: ColumnSort;
+  sorting: ColumnSort;
 }
 
 export const DataTable = <TData extends RowData>({

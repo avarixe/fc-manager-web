@@ -1,4 +1,3 @@
-import { Player } from "@/types";
 import {
   Box,
   Button,
@@ -65,7 +64,7 @@ function SeasonPage() {
       const { data } = await supabase
         .from("players")
         .select("id, name, pos, youth, transfers, loans, contracts, history")
-        .eq("team_id", teamId)
+        .eq("team_id", Number(teamId))
         .order("name", { ascending: true });
       if (data) {
         assertType<PlayerData[]>(data);

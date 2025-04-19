@@ -1,7 +1,6 @@
 import { Autocomplete, Button, Checkbox, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { Tables } from "@/database-generated.types";
-import { Stage } from "@/types";
 
 export function CompetitionForm({
   record,

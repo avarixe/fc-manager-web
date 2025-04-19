@@ -143,9 +143,18 @@ declare global {
 // for type re-export
 declare global {
   // @ts-ignore
-  export type { StateSetter } from 'src/hooks'
-  import('src/hooks')
+  export type { DataTableProps, TableState } from './src/components/base/DataTable'
+  import('./src/components/base/DataTable')
+  // @ts-ignore
+  export type { DatePickerInputProps } from './src/components/base/DatePickerInput'
+  import('./src/components/base/DatePickerInput')
+  // @ts-ignore
+  export type { LocalDataTableProps } from './src/components/base/LocalDataTable'
+  import('./src/components/base/LocalDataTable')
   // @ts-ignore
   export type { MatchPosType, PlayerEventKey, PlayerEventType, PlayerStatusFilter } from './src/constants/index'
   import('./src/constants/index')
+  // @ts-ignore
+  export type { StateSetter, Player, Contract, Injury, Loan, Transfer, PlayerEvent, PlayerHistoryData, Match, Goal, Booking, Change, Competition, Stage, StageTableRowData, StageFixtureData, Squad, Cap, BreadcrumbItem, MatchFilters } from './src/types/index'
+  import('./src/types/index')
 }

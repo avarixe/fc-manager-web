@@ -1,4 +1,3 @@
-import { Transfer } from "@/types";
 import {
   ActionIcon,
   Button,

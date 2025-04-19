@@ -9,7 +9,7 @@ export const useTeam = (teamId?: string) => {
       const { data, error } = await supabase
         .from("teams")
         .select()
-        .eq("id", teamId)
+        .eq("id", Number(teamId))
         .single();
       if (error) {
         console.error(error);

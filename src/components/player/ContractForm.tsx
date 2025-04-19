@@ -1,4 +1,3 @@
-import { Contract } from "@/types";
 import {
   ActionIcon,
   Button,

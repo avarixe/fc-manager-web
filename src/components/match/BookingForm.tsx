@@ -1,4 +1,3 @@
-import { Cap, Booking } from "@/types";
 import {
   Button,
   ComboboxItem,

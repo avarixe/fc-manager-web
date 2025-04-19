@@ -1,4 +1,3 @@
-import { Cap } from "@/types";
 import { Group, GroupProps, Indicator } from "@mantine/core";
 
 export const CapSummary: React.FC<GroupProps & { cap: Cap }> = ({

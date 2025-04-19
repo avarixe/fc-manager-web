@@ -1,13 +1,7 @@
-import { TablesUpdate } from "@/database-generated.types";
-import { Player } from "@/types";
-
 export const usePlayerCallbacks = () => {
   const supabase = useAtomValue(supabaseAtom);
   const savePlayerStatus = useCallback(
-    async (
-      player: Pick<Player, "id" | "status">,
-      updates: TablesUpdate<"players">,
-    ) => {
+    async (player: Pick<Player, "id" | "status">, updates: Partial<Player>) => {
       if (player.status === updates.status) return;
 
       const { error } = await supabase

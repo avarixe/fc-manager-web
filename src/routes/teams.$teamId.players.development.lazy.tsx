@@ -1,4 +1,3 @@
-import { Player, PlayerHistoryData } from "@/types";
 import {
   Button,
   Group,
@@ -49,7 +48,7 @@ function PlayerDevelopmentPage() {
         .select(
           "id, name, nationality, status, pos, pos_order, ovr, value, history, contracts, youth",
         )
-        .eq("team_id", teamId)
+        .eq("team_id", Number(teamId))
         .order("pos_order");
       assertType<PlayerData[]>(data);
       setPlayers(data);

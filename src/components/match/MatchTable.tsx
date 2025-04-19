@@ -1,5 +1,4 @@
 import { Tables } from "@/database-generated.types";
-import { MatchFilters } from "@/types";
 import { Box, Button } from "@mantine/core";
 
 type Match = Pick<
@@ -52,8 +51,8 @@ export const MatchTable: React.FC<{ filters?: MatchFilters }> = ({
 
       if (filters) {
         if (filters.season) {
-          pageQuery.eq("season", filters.season);
-          countQuery.eq("season", filters.season);
+          pageQuery.eq("season", Number(filters.season));
+          countQuery.eq("season", Number(filters.season));
         }
         if (filters.competition) {
           pageQuery.eq("competition", filters.competition);

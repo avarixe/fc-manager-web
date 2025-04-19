@@ -1,5 +1,4 @@
 import { Tables } from "@/database-generated.types";
-import { Contract, Injury, Loan, Player, PlayerEvent, Transfer } from "@/types";
 import {
   Badge,
   Button,
@@ -23,7 +22,7 @@ type PlayerTimelineEvent = PlayerEvent & {
 
 export const PlayerTimeline: React.FC<{
   player: Player;
-  setPlayer: StateSetter<Player>;
+  setPlayer: StateSetter<Player | null>;
 }> = ({ player, setPlayer }) => {
   const team = useAtomValue(teamAtom)!;
   const items: PlayerTimelineEvent[] = useMemo(

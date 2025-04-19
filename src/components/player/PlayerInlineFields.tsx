@@ -1,4 +1,3 @@
-import { Player } from "@/types";
 import {
   Box,
   Indicator,

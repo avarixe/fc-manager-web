@@ -1,4 +1,3 @@
-import { Cap, Player } from "@/types";
 import {
   Button,
   ComboboxItem,

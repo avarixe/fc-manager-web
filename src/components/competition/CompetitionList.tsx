@@ -1,5 +1,4 @@
 import { Tables } from "@/database-generated.types";
-import { Competition } from "@/types";
 import { BoxProps, Button, NavLink } from "@mantine/core";
 
 type CompetitionItem = Pick<Tables<"competitions">, "id" | "name" | "champion">;

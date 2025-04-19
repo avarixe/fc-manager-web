@@ -1,5 +1,4 @@
 import { Tables, TablesInsert } from "@/database-generated.types";
-import { Player } from "@/types";
 import {
   ActionIcon,
   Autocomplete,

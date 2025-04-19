@@ -1,4 +1,3 @@
-import { Player } from "@/types";
 import {
   Button,
   Group,
@@ -39,11 +38,11 @@ function PlayersPage() {
           tableState.pageSize * tableState.pageIndex,
           tableState.pageSize * (tableState.pageIndex + 1) - 1,
         )
-        .eq("team_id", teamId);
+        .eq("team_id", Number(teamId));
       const countQuery = supabase
         .from("players")
         .select("id", { count: "exact", head: true })
-        .eq("team_id", teamId);
+        .eq("team_id", Number(teamId));
 
       switch (statusFilter) {
         case PlayerStatusFilter.Youth:

@@ -1,4 +1,3 @@
-import { Injury } from "@/types";
 import {
   ActionIcon,
   Button,

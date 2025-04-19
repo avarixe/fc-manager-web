@@ -7,11 +7,12 @@
     "start": "vite --host",
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "tsc": "tsc --noEmit --project tsconfig.app.json",
     "lint": "eslint .",
     "format": "prettier --write .",
     "preview": "vite preview",
     "prepare": "husky",
-    "precommit": "lint-staged"
+    "precommit": "bun run tsc && lint-staged"
   },
   "dependencies": {
     "@mantine/charts": "^7.17.4",
@@ -46,6 +47,7 @@
     "@types/react": "^18.3.20",
     "@types/react-dom": "^18.3.6",
     "@unocss/preset-icons": "^66.0.0",
+    "@unocss/preset-wind3": "66.1.0-beta.12",
     "@vitejs/plugin-react": "^4.4.0",
     "eslint": "^9.25.0",
     "eslint-config-prettier": "^9.1.0",

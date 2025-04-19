@@ -1,10 +1,12 @@
 # FC Manager Web
 
-## TODO
+```
+bun install
 
-- Create Substitution
-  - Create/update appearance
-  - Update previous appearance "injury", "stop_minute"
+bun start
+
+bun build
+```
 
 # React + TypeScript + Vite
 

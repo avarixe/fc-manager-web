@@ -1,10 +1,4 @@
 import {
-  Competition,
-  Stage,
-  StageTableRowData,
-  StageFixtureData,
-} from "@/types";
-import {
   Accordion,
   ActionIcon,
   Box,
@@ -50,8 +44,8 @@ function CompetitionPage() {
       const { data, error } = await supabase
         .from("competitions")
         .select()
-        .eq("team_id", teamId)
-        .eq("id", id)
+        .eq("team_id", Number(teamId))
+        .eq("id", Number(id))
         .single();
       if (error) {
         console.error(error);
@@ -85,7 +79,7 @@ function CompetitionPage() {
       onConfirm: async () => {
         try {
           setAppLoading(true);
-          await supabase.from("competitions").delete().eq("id", id);
+          await supabase.from("competitions").delete().eq("id", Number(id));
           navigate({ to: `/teams/${teamId}/competitions/` });
         } catch (error) {
           console.error(error);

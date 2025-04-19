@@ -1,4 +1,3 @@
-import { Cap, Player } from "@/types";
 import { Box, Button, Group, NavLink } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { orderBy } from "lodash-es";
