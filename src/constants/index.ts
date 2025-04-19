@@ -76,3 +76,10 @@ export enum PlayerStatusFilter {
   Loaned = "Loaned",
   Pending = "Pending",
 }
+
+export enum PlayerPositionFilter {
+  GK = "GK",
+  DEF = "DEF",
+  MID = "MID",
+  FWD = "FWD",
+}

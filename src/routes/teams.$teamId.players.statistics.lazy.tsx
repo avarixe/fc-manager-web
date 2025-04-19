@@ -311,7 +311,7 @@ function PlayerStatisticsPage() {
   return (
     <Stack>
       <Title fw="lighter" mb="xl">
-        Player Development
+        Player Statistics
       </Title>
 
       <Group align="start">

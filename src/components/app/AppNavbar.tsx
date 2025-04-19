@@ -80,6 +80,12 @@ export const AppNavbar = () => {
                 component={Link}
                 to={`/teams/${team.id}/players/statistics`}
                 label="Statistics"
+                leftSection={<BaseIcon name="i-mdi:hashtag" />}
+              />
+              <NavLink
+                component={Link}
+                to={`/teams/${team.id}/players/analytics`}
+                label="Analytics"
                 leftSection={<BaseIcon name="i-mdi:google-analytics" />}
               />
             </NavLink>

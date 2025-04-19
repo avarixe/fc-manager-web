@@ -53,6 +53,7 @@ declare global {
   const PlayerInlineField: typeof import('./src/components/player/PlayerInlineFields')['PlayerInlineField']
   const PlayerKitNo: typeof import('./src/components/player/PlayerInlineFields')['PlayerKitNo']
   const PlayerOvr: typeof import('./src/components/player/PlayerInlineFields')['PlayerOvr']
+  const PlayerPositionFilter: typeof import('./src/constants/index')['PlayerPositionFilter']
   const PlayerStatus: typeof import('./src/components/player/PlayerStatus')['PlayerStatus']
   const PlayerStatusFilter: typeof import('./src/constants/index')['PlayerStatusFilter']
   const PlayerTimeline: typeof import('./src/components/player/PlayerTimeline')['PlayerTimeline']
@@ -152,7 +153,7 @@ declare global {
   export type { LocalDataTableProps } from './src/components/base/LocalDataTable'
   import('./src/components/base/LocalDataTable')
   // @ts-ignore
-  export type { MatchPosType, PlayerEventKey, PlayerEventType, PlayerStatusFilter } from './src/constants/index'
+  export type { MatchPosType, PlayerEventKey, PlayerEventType, PlayerStatusFilter, PlayerPositionFilter } from './src/constants/index'
   import('./src/constants/index')
   // @ts-ignore
   export type { StateSetter, Player, Contract, Injury, Loan, Transfer, PlayerEvent, PlayerHistoryData, Match, Goal, Booking, Change, Competition, Stage, StageTableRowData, StageFixtureData, Squad, Cap, BreadcrumbItem, MatchFilters } from './src/types/index'
