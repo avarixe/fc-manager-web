@@ -36,7 +36,6 @@ export function CompetitionForm({
         const { data } = await supabase
           .from("competitions")
           .select("stages")
-          .eq("team_id", team.id)
           .eq("name", values.name)
           .order("id", { ascending: false })
           .limit(1)

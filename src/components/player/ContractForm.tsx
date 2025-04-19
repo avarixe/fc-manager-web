@@ -124,6 +124,17 @@ export const ContractForm: React.FC<{
           <DatePickerInput
             {...form.getInputProps("ended_on")}
             label="End Date"
+            rightSection={
+              <ActionIcon
+                onClick={() =>
+                  form.setFieldValue("ended_on", team.currently_on)
+                }
+                variant="transparent"
+                color="gray"
+              >
+                <div className="i-mdi:calendar-arrow-left" />
+              </ActionIcon>
+            }
             required
             mb="xs"
           />
