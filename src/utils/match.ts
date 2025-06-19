@@ -5,7 +5,7 @@ export function matchScore(
   >,
 ) {
   let score = String(match.home_score);
-  if (match.home_penalty_score) {
+  if (match.home_penalty_score !== null) {
     score += ` (${match.home_penalty_score})`;
   }
   score += ` - ${match.away_score}`;

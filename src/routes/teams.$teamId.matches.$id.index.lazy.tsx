@@ -599,7 +599,9 @@ const MatchInfo: React.FC<{
         <Table.Tr>
           <Table.Td ta="end" fz="xl" fw={1000} c={scoreColor}>
             {match.home_score}
-            {match.home_penalty_score ? ` (${match.home_penalty_score})` : null}
+            {match.home_penalty_score !== null
+              ? ` (${match.home_penalty_score})`
+              : null}
           </Table.Td>
           <Table.Td ta="center">
             <div>Score</div>
