@@ -62,9 +62,9 @@ export const useCompetitionHelpers = () => {
   const groupStageAdvances = useCallback(
     (numAdvancesPerGroup: number) => {
       return groupStages.reduce((teams: string[], stage) => {
-        const teamNames = orderBy(stage.table, "pts", "desc").map(
-          (row) => row.team,
-        );
+        const teamNames = orderBy(stage.table, "pts", "desc")
+          .map((row) => row.team)
+          .filter((team) => team !== null);
         return [...teams, ...teamNames.slice(0, numAdvancesPerGroup)];
       }, []);
     },
@@ -73,8 +73,8 @@ export const useCompetitionHelpers = () => {
 
   const knockoutStageAdvances = useCallback(
     (knockoutStageIndex: number) => {
-      return knockoutStages[knockoutStageIndex].fixtures.reduce(
-        (teams: string[], fixture) => {
+      return knockoutStages[knockoutStageIndex].fixtures
+        .reduce((teams: string[], fixture) => {
           const diff = scoreDiff(fixture);
           if (diff > 0) {
             teams.push(fixture.home_team);
@@ -84,9 +84,8 @@ export const useCompetitionHelpers = () => {
             teams.push(fixture.home_team, fixture.away_team);
           }
           return teams;
-        },
-        [],
-      );
+        }, [])
+        .filter((team) => team !== null);
     },
     [knockoutStages, scoreDiff],
   );
