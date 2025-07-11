@@ -27,25 +27,6 @@ export const MatchFormationForm: React.FC<{
   opened: boolean;
   onClose: () => void;
 }> = ({ opened, onClose }) => {
-  const form = useForm<FormationChange>({
-    initialValues: {
-      minute: "",
-      stoppage_time: undefined,
-      formation: {},
-    },
-    validate: {
-      formation: (value) => {
-        return Object.values(value).filter((id) => id).length !== 11
-          ? "Formation must have 11 players"
-          : null;
-      },
-    },
-    validateInputOnChange: true,
-  });
-  form.watch("minute", () => {
-    form.setFieldValue("stoppage_time", undefined);
-  });
-
   const [players, setPlayers] = useState<PlayerOption[]>([]);
   const team = useAtomValue(teamAtom)!;
   const supabase = useAtomValue(supabaseAtom);
@@ -67,6 +48,35 @@ export const MatchFormationForm: React.FC<{
   const [loading, setLoading] = useState(false);
   const [match, setMatch] = useAtom(matchAtom)!;
   const { resolveFormationChanges } = useMatchCallbacks();
+
+  const caps = useAtomValue(capsAtom);
+  const form = useForm<FormationChange>({
+    initialValues: {
+      minute: "",
+      stoppage_time: undefined,
+      formation: {},
+    },
+    validate: {
+      formation: (value, values) => {
+        const currentMaxPlayers =
+          11 -
+          caps.filter(
+            (cap) =>
+              cap.stop_minute <= Number(values.minute || 0) &&
+              cap.num_red_cards > 0,
+          ).length;
+        return Object.values(value).filter((id) => id).length !==
+          currentMaxPlayers
+          ? `Formation must have ${currentMaxPlayers} players`
+          : null;
+      },
+    },
+    validateInputOnChange: true,
+  });
+  form.watch("minute", () => {
+    form.setFieldValue("stoppage_time", undefined);
+  });
+
   const { capsAtMinute, inStoppageTime } = useMatchState(
     Number(form.values.minute),
   );
@@ -211,7 +221,6 @@ export const MatchFormationForm: React.FC<{
       }));
   }, [form.values.formation, players]);
 
-  const caps = useAtomValue(capsAtom);
   const maxPlayers = useMemo(() => {
     return (
       11 -
