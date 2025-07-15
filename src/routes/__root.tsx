@@ -1,8 +1,6 @@
 import { Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import { SupabaseClient } from "@supabase/supabase-js";
-import { Auth } from "@supabase/auth-ui-react";
-import { ThemeSupa } from "@supabase/auth-ui-shared";
 import {
   AppShell,
   Burger,
@@ -10,9 +8,11 @@ import {
   Image,
   Group,
   LoadingOverlay,
+  UnstyledButton,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import logo from "@/assets/logo.png";
+import googleSsoButton from "@/assets/google-sso-button.png";
 
 export const Route = createRootRoute({
   component: App,
@@ -79,25 +79,49 @@ function App() {
           />
         </Container>
       </AppShell.Main>
-      {import.meta.env.DEV && <TanStackRouterDevtools />}
+      {import.meta.env.DEV && (
+        <TanStackRouterDevtools position="bottom-right" />
+      )}
     </AppShell>
   );
 }
 
 const Login = ({ supabase }: { supabase: SupabaseClient }) => {
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+
+  const handleLogin = useCallback(async () => {
+    setIsLoggingIn(true);
+    try {
+      await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: window.location.href },
+      });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoggingIn(false);
+    }
+  }, [supabase]);
+
   return (
     <>
       <h1 className="text-lg font-semibold md:text-2xl mb-4">
-        Welcome to FC Manager!
+        Welcome to MyFC Manager!
       </h1>
 
-      <Auth
-        supabaseClient={supabase}
-        providers={["google"]}
-        onlyThirdPartyProviders
-        appearance={{ theme: ThemeSupa }}
-        redirectTo={window.location.href}
-      />
+      <UnstyledButton
+        onClick={handleLogin}
+        disabled={isLoggingIn}
+        p={0}
+        style={{ border: "none" }}
+      >
+        <Image
+          src={googleSsoButton}
+          alt="Sign in with Google"
+          height={40}
+          fit="contain"
+        />
+      </UnstyledButton>
     </>
   );
 };
