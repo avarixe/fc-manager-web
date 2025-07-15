@@ -7,7 +7,8 @@ import "@mantine/core/styles.css";
 import "@mantine/dates/styles.css";
 import "@mantine/charts/styles.css";
 import "virtual:uno.css";
-import { MantineProvider } from "@mantine/core";
+import { createTheme, MantineProvider, Switch } from "@mantine/core";
+import { DatePickerInput } from "@mantine/dates";
 import { ModalsProvider } from "@mantine/modals";
 
 import "@tanstack/react-table";
@@ -26,9 +27,24 @@ declare module "@tanstack/react-table" {
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
 
+const theme = createTheme({
+  components: {
+    Switch: Switch.extend({
+      defaultProps: {
+        withThumbIndicator: false,
+      },
+    }),
+    DatePickerInput: DatePickerInput.extend({
+      defaultProps: {
+        firstDayOfWeek: 0,
+      },
+    }),
+  },
+});
+
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <JotaiProvider>
-    <MantineProvider defaultColorScheme="dark">
+    <MantineProvider defaultColorScheme="dark" theme={theme}>
       <ModalsProvider>
         <RouterProvider router={router} />
       </ModalsProvider>

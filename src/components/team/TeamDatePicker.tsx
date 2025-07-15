@@ -12,13 +12,11 @@ export const TeamDatePicker: React.FC<{ team: Tables<"teams"> }> = ({
   const setTeam = useSetAtom(teamAtom);
   const { updatePlayerStatus } = usePlayerCallbacks();
   const onClick = useCallback(
-    async (date: Date) => {
+    async (date: string) => {
       setAppLoading(true);
-      const currentDate = dayjs(date).format("YYYY-MM-DD");
-
       const { error: teamUpdateError } = await supabase
         .from("teams")
-        .update({ currently_on: currentDate })
+        .update({ currently_on: date })
         .eq("id", team.id);
       if (teamUpdateError) {
         console.error(teamUpdateError);
@@ -37,7 +35,7 @@ export const TeamDatePicker: React.FC<{ team: Tables<"teams"> }> = ({
             assertType<
               Pick<Player, "id" | "status" | "contracts" | "injuries" | "loans">
             >(player);
-            updatePlayerStatus(player, currentDate);
+            updatePlayerStatus(player, date);
           }),
         );
       } else {
@@ -45,7 +43,7 @@ export const TeamDatePicker: React.FC<{ team: Tables<"teams"> }> = ({
       }
 
       // update team after to trigger re-render after all players are updated
-      setTeam({ ...team, currently_on: currentDate });
+      setTeam({ ...team, currently_on: date });
 
       setAppLoading(false);
       setOpened(false);

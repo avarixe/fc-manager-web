@@ -147,9 +147,6 @@ declare global {
   export type { DataTableProps, TableState } from './src/components/base/DataTable'
   import('./src/components/base/DataTable')
   // @ts-ignore
-  export type { DatePickerInputProps } from './src/components/base/DatePickerInput'
-  import('./src/components/base/DatePickerInput')
-  // @ts-ignore
   export type { LocalDataTableProps } from './src/components/base/LocalDataTable'
   import('./src/components/base/LocalDataTable')
   // @ts-ignore

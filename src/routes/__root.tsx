@@ -55,7 +55,7 @@ function App() {
         <Group h="100%" px="md">
           <Burger opened={opened} onClick={toggle} hiddenFrom="md" size="sm" />
           <Group gap="xs">
-            <Image src={logo} alt="logo" width={48} height={48} />
+            <Image src={logo} alt="logo" height={48} fit="contain" flex={1} />
             <MText size="xl">MyFC Manager</MText>
           </Group>
         </Group>

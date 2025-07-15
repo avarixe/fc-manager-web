@@ -128,6 +128,10 @@ function TeamPage() {
   >([]);
   useEffect(() => {
     const fetchExpiringContracts = async () => {
+      if (!endOfCurrentSeason) {
+        return;
+      }
+
       const { data, error } = await supabase
         .from("players")
         .select("id, name, pos, value, wage")
