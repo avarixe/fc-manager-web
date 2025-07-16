@@ -54,6 +54,19 @@ export const matchPositionTypes: Record<string, MatchPosType> = {
 
 export const matchPositions = Object.keys(matchPositionTypes);
 
+export const matchPosTypes: MatchPosType[] = Object.values(MatchPosType);
+
+export const positionsByType = positions.reduce(
+  (acc, pos) => {
+    const type = matchPositionTypes[pos];
+    return {
+      ...acc,
+      [type]: [...(acc[type] || []), pos],
+    };
+  },
+  {} as Record<MatchPosType, string[]>,
+);
+
 export enum PlayerEventKey {
   Contract = "contracts",
   Injury = "injuries",

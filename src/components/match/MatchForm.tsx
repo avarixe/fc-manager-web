@@ -8,6 +8,7 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { Tables } from "@/database-generated.types";
+import { DatePickerInput } from "@mantine/dates";
 
 type CompetitionOption = Pick<Competition, "name" | "stages">;
 

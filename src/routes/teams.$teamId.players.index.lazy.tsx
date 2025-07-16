@@ -27,6 +27,7 @@ function PlayersPage() {
     },
   });
   const [statusFilter, setStatusFilter] = useState(PlayerStatusFilter.Active);
+  const [positionFilter, setPositionFilter] = useState<Set<string>>(new Set());
   useEffect(() => {
     const fetchPage = async () => {
       const pageQuery = supabase
@@ -63,6 +64,13 @@ function PlayersPage() {
           break;
       }
 
+      // Apply position filter
+      if (positionFilter.size > 0) {
+        const positionArray = Array.from(positionFilter);
+        pageQuery.in("pos", positionArray);
+        countQuery.in("pos", positionArray);
+      }
+
       switch (tableState.sorting?.id) {
         case "pos":
           pageQuery.order("pos_order", { ascending: !tableState.sorting.desc });
@@ -94,6 +102,7 @@ function PlayersPage() {
     fetchPage();
   }, [
     statusFilter,
+    positionFilter,
     supabase,
     tableState.pageIndex,
     tableState.pageSize,
@@ -106,6 +115,11 @@ function PlayersPage() {
 
   const onChangeStatusFilter = useCallback((status: PlayerStatusFilter) => {
     setStatusFilter(status);
+    setTableState((prev) => ({ ...prev, pageIndex: 0 }));
+  }, []);
+
+  const onChangePositionFilter = useCallback((newPositions: Set<string>) => {
+    setPositionFilter(newPositions);
     setTableState((prev) => ({ ...prev, pageIndex: 0 }));
   }, []);
 
@@ -254,6 +268,11 @@ function PlayersPage() {
         <StatusFilterToggle
           statusFilter={statusFilter}
           onChangeStatusFilter={onChangeStatusFilter}
+        />
+
+        <PositionFilterPopover
+          positionFilter={positionFilter}
+          onChangePositionFilter={onChangePositionFilter}
         />
       </Group>
 

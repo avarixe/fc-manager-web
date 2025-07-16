@@ -251,7 +251,11 @@ function PlayerPage() {
             <Title order={6}>Assists</Title>
           </Box>
           <Box ta="center">
-            <Title>{round(stats.avgRating ?? 0, 2).toFixed(2)}</Title>
+            <Title
+              c={stats.avgRating ? ratingColor(stats.avgRating) : undefined}
+            >
+              {stats.avgRating ? round(stats.avgRating, 2).toFixed(2) : "N/A"}
+            </Title>
             <Title order={6}>Rating</Title>
           </Box>
         </Group>

@@ -8,6 +8,7 @@ import {
   Select,
   TextInput,
 } from "@mantine/core";
+import { DatePickerInput } from "@mantine/dates";
 import { useForm } from "@mantine/form";
 
 export const InjuryForm: React.FC<{

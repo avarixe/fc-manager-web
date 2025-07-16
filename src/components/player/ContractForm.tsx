@@ -7,6 +7,7 @@ import {
   NumberInput,
   Select,
 } from "@mantine/core";
+import { DatePickerInput } from "@mantine/dates";
 import { useForm } from "@mantine/form";
 
 export const ContractForm: React.FC<{

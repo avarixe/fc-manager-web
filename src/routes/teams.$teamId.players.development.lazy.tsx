@@ -62,9 +62,14 @@ function PlayerDevelopmentPage() {
     [currentSeason],
   );
   const [statusFilter, setStatusFilter] = useState(PlayerStatusFilter.Active);
+  const [positionFilter, setPositionFilter] = useState<Set<string>>(new Set());
   const items = useMemo(() => {
     return players
       .filter((player) => {
+        if (positionFilter.size > 0 && !positionFilter.has(player.pos)) {
+          return false;
+        }
+
         switch (statusFilter) {
           case PlayerStatusFilter.Youth:
             return player.youth;
@@ -116,7 +121,14 @@ function PlayerDevelopmentPage() {
           },
         };
       });
-  }, [endOfSeason, players, seasons, startOfSeason, statusFilter]);
+  }, [
+    endOfSeason,
+    players,
+    seasons,
+    startOfSeason,
+    statusFilter,
+    positionFilter,
+  ]);
 
   const [dataType, setDataType] = useState("ovr");
 
@@ -286,6 +298,12 @@ function PlayerDevelopmentPage() {
           statusFilter={statusFilter}
           onChangeStatusFilter={setStatusFilter}
         />
+
+        <PositionFilterPopover
+          positionFilter={positionFilter}
+          onChangePositionFilter={setPositionFilter}
+        />
+
         <SegmentedControl
           value={dataType}
           onChange={setDataType}

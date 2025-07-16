@@ -15,6 +15,7 @@ import {
   TextInput,
   Title,
 } from "@mantine/core";
+import { DatePickerInput } from "@mantine/dates";
 import { useForm } from "@mantine/form";
 
 export const Route = createLazyFileRoute("/teams/$teamId/players/new")({

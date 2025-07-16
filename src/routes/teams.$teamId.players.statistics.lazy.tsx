@@ -99,10 +99,15 @@ function PlayerStatisticsPage() {
   }, [supabase, teamId]);
 
   const [statusFilter, setStatusFilter] = useState(PlayerStatusFilter.Active);
+  const [positionFilter, setPositionFilter] = useState<Set<string>>(new Set());
   const [splitBySeason, setSplitBySeason] = useState(false);
   const [splitByCompetition, setSplitByCompetition] = useState(false);
   const items = useMemo(() => {
     const filteredPlayers = players.filter((player) => {
+      if (positionFilter.size > 0 && !positionFilter.has(player.pos)) {
+        return false;
+      }
+
       switch (statusFilter) {
         case PlayerStatusFilter.Youth:
           return player.youth;
@@ -176,6 +181,7 @@ function PlayerStatisticsPage() {
     splitBySeason,
     statsByPlayerId,
     statusFilter,
+    positionFilter,
   ]);
 
   const columnHelper = createColumnHelper<PlayerRow>();
@@ -318,6 +324,10 @@ function PlayerStatisticsPage() {
         <StatusFilterToggle
           statusFilter={statusFilter}
           onChangeStatusFilter={setStatusFilter}
+        />
+        <PositionFilterPopover
+          positionFilter={positionFilter}
+          onChangePositionFilter={setPositionFilter}
         />
         <Stack gap="xs">
           <Select

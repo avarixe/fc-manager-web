@@ -5,6 +5,7 @@ import {
   Modal,
   NumberInput,
 } from "@mantine/core";
+import { DatePickerInput } from "@mantine/dates";
 import { useForm } from "@mantine/form";
 
 export const TransferForm: React.FC<{
