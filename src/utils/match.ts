@@ -49,9 +49,9 @@ export function matchScoreColor(
 }
 
 export function ratingColor(rating: number) {
-  if (rating >= 90) {
+  if (rating >= 4.5) {
     return "green.8";
-  } else if (rating >= 4.5) {
+  } else if (rating >= 4.25) {
     return "green.6";
   } else if (rating >= 4.0) {
     return "green";

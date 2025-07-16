@@ -259,6 +259,8 @@ function PlayerPage() {
             <Title order={6}>Rating</Title>
           </Box>
         </Group>
+
+        <PlayerRatingHeatmap player={player} team={team} />
       </Box>
 
       <Box my="lg">

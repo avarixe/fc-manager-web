@@ -247,7 +247,8 @@ function TeamPage() {
               </Title>
               <Box ta="center">
                 <Box fz="sm">
-                  {latestMatch.competition} · {latestMatch.stage}
+                  {latestMatch.competition}
+                  {latestMatch.stage && ` · ${latestMatch.stage}`}
                 </Box>
                 <Box fz="xl" fw="bold">
                   {latestMatch.home_team} v {latestMatch.away_team}

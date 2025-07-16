@@ -53,6 +53,7 @@ declare global {
   const PlayerKitNo: typeof import('./src/components/player/PlayerInlineFields')['PlayerKitNo']
   const PlayerOvr: typeof import('./src/components/player/PlayerInlineFields')['PlayerOvr']
   const PlayerPositionFilter: typeof import('./src/constants/index')['PlayerPositionFilter']
+  const PlayerRatingHeatmap: typeof import('./src/components/player/PlayerRatingHeatmap')['PlayerRatingHeatmap']
   const PlayerStatus: typeof import('./src/components/player/PlayerStatus')['PlayerStatus']
   const PlayerStatusFilter: typeof import('./src/constants/index')['PlayerStatusFilter']
   const PlayerTimeline: typeof import('./src/components/player/PlayerTimeline')['PlayerTimeline']
