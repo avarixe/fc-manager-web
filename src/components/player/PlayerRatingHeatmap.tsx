@@ -157,12 +157,8 @@ export const PlayerRatingHeatmap: React.FC<PlayerRatingHeatmapProps> = ({
                 <Rating
                   value={value}
                   readOnly
-                  emptySymbol={
-                    <BaseIcon name="i-mdi:star-four-points" c="gray.7" />
-                  }
-                  fullSymbol={
-                    <BaseIcon name="i-mdi:star-four-points" c="gray.1" />
-                  }
+                  emptySymbol={<BaseIcon name="i-mdi:star" c="gray.7" />}
+                  fullSymbol={<BaseIcon name="i-mdi:star" c="gray.1" />}
                 />
               </Group>
             </Box>

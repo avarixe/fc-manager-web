@@ -65,7 +65,7 @@ export const CapRating: React.FC<
     <Group {...rest}>
       {!readonly && cap.rating && (
         <ActionIcon onClick={clearRating} variant="subtle" c="gray">
-          <BaseIcon name="i-mdi:delete" />
+          <BaseIcon name="i-mdi:star-off" />
         </ActionIcon>
       )}
       <Rating
@@ -74,8 +74,8 @@ export const CapRating: React.FC<
         onHover={onHover}
         onClick={stopPropagation}
         readOnly={readonly}
-        emptySymbol={<BaseIcon name="i-mdi:star-four-points" />}
-        fullSymbol={<BaseIcon name="i-mdi:star-four-points" c={color} />}
+        emptySymbol={<BaseIcon name="i-mdi:star" />}
+        fullSymbol={<BaseIcon name="i-mdi:star" c={color} />}
       />
     </Group>
   );

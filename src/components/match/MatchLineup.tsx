@@ -8,6 +8,7 @@ import { matchAtom, teamAtom } from "@/atoms";
 import { CapModal } from "@/components/match/CapModal";
 import { CapRating } from "@/components/match/CapRating";
 import { CapSummary } from "@/components/match/CapSummary";
+import { SideSummary } from "@/components/match/SideSummary";
 import { useCapHelpers } from "@/hooks/useCapHelpers";
 import { Cap, Player } from "@/types";
 
@@ -49,7 +50,12 @@ export const MatchLineup: React.FC<{
       </Text>
       {match.home_team !== team.name && (
         <NavLink
-          label={match.home_team}
+          label={
+            <Group>
+              <Text size="sm">{match.home_team}</Text>
+              <SideSummary match={match} side="home" />
+            </Group>
+          }
           leftSection={
             <Box w={50} fw={700}>
               Home
@@ -59,7 +65,12 @@ export const MatchLineup: React.FC<{
       )}
       {match.away_team !== team.name && (
         <NavLink
-          label={match.away_team}
+          label={
+            <Group>
+              <Text size="sm">{match.away_team}</Text>
+              <SideSummary match={match} side="away" />
+            </Group>
+          }
           leftSection={
             <Box w={50} fw={700}>
               Away

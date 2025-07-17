@@ -20,6 +20,7 @@ import { FormationGrid } from "@/components/formation/FormationGrid";
 import { CapModal } from "@/components/match/CapModal";
 import { CapRating } from "@/components/match/CapRating";
 import { CapSummary } from "@/components/match/CapSummary";
+import { SideSummary } from "@/components/match/SideSummary";
 import { useMatchState } from "@/hooks/useMatchState";
 import { Cap, Player } from "@/types";
 
@@ -83,8 +84,6 @@ export const MatchFormation: React.FC<{
     }
   }, [changeMinutes]);
 
-  const opponent = isTeamHome ? match.away_team : match.home_team;
-
   return (
     <Stack gap="xs">
       {changeMinutes.length > 1 && (
@@ -146,7 +145,7 @@ export const MatchFormation: React.FC<{
         </Grid.Col>
         <Grid.Col span={1} fz="sm">
           vs
-          <Box mt="xs">{opponent}</Box>
+          <SideItem side={isTeamHome ? "away" : "home"} />
         </Grid.Col>
       </Grid>
     </Stack>
@@ -200,5 +199,27 @@ const MatchFormationItem: React.FC<{
         playerOptions={playerOptions}
       />
     </Stack>
+  );
+};
+
+const SideItem: React.FC<{
+  side: "home" | "away";
+}> = ({ side }) => {
+  const match = useAtomValue(matchAtom)!;
+
+  return (
+    <Box ta="center">
+      <Text fw="bold">{side === "home" ? "HOME" : "AWAY"}</Text>
+      <BaseIcon
+        name="i-mdi:shield-sword"
+        w="auto"
+        c={side === "home" ? "cyan.6" : "teal.6"}
+        fz={50}
+      />
+      <Text size="xs">
+        {side === "home" ? match.home_team : match.away_team}
+      </Text>
+      <SideSummary match={match} side={side} justify="center" />
+    </Box>
   );
 };

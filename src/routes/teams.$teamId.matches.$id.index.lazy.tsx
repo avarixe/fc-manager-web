@@ -30,7 +30,7 @@ import {
   supabaseAtom,
   teamAtom,
 } from "@/atoms";
-import { BaseIcon } from "@/components/base/CommonIcons";
+import { BaseIcon, RedCardIcon } from "@/components/base/CommonIcons";
 import { FormationOvr } from "@/components/formation/FormationOvr";
 import { CapForm } from "@/components/match/CapForm";
 import { MatchFormation } from "@/components/match/MatchFormation";
@@ -609,18 +609,50 @@ const MatchInfo: React.FC<{
     [match, team?.name],
   );
 
+  // Count red cards for each team
+  const homeRedCards = useMemo(
+    () =>
+      match.bookings.filter((booking) => booking.home && booking.red_card)
+        .length,
+    [match.bookings],
+  );
+  const awayRedCards = useMemo(
+    () =>
+      match.bookings.filter((booking) => !booking.home && booking.red_card)
+        .length,
+    [match.bookings],
+  );
+
   return (
     <Table withRowBorders={false}>
       <Table.Tbody>
         <Table.Tr>
-          <Table.Td w="40%" ta="end" fz="xl" fw={1000} c="cyan">
-            {match.home_team}
+          <Table.Td w="40%" fz="xl" fw={1000} c="cyan">
+            <Group gap="xs" justify="flex-end">
+              {homeRedCards > 0 && (
+                <Group gap={4}>
+                  {Array.from({ length: homeRedCards }, (_, i) => (
+                    <RedCardIcon key={i} />
+                  ))}
+                </Group>
+              )}
+              {match.home_team}
+            </Group>
           </Table.Td>
           <Table.Td w="20%" ta="center">
             Team
           </Table.Td>
           <Table.Td w="40%" fz="xl" fw={1000} c="teal">
-            {match.away_team}
+            <Group gap="xs">
+              {match.away_team}
+              {awayRedCards > 0 && (
+                <Group gap={4}>
+                  {Array.from({ length: awayRedCards }, (_, i) => (
+                    <RedCardIcon key={i} fz="sm" />
+                  ))}
+                </Group>
+              )}
+            </Group>
           </Table.Td>
         </Table.Tr>
         <Table.Tr>

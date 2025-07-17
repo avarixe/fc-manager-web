@@ -74,16 +74,16 @@ export const CapModal: React.FC<{
       <Tabs defaultValue="cap" activateTabWithKeyboard={false}>
         <Tabs.List grow>
           <Tabs.Tab value="cap" color="default">
-            <BaseIcon name="i-mdi:account" />
+            <BaseIcon name="i-mdi:account" w="100%" />
           </Tabs.Tab>
           <Tabs.Tab value="goal" color="blue">
-            <GoalIcon />
+            <GoalIcon w="100%" />
           </Tabs.Tab>
           <Tabs.Tab value="change" color="green">
-            <SubstitutionIcon />
+            <SubstitutionIcon w="100%" />
           </Tabs.Tab>
           <Tabs.Tab value="booking" color="yellow">
-            <YellowCardIcon />
+            <YellowCardIcon w="100%" />
           </Tabs.Tab>
         </Tabs.List>
 
