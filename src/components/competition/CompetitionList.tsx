@@ -1,5 +1,12 @@
-import { Tables } from "@/database-generated.types";
 import { BoxProps, Button, NavLink } from "@mantine/core";
+import { Link } from "@tanstack/react-router";
+import { useAtomValue } from "jotai";
+
+import { teamAtom } from "@/atoms";
+import { BaseIcon } from "@/components/base/CommonIcons";
+import { Tables } from "@/database-generated.types";
+import { useTeamHelpers } from "@/hooks/useTeamHelpers";
+import { Competition } from "@/types";
 
 type CompetitionItem = Pick<Tables<"competitions">, "id" | "name" | "champion">;
 

@@ -1,7 +1,22 @@
-import { Box, Button, ComboboxItem, Select, TextInput } from "@mantine/core";
-import { useForm } from "@mantine/form";
-import { Tables } from "@/database-generated.types";
+import {
+  Box,
+  Button,
+  ComboboxItem,
+  Select,
+  Text,
+  TextInput,
+} from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
+import { useForm } from "@mantine/form";
+import { useNavigate } from "@tanstack/react-router";
+import dayjs from "dayjs";
+import { useAtomValue } from "jotai";
+import { useCallback, useEffect, useState } from "react";
+
+import { sessionAtom, supabaseAtom } from "@/atoms";
+import { TeamAutocomplete } from "@/components/team/TeamAutocomplete";
+import { Tables } from "@/database-generated.types";
+import { assertType } from "@/utils/assert";
 
 type TeamOption = ComboboxItem & Tables<"teams">;
 
@@ -86,10 +101,10 @@ export function TeamForm({ record }: { record?: Tables<"teams"> }) {
           assertType<TeamOption>(option);
           return (
             <Box>
-              <MText>{option.name}</MText>
-              <MText size="xs">
+              <Text>{option.name}</Text>
+              <Text size="xs">
                 {option.manager_name} · {option.game}
-              </MText>
+              </Text>
             </Box>
           );
         }}

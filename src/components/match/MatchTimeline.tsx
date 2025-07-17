@@ -6,12 +6,38 @@ import {
   RingProgress,
   Stack,
   Switch,
+  Text,
   ThemeIcon,
   Timeline,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
+import { useAtom, useAtomValue } from "jotai";
 import { groupBy, orderBy } from "lodash-es";
+import { useCallback, useMemo } from "react";
+
+import { capsAtom, matchAtom, supabaseAtom, teamAtom } from "@/atoms";
+import {
+  AssistIcon,
+  BaseIcon,
+  GoalIcon,
+  MatchInjuryIcon,
+  RedCardIcon,
+  SubInIcon,
+  SubOutIcon,
+  SubstitutionIcon,
+  YellowCardIcon,
+} from "@/components/base/CommonIcons";
+import { BookingForm } from "@/components/match/BookingForm";
+import { ChangeForm } from "@/components/match/ChangeForm";
+import { GoalForm } from "@/components/match/GoalForm";
+import { PenaltyShootoutForm } from "@/components/match/PenaltyShootoutForm";
+import { useCapHelpers } from "@/hooks/useCapHelpers";
+import { useManageBookings } from "@/hooks/useManageBookings";
+import { useManageChanges } from "@/hooks/useManageChanges";
+import { useManageGoals } from "@/hooks/useManageGoals";
+import { Booking, Cap, Change, Goal, Match, Player } from "@/types";
+import { assertType } from "@/utils/assert";
 
 enum MatchEventType {
   Goal = "Goal",
@@ -234,9 +260,9 @@ export const MatchTimeline: React.FC<{
           }
           mt="sm"
         >
-          <MText size="xs" c={item.home ? "cyan" : "teal"}>
+          <Text size="xs" c={item.home ? "cyan" : "teal"}>
             {item.home ? match.home_team : match.away_team}
-          </MText>
+          </Text>
           {renderMatchEvent(item)}
         </Timeline.Item>
       );
@@ -302,9 +328,9 @@ export const MatchTimeline: React.FC<{
           <ThemeIcon size="md" radius="xl" color="transparent">
             <RingProgress
               label={
-                <MText size="xs" ta="center">
+                <Text size="xs" ta="center">
                   HT
-                </MText>
+                </Text>
               }
               size={32}
               thickness={3}
@@ -334,9 +360,9 @@ export const MatchTimeline: React.FC<{
           <ThemeIcon size="md" radius="xl" color="transparent">
             <RingProgress
               label={
-                <MText size="xs" ta="center">
+                <Text size="xs" ta="center">
                   FT
-                </MText>
+                </Text>
               }
               size={32}
               thickness={3}
@@ -391,9 +417,9 @@ export const MatchTimeline: React.FC<{
             <ThemeIcon size="md" radius="xl" color="transparent">
               <RingProgress
                 label={
-                  <MText size="xs" ta="center">
+                  <Text size="xs" ta="center">
                     AET
-                  </MText>
+                  </Text>
                 }
                 size={32}
                 thickness={3}
@@ -611,15 +637,15 @@ const ChangeEvent: React.FC<{
           )}
           {change.injured && <MatchInjuryIcon />}
           {change.out.name}
-          <MText component="span" fw="bold">
+          <Text component="span" fw="bold">
             {change.out.pos}
-          </MText>
+          </Text>
           {isSamePlayer && (
             <>
               <BaseIcon name="i-mdi:arrow-right" />
-              <MText component="span" fw="bold">
+              <Text component="span" fw="bold">
                 {change.in.pos}
-              </MText>
+              </Text>
             </>
           )}
         </Group>
@@ -627,9 +653,9 @@ const ChangeEvent: React.FC<{
           <Group h="lg">
             <SubInIcon />
             {change.in.name}
-            <MText component="span" fw="bold">
+            <Text component="span" fw="bold">
               {change.in.pos}
-            </MText>
+            </Text>
           </Group>
         )}
       </Box>
@@ -675,10 +701,10 @@ const PenaltyShootoutEvent: React.FC<{
       title: `Delete Penalty Shootout`,
       centered: true,
       children: (
-        <MText size="sm">
+        <Text size="sm">
           Are you sure you want to delete the penalty shootout? This action
           cannot be undone.
-        </MText>
+        </Text>
       ),
       labels: {
         confirm: "Delete",
@@ -698,9 +724,9 @@ const PenaltyShootoutEvent: React.FC<{
         <ThemeIcon size="md" radius="xl" color="transparent">
           <RingProgress
             label={
-              <MText size="xs" ta="center">
+              <Text size="xs" ta="center">
                 PS
-              </MText>
+              </Text>
             }
             size={32}
             thickness={3}

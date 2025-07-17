@@ -1,4 +1,8 @@
+import { useAtomValue } from "jotai";
 import { orderBy, sumBy } from "lodash-es";
+import { useMemo } from "react";
+
+import { capsAtom, matchAtom } from "@/atoms";
 
 function useCapStats(playerId: number) {
   const caps = useAtomValue(capsAtom);

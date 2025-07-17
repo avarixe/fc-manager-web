@@ -1,4 +1,8 @@
 import { Breadcrumbs, Button } from "@mantine/core";
+import { Link } from "@tanstack/react-router";
+import { useAtomValue } from "jotai";
+
+import { breadcrumbsAtom } from "@/atoms";
 
 export const AppBreadcrumbs = () => {
   const items = useAtomValue(breadcrumbsAtom);

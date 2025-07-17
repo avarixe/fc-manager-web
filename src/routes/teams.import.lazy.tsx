@@ -1,12 +1,21 @@
-import { Tables, TablesInsert } from "@/database-generated.types";
 import {
   Button,
   Divider,
   FileInput,
   Progress,
   Stack,
+  Text,
   Title,
 } from "@mantine/core";
+import { createLazyFileRoute } from "@tanstack/react-router";
+import { useAtomValue, useSetAtom } from "jotai";
+import { useCallback, useEffect, useRef, useState } from "react";
+
+import { breadcrumbsAtom, sessionAtom, supabaseAtom } from "@/atoms";
+import { Tables, TablesInsert } from "@/database-generated.types";
+import { useProgress } from "@/hooks/useProgress";
+import { Change } from "@/types";
+import { assertType } from "@/utils/assert";
 
 export const Route = createLazyFileRoute("/teams/import")({
   component: ImportTeamPage,
@@ -524,10 +533,10 @@ const ImportProgress: React.FC<{
 }> = ({ label, color, progress, count, total }) =>
   total > 0 ? (
     <>
-      <MText size="sm" mt="xs" c={color}>
+      <Text size="sm" mt="xs" c={color}>
         Importing {label}...
         <span className="ml-1">{progress >= 100 && "Done!"}</span>
-      </MText>
+      </Text>
       <Progress.Root size="xl">
         <Progress.Section
           value={progress}

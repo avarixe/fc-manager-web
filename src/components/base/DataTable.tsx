@@ -8,6 +8,7 @@ import {
   Select,
   Table,
   TableProps,
+  Text,
 } from "@mantine/core";
 import {
   ColumnSort,
@@ -18,6 +19,9 @@ import {
   TableOptions,
   useReactTable,
 } from "@tanstack/react-table";
+import { useCallback, useMemo } from "react";
+
+import { StateSetter } from "@/types";
 
 export interface DataTableProps<TData extends RowData>
   extends Pick<TableOptions<TData>, "data" | "columns">,
@@ -140,14 +144,14 @@ export const DataTable = <TData extends RowData>({
           w={100}
         />
 
-        <MText size="xs" className="ml-auto">
+        <Text size="xs" className="ml-auto">
           Showing {tableState.pageSize * tableState.pageIndex + 1}-
           {Math.min(
             tableState.pageSize * (tableState.pageIndex + 1),
             tableState.rowCount,
           )}{" "}
           of {tableState.rowCount}
-        </MText>
+        </Text>
         <Pagination
           value={tableState.pageIndex + 1}
           total={totalPages}

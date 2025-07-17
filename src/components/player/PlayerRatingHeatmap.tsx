@@ -1,5 +1,13 @@
-import { Box, Group, Rating, Text } from "@mantine/core";
 import { Heatmap } from "@mantine/charts";
+import { Box, Group, Rating, Text } from "@mantine/core";
+import { useAtomValue } from "jotai";
+import { useEffect, useMemo, useState } from "react";
+
+import { supabaseAtom } from "@/atoms";
+import { BaseIcon } from "@/components/base/CommonIcons";
+import { Match, Player } from "@/types";
+import { formatDate } from "@/utils/format";
+import { matchScore } from "@/utils/match";
 
 interface PlayerRatingHeatmapProps {
   player: Player;

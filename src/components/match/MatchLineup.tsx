@@ -1,6 +1,15 @@
-import { Box, Button, Group, NavLink } from "@mantine/core";
+import { Box, Button, Group, NavLink, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { useAtomValue } from "jotai";
 import { orderBy } from "lodash-es";
+import { useMemo } from "react";
+
+import { matchAtom, teamAtom } from "@/atoms";
+import { CapModal } from "@/components/match/CapModal";
+import { CapRating } from "@/components/match/CapRating";
+import { CapSummary } from "@/components/match/CapSummary";
+import { useCapHelpers } from "@/hooks/useCapHelpers";
+import { Cap, Player } from "@/types";
 
 type PlayerOption = Pick<
   Player,
@@ -24,9 +33,9 @@ export const MatchLineup: React.FC<{
   const match = useAtomValue(matchAtom)!;
   return (
     <Box>
-      <MText pl="xs" size="sm" className="opacity-60">
+      <Text pl="xs" size="sm" className="opacity-60">
         Players
-      </MText>
+      </Text>
       {sortedCaps.map((cap) => (
         <MatchLineupItem
           key={cap.id}
@@ -35,9 +44,9 @@ export const MatchLineup: React.FC<{
           playerOptions={playerOptions}
         />
       ))}
-      <MText pl="xs" size="sm" mt="xs" className="opacity-60">
+      <Text pl="xs" size="sm" mt="xs" className="opacity-60">
         Teams
-      </MText>
+      </Text>
       {match.home_team !== team.name && (
         <NavLink
           label={match.home_team}

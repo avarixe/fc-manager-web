@@ -1,4 +1,12 @@
+import { Text } from "@mantine/core";
 import { modals } from "@mantine/modals";
+import { useAtom, useAtomValue } from "jotai";
+import { useCallback } from "react";
+
+import { matchAtom, supabaseAtom } from "@/atoms";
+import { useMatchCallbacks } from "@/hooks/useMatchCallbacks";
+import { Goal, Match } from "@/types";
+import { assertType } from "@/utils/assert";
 
 function useManageGoals() {
   const [match, setMatch] = useAtom(matchAtom);
@@ -36,10 +44,10 @@ function useManageGoals() {
         title: "Delete Goal",
         centered: true,
         children: (
-          <MText size="sm">
+          <Text size="sm">
             Are you sure you want to delete this goal? This action cannot be
             undone.
-          </MText>
+          </Text>
         ),
         labels: {
           confirm: "Delete",

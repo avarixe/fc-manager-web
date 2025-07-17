@@ -1,4 +1,8 @@
-import { Button, Checkbox, Group, Popover, Stack } from "@mantine/core";
+import { Button, Checkbox, Group, Popover, Stack, Text } from "@mantine/core";
+import { useCallback } from "react";
+
+import { BaseIcon } from "@/components/base/CommonIcons";
+import { matchPosTypes, positionsByType } from "@/constants";
 
 export const PositionFilterPopover: React.FC<{
   positionFilter: Set<string>;
@@ -50,9 +54,9 @@ export const PositionFilterPopover: React.FC<{
         >
           Pos
           {activeCount > 0 && (
-            <MText size="xs" ml={4} fw={500}>
+            <Text size="xs" ml={4} fw={500}>
               ({activeCount})
-            </MText>
+            </Text>
           )}
         </Button>
       </Popover.Target>

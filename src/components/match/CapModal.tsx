@@ -1,4 +1,22 @@
-import { Modal, Tabs } from "@mantine/core";
+import { Modal, Tabs, Text } from "@mantine/core";
+import { useAtomValue } from "jotai";
+import { useCallback, useMemo } from "react";
+
+import { matchAtom, teamAtom } from "@/atoms";
+import {
+  BaseIcon,
+  GoalIcon,
+  SubstitutionIcon,
+  YellowCardIcon,
+} from "@/components/base/CommonIcons";
+import { BaseBookingForm } from "@/components/match/BookingForm";
+import { CapEditor } from "@/components/match/CapEditor";
+import { BaseChangeForm } from "@/components/match/ChangeForm";
+import { BaseGoalForm } from "@/components/match/GoalForm";
+import { useManageBookings } from "@/hooks/useManageBookings";
+import { useManageChanges } from "@/hooks/useManageChanges";
+import { useManageGoals } from "@/hooks/useManageGoals";
+import { Booking, Cap, Change, Goal, Player } from "@/types";
 
 type PlayerOption = Pick<
   Player,
@@ -70,15 +88,15 @@ export const CapModal: React.FC<{
         </Tabs.List>
 
         <Tabs.Panel value="cap" pt="xs">
-          <MText size="sm" mb="xs" fw="bold">
+          <Text size="sm" mb="xs" fw="bold">
             Edit Position and Player
-          </MText>
+          </Text>
           <CapEditor cap={cap} playerOptions={playerOptions} />
         </Tabs.Panel>
         <Tabs.Panel value="goal" pt="xs">
-          <MText size="sm" mb="xs" fw="bold">
+          <Text size="sm" mb="xs" fw="bold">
             Add Goal
-          </MText>
+          </Text>
           <BaseGoalForm
             prefill={{ player_name: cap.players.name, home: isTeamHome }}
             opened={opened}
@@ -86,9 +104,9 @@ export const CapModal: React.FC<{
           />
         </Tabs.Panel>
         <Tabs.Panel value="change" pt="xs">
-          <MText size="sm" mb="xs" fw="bold">
+          <Text size="sm" mb="xs" fw="bold">
             Add Formation Change
-          </MText>
+          </Text>
           <BaseChangeForm
             prefill={{ out: { name: cap.players.name, pos: cap.pos } }}
             opened={opened}
@@ -97,9 +115,9 @@ export const CapModal: React.FC<{
           />
         </Tabs.Panel>
         <Tabs.Panel value="booking" pt="xs">
-          <MText size="sm" mb="xs" fw="bold">
+          <Text size="sm" mb="xs" fw="bold">
             Add Booking
-          </MText>
+          </Text>
           <BaseBookingForm
             prefill={{ player_name: cap.players.name, home: isTeamHome }}
             opened={opened}

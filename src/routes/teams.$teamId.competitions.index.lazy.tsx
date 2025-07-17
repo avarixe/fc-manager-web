@@ -1,6 +1,13 @@
-import { Tables } from "@/database-generated.types";
 import { Button, Group, Stack, Timeline, Title } from "@mantine/core";
+import { createLazyFileRoute, Link } from "@tanstack/react-router";
+import { useAtomValue, useSetAtom } from "jotai";
 import { groupBy } from "lodash-es";
+import { useEffect, useMemo, useState } from "react";
+
+import { breadcrumbsAtom, supabaseAtom } from "@/atoms";
+import { CompetitionList } from "@/components/competition/CompetitionList";
+import { Tables } from "@/database-generated.types";
+import { useTeam } from "@/hooks/useTeam";
 
 type Competition = Pick<
   Tables<"competitions">,

@@ -1,6 +1,14 @@
-import { Tables } from "@/database-generated.types";
 import { NavLink, Popover } from "@mantine/core";
 import { Calendar } from "@mantine/dates";
+import { useAtomValue, useSetAtom } from "jotai";
+import { useCallback, useState } from "react";
+
+import { appLoadingAtom, supabaseAtom, teamAtom } from "@/atoms";
+import { Tables } from "@/database-generated.types";
+import { usePlayerCallbacks } from "@/hooks/usePlayerCallbacks";
+import { Player } from "@/types";
+import { assertType } from "@/utils/assert";
+import { formatDate } from "@/utils/format";
 
 export const TeamDatePicker: React.FC<{ team: Tables<"teams"> }> = ({
   team,
@@ -63,9 +71,9 @@ export const TeamDatePicker: React.FC<{ team: Tables<"teams"> }> = ({
       </Popover.Target>
       <Popover.Dropdown>
         <Calendar
-          defaultDate={dayjs(team.currently_on)}
+          defaultDate={team.currently_on}
           getDayProps={(date) => ({
-            selected: dayjs(date).isSame(team.currently_on, "string"),
+            selected: date === team.currently_on,
             onClick: () => onClick(date),
           })}
           firstDayOfWeek={0}

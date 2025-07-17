@@ -1,5 +1,16 @@
 import { DonutChart, ScatterChart } from "@mantine/charts";
-import { Card, Group, Stack, Title } from "@mantine/core";
+import { Card, Group, Stack, Text, Title } from "@mantine/core";
+import { createLazyFileRoute } from "@tanstack/react-router";
+import { useAtomValue, useSetAtom } from "jotai";
+import { useEffect, useMemo, useState } from "react";
+
+import { breadcrumbsAtom, supabaseAtom } from "@/atoms";
+import { BaseIcon } from "@/components/base/CommonIcons";
+import { FormationOvr } from "@/components/formation/FormationOvr";
+import { matchPositionTypes } from "@/constants";
+import { useTeam } from "@/hooks/useTeam";
+import { Player } from "@/types";
+import { assertType } from "@/utils/assert";
 
 export const Route = createLazyFileRoute("/teams/$teamId/players/analytics")({
   component: PlayerAnalyticsPage,
@@ -128,8 +139,8 @@ const PositionDistribution: React.FC<{
         {chartData.map(({ name, value, color }) => (
           <Group key={name} align="center">
             <BaseIcon name="i-mdi:circle" c={color} />
-            <MText>{name}</MText>
-            <MText ml="auto">{value}</MText>
+            <Text>{name}</Text>
+            <Text ml="auto">{value}</Text>
           </Group>
         ))}
       </Stack>

@@ -1,4 +1,10 @@
-export default (minute: number) => {
+import { useAtomValue } from "jotai";
+import { useMemo } from "react";
+
+import { matchAtom } from "@/atoms";
+import { useCapHelpers } from "@/hooks/useCapHelpers";
+
+export const useMatchState = (minute: number) => {
   const { sortedCaps } = useCapHelpers();
 
   const match = useAtomValue(matchAtom)!;

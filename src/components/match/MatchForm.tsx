@@ -6,9 +6,20 @@ import {
   Group,
   Select,
 } from "@mantine/core";
-import { useForm } from "@mantine/form";
-import { Tables } from "@/database-generated.types";
 import { DatePickerInput } from "@mantine/dates";
+import { useForm } from "@mantine/form";
+import { useNavigate } from "@tanstack/react-router";
+import { useAtomValue } from "jotai";
+import { useCallback, useEffect, useMemo, useState } from "react";
+
+import { sessionAtom, supabaseAtom } from "@/atoms";
+import { BaseIcon } from "@/components/base/CommonIcons";
+import { TeamAutocomplete } from "@/components/team/TeamAutocomplete";
+import { Tables } from "@/database-generated.types";
+import { useManageOptions } from "@/hooks/useManageOptions";
+import { useTeamHelpers } from "@/hooks/useTeamHelpers";
+import { Competition } from "@/types";
+import { assertType } from "@/utils/assert";
 
 type CompetitionOption = Pick<Competition, "name" | "stages">;
 

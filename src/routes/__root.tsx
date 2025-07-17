@@ -1,18 +1,25 @@
-import { Outlet } from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/router-devtools";
-import { SupabaseClient } from "@supabase/supabase-js";
 import {
   AppShell,
   Burger,
   Container,
-  Image,
   Group,
+  Image,
   LoadingOverlay,
+  Text,
   UnstyledButton,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import logo from "@/assets/logo.png";
+import { SupabaseClient } from "@supabase/supabase-js";
+import { createRootRoute, Outlet } from "@tanstack/react-router";
+import { TanStackRouterDevtools } from "@tanstack/router-devtools";
+import { useAtom, useAtomValue } from "jotai";
+import { useCallback, useEffect, useState } from "react";
+
 import googleSsoButton from "@/assets/google-sso-button.png";
+import logo from "@/assets/logo.png";
+import { appLoadingAtom, sessionAtom, supabaseAtom } from "@/atoms";
+import { AppBreadcrumbs } from "@/components/app/AppBreadcrumbs";
+import { AppNavbar } from "@/components/app/AppNavbar";
 
 export const Route = createRootRoute({
   component: App,
@@ -56,7 +63,7 @@ function App() {
           <Burger opened={opened} onClick={toggle} hiddenFrom="md" size="sm" />
           <Group gap="xs">
             <Image src={logo} alt="logo" height={48} fit="contain" flex={1} />
-            <MText size="xl">MyFC Manager</MText>
+            <Text size="xl">MyFC Manager</Text>
           </Group>
         </Group>
       </AppShell.Header>

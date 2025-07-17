@@ -1,6 +1,16 @@
 import { Autocomplete, Button, Checkbox, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { useNavigate } from "@tanstack/react-router";
+import { useAtomValue } from "jotai";
+import { useCallback, useEffect, useState } from "react";
+
+import { sessionAtom, supabaseAtom } from "@/atoms";
+import { TeamAutocomplete } from "@/components/team/TeamAutocomplete";
 import { Tables } from "@/database-generated.types";
+import { useCompetitionHelpers } from "@/hooks/useCompetitionHelpers";
+import { useTeamHelpers } from "@/hooks/useTeamHelpers";
+import { Stage } from "@/types";
+import { assertType } from "@/utils/assert";
 
 export function CompetitionForm({
   record,

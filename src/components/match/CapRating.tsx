@@ -1,4 +1,10 @@
 import { ActionIcon, Group, GroupProps, Rating } from "@mantine/core";
+import { useAtomValue, useSetAtom } from "jotai";
+import { useCallback, useMemo, useState } from "react";
+
+import { capsAtom, supabaseAtom } from "@/atoms";
+import { BaseIcon } from "@/components/base/CommonIcons";
+import { Cap } from "@/types";
 
 export const CapRating: React.FC<
   GroupProps & {

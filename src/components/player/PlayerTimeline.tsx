@@ -1,4 +1,3 @@
-import { Tables } from "@/database-generated.types";
 import {
   Badge,
   Button,
@@ -11,7 +10,39 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
+import dayjs from "dayjs";
+import { useAtomValue } from "jotai";
 import { orderBy } from "lodash-es";
+import { useCallback, useMemo } from "react";
+
+import { teamAtom } from "@/atoms";
+import {
+  ContractIcon,
+  InjuryIcon,
+  LoanIcon,
+  TransferIcon,
+  TransferInIcon,
+  TransferOutIcon,
+} from "@/components/base/CommonIcons";
+import { ContractForm } from "@/components/player/ContractForm";
+import { InjuryForm } from "@/components/player/InjuryForm";
+import { LoanForm } from "@/components/player/LoanForm";
+import { TransferForm } from "@/components/player/TransferForm";
+import { PlayerEventKey, PlayerEventType } from "@/constants";
+import { Tables } from "@/database-generated.types";
+import { useManagePlayerEvents } from "@/hooks/useManagePlayerEvents";
+import { useTeamHelpers } from "@/hooks/useTeamHelpers";
+import {
+  Contract,
+  Injury,
+  Loan,
+  Player,
+  PlayerEvent,
+  StateSetter,
+  Transfer,
+} from "@/types";
+import { assertType } from "@/utils/assert";
+import { formatDate } from "@/utils/format";
 
 type PlayerTimelineEvent = PlayerEvent & {
   type: PlayerEventType;
@@ -770,5 +801,7 @@ function playerEventColor(
       } else {
         return "red";
       }
+    default:
+      throw new Error(`Unknown player event type: ${item.type}`);
   }
 }

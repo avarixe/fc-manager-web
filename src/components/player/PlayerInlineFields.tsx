@@ -6,6 +6,12 @@ import {
   Popover,
 } from "@mantine/core";
 import { isNotEmpty, useField } from "@mantine/form";
+import { useAtomValue } from "jotai";
+import { useCallback, useMemo } from "react";
+
+import { supabaseAtom, teamAtom } from "@/atoms";
+import { Player } from "@/types";
+import { ovrColor } from "@/utils/player";
 
 export const PlayerInlineField = <T,>({
   target,

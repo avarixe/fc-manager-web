@@ -7,9 +7,18 @@ import {
   NumberInput,
   SegmentedControl,
   Select,
+  Text,
   TextInput,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { useAtomValue } from "jotai";
+import { useCallback, useEffect, useMemo, useState } from "react";
+
+import { capsAtom, matchAtom, teamAtom } from "@/atoms";
+import { RedCardIcon, YellowCardIcon } from "@/components/base/CommonIcons";
+import { useMatchState } from "@/hooks/useMatchState";
+import { Booking, Cap } from "@/types";
+import { assertType } from "@/utils/assert";
 
 type CapOption = ComboboxItem & Cap;
 
@@ -173,10 +182,10 @@ export const BaseBookingForm: React.FC<{
             assertType<CapOption>(option);
             return (
               <Group>
-                <MText size="xs" fw="bold">
+                <Text size="xs" fw="bold">
                   {option.pos}
-                </MText>
-                <MText size="xs">{option.value}</MText>
+                </Text>
+                <Text size="xs">{option.value}</Text>
               </Group>
             );
           }}

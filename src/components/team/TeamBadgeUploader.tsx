@@ -7,6 +7,11 @@ import {
   Modal,
   Paper,
 } from "@mantine/core";
+import { useAtom, useAtomValue } from "jotai";
+import { useCallback, useEffect, useRef, useState } from "react";
+
+import { supabaseAtom, teamAtom } from "@/atoms";
+import { BaseIcon } from "@/components/base/CommonIcons";
 
 export const TeamBadgeUploader: React.FC<{
   opened: boolean;

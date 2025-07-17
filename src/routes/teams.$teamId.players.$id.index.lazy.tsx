@@ -1,4 +1,9 @@
 import {
+  AreaChart,
+  ChartTooltipProps,
+  getFilteredChartTooltipPayload,
+} from "@mantine/charts";
+import {
   Box,
   Button,
   ColorSwatch,
@@ -7,15 +12,35 @@ import {
   NumberFormatter,
   Paper,
   Stack,
+  Text,
   Title,
 } from "@mantine/core";
-import {
-  AreaChart,
-  ChartTooltipProps,
-  getFilteredChartTooltipPayload,
-} from "@mantine/charts";
 import { modals } from "@mantine/modals";
+import { createLazyFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import dayjs from "dayjs";
+import { useAtomValue, useSetAtom } from "jotai";
 import { round } from "lodash-es";
+import { useCallback, useEffect, useMemo, useState } from "react";
+
+import {
+  appLoadingAtom,
+  breadcrumbsAtom,
+  supabaseAtom,
+  teamAtom,
+} from "@/atoms";
+import { PlayerFlag } from "@/components/player/PlayerFlag";
+import {
+  PlayerKitNo,
+  PlayerOvr,
+  PlayerValue,
+} from "@/components/player/PlayerInlineFields";
+import { PlayerRatingHeatmap } from "@/components/player/PlayerRatingHeatmap";
+import { PlayerStatus } from "@/components/player/PlayerStatus";
+import { PlayerTimeline } from "@/components/player/PlayerTimeline";
+import { useTeam } from "@/hooks/useTeam";
+import { Player } from "@/types";
+import { assertType } from "@/utils/assert";
+import { ratingColor } from "@/utils/match";
 
 export const Route = createLazyFileRoute("/teams/$teamId/players/$id/")({
   component: PlayerPage,
@@ -97,10 +122,10 @@ function PlayerPage() {
       title: "Delete Player",
       centered: true,
       children: (
-        <MText size="sm">
+        <Text size="sm">
           Are you sure you want to delete this player? This action cannot be
           undone.
-        </MText>
+        </Text>
       ),
       labels: {
         confirm: "Delete",
@@ -329,7 +354,7 @@ const PlayerHistoryChart: React.FC<{ player: Player }> = ({ player }) => {
       ]}
       xAxisProps={{
         scale: "time",
-        domain: [data[0].date, new Date(team.currently_on)],
+        domain: [data[0].date, dayjs(team.currently_on).valueOf()],
         tickFormatter: (date) => dayjs(date).format("MMM YYYY"),
       }}
       yAxisProps={{
@@ -352,7 +377,7 @@ const PlayerHistoryChart: React.FC<{ player: Player }> = ({ player }) => {
 };
 
 const PlayerHistoryChartTooltip: React.FC<
-  ChartTooltipProps & { currency: string }
+  ChartTooltipProps & { label: string; currency: string }
 > = ({ label, payload, currency }) => {
   if (!payload) return null;
 
@@ -363,10 +388,10 @@ const PlayerHistoryChartTooltip: React.FC<
         {getFilteredChartTooltipPayload(payload).map((item) => (
           <Group key={item.name}>
             <ColorSwatch color={item.color} size={10} />
-            <MText size="sm">
+            <Text size="sm">
               {item.name === "ovr" ? "Overall Rating" : "Market Value"}
-            </MText>
-            <MText size="sm" ml="auto">
+            </Text>
+            <Text size="sm" ml="auto">
               {item.name === "ovr" ? (
                 item.value
               ) : (
@@ -376,7 +401,7 @@ const PlayerHistoryChartTooltip: React.FC<
                   thousandSeparator
                 />
               )}
-            </MText>
+            </Text>
           </Group>
         ))}
       </Box>

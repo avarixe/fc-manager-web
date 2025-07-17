@@ -4,10 +4,26 @@ import {
   Group,
   Select,
   Stack,
+  Text,
   Title,
   Tooltip,
 } from "@mantine/core";
+import { createLazyFileRoute, Link } from "@tanstack/react-router";
+import { createColumnHelper } from "@tanstack/react-table";
+import { useAtomValue, useSetAtom } from "jotai";
 import { groupBy, round } from "lodash-es";
+import { useEffect, useMemo, useState } from "react";
+
+import { breadcrumbsAtom, supabaseAtom } from "@/atoms";
+import { BaseIcon } from "@/components/base/CommonIcons";
+import { LocalDataTable } from "@/components/base/LocalDataTable";
+import { PlayerFlag } from "@/components/player/PlayerFlag";
+import { PositionFilterPopover } from "@/components/player/PositionFilterPopover";
+import { PlayerStatusFilter } from "@/constants";
+import { useTeam } from "@/hooks/useTeam";
+import { Player } from "@/types";
+import { assertType } from "@/utils/assert";
+import { ratingColor } from "@/utils/match";
 
 type PlayerData = Pick<
   Player,
@@ -256,7 +272,7 @@ function PlayerStatisticsPage() {
         cell: (info) => {
           const value = info.getValue();
           return (
-            <MText c={ratingColor(value)}>{round(value, 2).toFixed(2)}</MText>
+            <Text c={ratingColor(value)}>{round(value, 2).toFixed(2)}</Text>
           );
         },
         meta: { align: "center", sortable: true },

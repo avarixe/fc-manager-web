@@ -10,12 +10,39 @@ import {
   Stack,
   Switch,
   Table,
+  Text,
   TextInput,
   Title,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
+import { createLazyFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+
+import {
+  appLoadingAtom,
+  breadcrumbsAtom,
+  capsAtom,
+  matchAtom,
+  sessionAtom,
+  supabaseAtom,
+  teamAtom,
+} from "@/atoms";
+import { BaseIcon } from "@/components/base/CommonIcons";
+import { FormationOvr } from "@/components/formation/FormationOvr";
+import { CapForm } from "@/components/match/CapForm";
+import { MatchFormation } from "@/components/match/MatchFormation";
+import { MatchFormationForm } from "@/components/match/MatchFormationForm";
+import { MatchLineup } from "@/components/match/MatchLineup";
+import { MatchTimeline } from "@/components/match/MatchTimeline";
+import { matchPositionTypes } from "@/constants";
+import { useTeam } from "@/hooks/useTeam";
+import { Cap, Match, Player, Squad } from "@/types";
+import { assertType } from "@/utils/assert";
+import { formatDate } from "@/utils/format";
+import { matchScoreColor } from "@/utils/match";
 
 type PlayerOption = Pick<
   Player,
@@ -128,10 +155,10 @@ function MatchPage() {
       title: "Delete Match",
       centered: true,
       children: (
-        <MText size="sm">
+        <Text size="sm">
           Are you sure you want to delete this match? This action cannot be
           undone.
-        </MText>
+        </Text>
       ),
       labels: {
         confirm: "Delete",

@@ -1,11 +1,10 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
-import AutoImport from "unplugin-auto-import/vite";
 import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
+import react from "@vitejs/plugin-react";
 import jotaiDebugLabel from "jotai/babel/plugin-debug-label";
 import jotaiReactRefresh from "jotai/babel/plugin-react-refresh";
-import UnoCSS from "unocss/vite";
 import path from "path";
+import UnoCSS from "unocss/vite";
+import { defineConfig } from "vite";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -17,33 +16,6 @@ export default defineConfig({
     }),
     UnoCSS(),
     TanStackRouterVite(),
-    AutoImport({
-      imports: [
-        "react",
-        "jotai",
-        {
-          "@tanstack/react-router": [
-            "createRootRoute",
-            "createLazyFileRoute",
-            "Link",
-            "useNavigate",
-            "useParams",
-          ],
-          "@tanstack/react-table": ["createColumnHelper"],
-          dayjs: [["default", "dayjs"]],
-          "react-usestateref": [["default", "useStateRef"]],
-          "@mantine/core": [["Text", "MText"]],
-        },
-      ],
-      dirs: [
-        "src/atoms",
-        "src/components/**",
-        "src/constants",
-        "src/hooks",
-        "src/utils",
-        "src/types",
-      ],
-    }),
   ],
   resolve: {
     alias: {

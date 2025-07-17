@@ -1,6 +1,3 @@
-import { createLazyFileRoute } from "@tanstack/react-router";
-
-import { Tables } from "@/database-generated.types";
 import {
   Autocomplete,
   Button,
@@ -14,6 +11,16 @@ import {
   Title,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
+import { useAtomValue, useSetAtom } from "jotai";
+import { useCallback, useEffect, useState } from "react";
+
+import { breadcrumbsAtom, supabaseAtom } from "@/atoms";
+import { positions } from "@/constants";
+import { countryCodes } from "@/constants/countryCodes";
+import { Tables } from "@/database-generated.types";
+import { useTeam } from "@/hooks/useTeam";
+import { useTeamHelpers } from "@/hooks/useTeamHelpers";
 
 export const Route = createLazyFileRoute("/teams/$teamId/players/$id/edit")({
   component: EditPlayerPage,

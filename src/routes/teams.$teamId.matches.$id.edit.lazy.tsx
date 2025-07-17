@@ -1,5 +1,12 @@
-import { Tables } from "@/database-generated.types";
 import { Stack, Title } from "@mantine/core";
+import { createLazyFileRoute } from "@tanstack/react-router";
+import { useAtomValue, useSetAtom } from "jotai";
+import { useEffect, useState } from "react";
+
+import { breadcrumbsAtom, supabaseAtom } from "@/atoms";
+import { MatchForm } from "@/components/match/MatchForm";
+import { Tables } from "@/database-generated.types";
+import { useTeam } from "@/hooks/useTeam";
 
 export const Route = createLazyFileRoute("/teams/$teamId/matches/$id/edit")({
   component: EditMatchPage,

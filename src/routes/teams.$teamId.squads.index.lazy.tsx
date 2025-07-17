@@ -8,12 +8,24 @@ import {
   LoadingOverlay,
   Select,
   Stack,
+  Text,
   TextInput,
   Title,
 } from "@mantine/core";
 import { isNotEmpty, useForm } from "@mantine/form";
 import { modals } from "@mantine/modals";
+import { createLazyFileRoute } from "@tanstack/react-router";
+import { useAtomValue, useSetAtom } from "jotai";
 import { keyBy } from "lodash-es";
+import { useCallback, useEffect, useMemo, useState } from "react";
+
+import { breadcrumbsAtom, sessionAtom, supabaseAtom } from "@/atoms";
+import { FormationGrid } from "@/components/formation/FormationGrid";
+import { FormationOvr } from "@/components/formation/FormationOvr";
+import { matchPositionTypes } from "@/constants";
+import { useTeam } from "@/hooks/useTeam";
+import { Player, Squad } from "@/types";
+import { assertType } from "@/utils/assert";
 
 type PlayerOption = Pick<Player, "id" | "name" | "status" | "pos" | "ovr">;
 
@@ -193,10 +205,10 @@ const SquadCard: React.FC<
       title: `Delete Squad: ${form.values.name}`,
       centered: true,
       children: (
-        <MText size="sm">
+        <Text size="sm">
           Are you sure you want to delete this squad? This action cannot be
           undone.
-        </MText>
+        </Text>
       ),
       labels: {
         confirm: "Delete",
@@ -337,10 +349,10 @@ const SquadCard: React.FC<
               assertType<PlayerOption>(option);
               return (
                 <Group>
-                  <MText size="xs" fw="bold">
+                  <Text size="xs" fw="bold">
                     {option.pos}
-                  </MText>
-                  <MText size="xs">{option.name}</MText>
+                  </Text>
+                  <Text size="xs">{option.name}</Text>
                 </Group>
               );
             }}
@@ -361,8 +373,8 @@ const SquadCard: React.FC<
             disabled={!isEditing}
           >
             <Box>
-              <MText fw="bold">{position}</MText>
-              <MText size="xs">{playersById[playerId]?.name}</MText>
+              <Text fw="bold">{position}</Text>
+              <Text size="xs">{playersById[playerId]?.name}</Text>
             </Box>
           </Button>
         )}
@@ -375,8 +387,8 @@ const SquadCard: React.FC<
             size="md"
           >
             <Box>
-              <MText fw="bold">{position}</MText>
-              <MText size="xs">-</MText>
+              <Text fw="bold">{position}</Text>
+              <Text size="xs">-</Text>
             </Box>
           </Button>
         )}

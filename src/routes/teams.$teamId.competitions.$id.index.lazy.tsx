@@ -12,13 +12,37 @@ import {
   Stack,
   Switch,
   Table,
+  Text,
   TextInput,
   Title,
 } from "@mantine/core";
 import { isNotEmpty, useField, useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
+import { createLazyFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { cloneDeep, omit } from "lodash-es";
+import { useCallback, useEffect, useMemo, useState } from "react";
+
+import {
+  appLoadingAtom,
+  breadcrumbsAtom,
+  competitionAtom,
+  supabaseAtom,
+} from "@/atoms";
+import { BaseIcon } from "@/components/base/CommonIcons";
+import { MatchTable } from "@/components/match/MatchTable";
+import { TeamAutocomplete } from "@/components/team/TeamAutocomplete";
+import { useCompetitionHelpers } from "@/hooks/useCompetitionHelpers";
+import { useManageOptions } from "@/hooks/useManageOptions";
+import { useTeam } from "@/hooks/useTeam";
+import {
+  Competition,
+  Stage,
+  StageFixtureData,
+  StageTableRowData,
+} from "@/types";
+import { assertType } from "@/utils/assert";
 
 interface NewStage extends Stage {
   amount: number;
@@ -66,10 +90,10 @@ function CompetitionPage() {
       title: "Delete Competition",
       centered: true,
       children: (
-        <MText size="sm">
+        <Text size="sm">
           Are you sure you want to delete this team? This action cannot be
           undone.
-        </MText>
+        </Text>
       ),
       labels: {
         confirm: "Delete",
@@ -562,10 +586,10 @@ const StageItem: React.FC<{
       title: `Delete Stage: ${stage.name}`,
       centered: true,
       children: (
-        <MText size="sm">
+        <Text size="sm">
           Are you sure you want to delete this stage? This action cannot be
           undone.
-        </MText>
+        </Text>
       ),
       labels: {
         confirm: "Delete",
@@ -770,14 +794,14 @@ const StageTableRow: React.FC<{
       <Table.Td>{statField("gf")}</Table.Td>
       <Table.Td>{statField("ga")}</Table.Td>
       <Table.Td>
-        <MText size="xs" ta="right">
+        <Text size="xs" ta="right">
           {form.values.gf - form.values.ga}
-        </MText>
+        </Text>
       </Table.Td>
       <Table.Td>
-        <MText size="xs" ta="right">
+        <Text size="xs" ta="right">
           {form.values.pts}
-        </MText>
+        </Text>
       </Table.Td>
     </Table.Tr>
   );
@@ -952,7 +976,7 @@ const StageFixtureRow: React.FC<{
                 ].join(" "),
               }}
             />
-            <MText size="xs">-</MText>
+            <Text size="xs">-</Text>
             <TextInput
               {...form.getInputProps(`legs.${k}.away_score`)}
               key={form.key(`legs.${k}.away_score`)}

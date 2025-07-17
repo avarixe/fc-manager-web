@@ -1,4 +1,13 @@
 import { Stack, Title } from "@mantine/core";
+import { createLazyFileRoute } from "@tanstack/react-router";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useEffect } from "react";
+
+import { breadcrumbsAtom, competitionAtom, supabaseAtom } from "@/atoms";
+import { CompetitionForm } from "@/components/competition/CompetitionForm";
+import { useTeam } from "@/hooks/useTeam";
+import { Competition } from "@/types";
+import { assertType } from "@/utils/assert";
 
 export const Route = createLazyFileRoute(
   "/teams/$teamId/competitions/$id/edit",

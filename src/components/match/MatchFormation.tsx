@@ -7,10 +7,21 @@ import {
   Group,
   Indicator,
   Stack,
+  Text,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { useAtomValue } from "jotai";
 import { chunk } from "lodash-es";
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
+
+import { capsAtom, matchAtom, teamAtom } from "@/atoms";
+import { BaseIcon } from "@/components/base/CommonIcons";
+import { FormationGrid } from "@/components/formation/FormationGrid";
+import { CapModal } from "@/components/match/CapModal";
+import { CapRating } from "@/components/match/CapRating";
+import { CapSummary } from "@/components/match/CapSummary";
+import { useMatchState } from "@/hooks/useMatchState";
+import { Cap, Player } from "@/types";
 
 type PlayerOption = Pick<
   Player,
@@ -163,7 +174,7 @@ const MatchFormationItem: React.FC<{
         h="auto"
       >
         <Box>
-          <MText fw="bold">{cap.pos}</MText>
+          <Text fw="bold">{cap.pos}</Text>
           <Indicator
             label={cap.kit_no}
             color="transparent"
@@ -177,7 +188,7 @@ const MatchFormationItem: React.FC<{
               fz={50}
             />
           </Indicator>
-          <MText size="xs">{cap.players.name}</MText>
+          <Text size="xs">{cap.players.name}</Text>
         </Box>
       </Button>
       <CapRating cap={cap} readonly={readonly} justify="center" gap={2} />

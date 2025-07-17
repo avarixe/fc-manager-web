@@ -1,4 +1,20 @@
+import { Text } from "@mantine/core";
 import { modals } from "@mantine/modals";
+import { useAtomValue } from "jotai";
+import { useCallback } from "react";
+
+import { supabaseAtom, teamAtom } from "@/atoms";
+import { PlayerEventKey, PlayerEventType } from "@/constants";
+import { usePlayerCallbacks } from "@/hooks/usePlayerCallbacks";
+import {
+  Contract,
+  Injury,
+  Loan,
+  Player,
+  PlayerEvent,
+  StateSetter,
+  Transfer,
+} from "@/types";
 
 interface UsePlayerEventsReturnType<T extends PlayerEvent> {
   create: (event: T) => Promise<void>;
@@ -132,10 +148,10 @@ function useManagePlayerEvents<T extends PlayerEvent>(
         title: `Delete ${eventNamesByKey[key]}`,
         centered: true,
         children: (
-          <MText size="sm">
+          <Text size="sm">
             Are you sure you want to delete this{" "}
             {eventNamesByKey[key].toLowerCase()}? This action cannot be undone.
-          </MText>
+          </Text>
         ),
         labels: {
           confirm: "Delete",

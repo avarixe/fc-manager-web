@@ -6,9 +6,18 @@ import {
   Modal,
   NumberInput,
   Select,
+  Text,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { useAtom, useAtomValue } from "jotai";
 import { keyBy } from "lodash-es";
+import { useCallback, useEffect, useMemo, useState } from "react";
+
+import { capsAtom, matchAtom, supabaseAtom, teamAtom } from "@/atoms";
+import { FormationGrid } from "@/components/formation/FormationGrid";
+import { useMatchCallbacks } from "@/hooks/useMatchCallbacks";
+import { useMatchState } from "@/hooks/useMatchState";
+import { Change, Player } from "@/types";
 
 interface FormationChange {
   minute: number | string;
@@ -299,10 +308,10 @@ export const MatchFormationForm: React.FC<{
             data={playerOptions}
             renderOption={({ option }) => (
               <Group>
-                <MText size="xs" fw="bold">
+                <Text size="xs" fw="bold">
                   {playersById[option.value]?.pos}
-                </MText>
-                <MText size="xs">{option.label}</MText>
+                </Text>
+                <Text size="xs">{option.label}</Text>
               </Group>
             )}
           />
@@ -338,8 +347,8 @@ export const MatchFormationForm: React.FC<{
               size="lg"
             >
               <Box>
-                <MText fw="bold">{position}</MText>
-                <MText size="xs">{playersById[playerId]?.name}</MText>
+                <Text fw="bold">{position}</Text>
+                <Text size="xs">{playersById[playerId]?.name}</Text>
               </Box>
             </Button>
           )}
@@ -352,8 +361,8 @@ export const MatchFormationForm: React.FC<{
               size="md"
             >
               <Box>
-                <MText fw="bold">{position}</MText>
-                <MText size="xs">-</MText>
+                <Text fw="bold">{position}</Text>
+                <Text size="xs">-</Text>
               </Box>
             </Button>
           )}

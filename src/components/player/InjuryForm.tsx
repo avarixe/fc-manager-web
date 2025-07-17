@@ -10,6 +10,12 @@ import {
 } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
 import { useForm } from "@mantine/form";
+import dayjs from "dayjs";
+import { useAtomValue } from "jotai";
+import { useCallback, useEffect, useState } from "react";
+
+import { teamAtom } from "@/atoms";
+import { Injury } from "@/types";
 
 export const InjuryForm: React.FC<{
   record?: Injury;
@@ -37,7 +43,7 @@ export const InjuryForm: React.FC<{
   }, [opened]);
 
   const [duration, setDuration] = useState(1);
-  const [timespan, setTimespan] = useState("month");
+  const [timespan, setTimespan] = useState<dayjs.ManipulateType>("month");
   const calculateEndedOn = useCallback(() => {
     form.setFieldValue(
       "ended_on",
@@ -127,7 +133,9 @@ export const InjuryForm: React.FC<{
             />
             <Select
               value={timespan}
-              onChange={(value) => value && setTimespan(value)}
+              onChange={(value) =>
+                value && setTimespan(value as dayjs.ManipulateType)
+              }
               label="Timespan"
               data={[
                 { label: "Days", value: "day" },

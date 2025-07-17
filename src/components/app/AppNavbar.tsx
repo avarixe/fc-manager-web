@@ -1,6 +1,7 @@
 import {
   AppShell,
   Avatar,
+  Button,
   ComboboxItem,
   Group,
   Loader,
@@ -8,8 +9,18 @@ import {
   ScrollArea,
   Select,
   Stack,
-  Button,
+  Text,
 } from "@mantine/core";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { useAtomValue } from "jotai";
+import { useCallback, useEffect, useRef, useState } from "react";
+
+import { supabaseAtom, teamAtom } from "@/atoms";
+import { BaseIcon } from "@/components/base/CommonIcons";
+import { TeamDatePicker } from "@/components/team/TeamDatePicker";
+import { useTeamHelpers } from "@/hooks/useTeamHelpers";
+import { Player } from "@/types";
+import { assertType } from "@/utils/assert";
 
 export const AppNavbar = () => {
   const team = useAtomValue(teamAtom);
@@ -237,10 +248,10 @@ const PlayerSearch = () => {
         assertType<PlayerOption>(option);
         return (
           <Group gap="xs" wrap="nowrap">
-            <MText size="xs" fw="bold">
+            <Text size="xs" fw="bold">
               {option.pos}
-            </MText>
-            <MText size="xs">{option.name}</MText>
+            </Text>
+            <Text size="xs">{option.name}</Text>
           </Group>
         );
       }}

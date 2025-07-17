@@ -1,21 +1,20 @@
-import ReactDOM from "react-dom/client";
-import { RouterProvider } from "@tanstack/react-router";
-import { Provider as JotaiProvider } from "jotai";
-import router from "./router";
-
 import "@mantine/core/styles.css";
 import "@mantine/dates/styles.css";
 import "@mantine/charts/styles.css";
 import "virtual:uno.css";
+
 import { createTheme, MantineProvider, Switch } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
 import { ModalsProvider } from "@mantine/modals";
-
-import "@tanstack/react-table";
+import { RouterProvider } from "@tanstack/react-router";
 import { RowData } from "@tanstack/react-table";
-
+import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { Provider as JotaiProvider } from "jotai";
+import ReactDOM from "react-dom/client";
+
+import router from "@/router";
 
 declare module "@tanstack/react-table" {
   interface ColumnMeta<TData extends RowData, TValue> {

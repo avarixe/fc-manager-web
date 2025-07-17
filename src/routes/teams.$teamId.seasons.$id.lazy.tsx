@@ -10,9 +10,22 @@ import {
   Table,
   Title,
 } from "@mantine/core";
+import { createLazyFileRoute, Link } from "@tanstack/react-router";
+import { useAtomValue, useSetAtom } from "jotai";
 import { orderBy, sumBy } from "lodash-es";
-import CountUp from "react-countup";
 import { Odometer } from "odometer_countup";
+import { useEffect, useMemo, useState } from "react";
+import CountUp from "react-countup";
+
+import { breadcrumbsAtom, supabaseAtom, teamAtom } from "@/atoms";
+import { BaseIcon } from "@/components/base/CommonIcons";
+import { CompetitionStatusIcon } from "@/components/competition/CompetitionList";
+import { useTeam } from "@/hooks/useTeam";
+import { useTeamHelpers } from "@/hooks/useTeamHelpers";
+import { Player } from "@/types";
+import { assertType } from "@/utils/assert";
+import { formatDate } from "@/utils/format";
+import { playerRecordAt, playerValueAt } from "@/utils/player";
 
 export const Route = createLazyFileRoute("/teams/$teamId/seasons/$id")({
   component: SeasonPage,

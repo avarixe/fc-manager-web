@@ -6,6 +6,11 @@ import {
   NumberInput,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { useAtomValue } from "jotai";
+import { useCallback, useEffect, useState } from "react";
+
+import { matchAtom } from "@/atoms";
+import { Match } from "@/types";
 
 export const PenaltyShootoutForm: React.FC<{
   opened: boolean;

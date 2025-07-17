@@ -1,4 +1,3 @@
-import { Tables } from "@/database-generated.types";
 import {
   Avatar,
   Box,
@@ -8,10 +7,31 @@ import {
   Indicator,
   Stack,
   Table,
+  Text,
   Title,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
+import { createLazyFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useAtomValue, useSetAtom } from "jotai";
+import { useEffect, useState } from "react";
+
+import {
+  appLoadingAtom,
+  breadcrumbsAtom,
+  supabaseAtom,
+  teamAtom,
+} from "@/atoms";
+import { BaseIcon } from "@/components/base/CommonIcons";
+import { CompetitionList } from "@/components/competition/CompetitionList";
+import { TeamBadgeUploader } from "@/components/team/TeamBadgeUploader";
+import { Tables } from "@/database-generated.types";
+import { useTeam } from "@/hooks/useTeam";
+import { Player } from "@/types";
+import { assertType } from "@/utils/assert";
+import { formatDate } from "@/utils/format";
+import { matchScore } from "@/utils/match";
+import { abbrevValue, playerValueColor } from "@/utils/player";
 
 type CompetitionInfo = Pick<Tables<"competitions">, "id" | "name" | "champion">;
 type MatchInfo = Pick<
@@ -155,10 +175,10 @@ function TeamPage() {
       title: "Delete Team",
       centered: true,
       children: (
-        <MText size="sm">
+        <Text size="sm">
           Are you sure you want to delete this team? This action cannot be
           undone.
-        </MText>
+        </Text>
       ),
       labels: {
         confirm: "Delete",

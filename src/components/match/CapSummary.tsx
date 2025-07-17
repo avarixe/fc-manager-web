@@ -1,5 +1,17 @@
 import { Group, GroupProps, Indicator } from "@mantine/core";
 
+import {
+  AssistIcon,
+  GoalIcon,
+  MatchInjuryIcon,
+  RedCardIcon,
+  SubInIcon,
+  SubOutIcon,
+  YellowCardIcon,
+} from "@/components/base/CommonIcons";
+import { useCapStats } from "@/hooks/useCapStats";
+import { Cap } from "@/types";
+
 export const CapSummary: React.FC<GroupProps & { cap: Cap }> = ({
   cap,
   ...rest

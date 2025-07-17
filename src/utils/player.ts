@@ -1,5 +1,7 @@
 import { round } from "lodash-es";
 
+import { Player } from "@/types";
+
 export function playerRecordAt(
   player: Pick<Player, "history">,
   date: string,

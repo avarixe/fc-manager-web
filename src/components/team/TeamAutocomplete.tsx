@@ -1,4 +1,8 @@
 import { Autocomplete, AutocompleteProps, Loader } from "@mantine/core";
+import { useAtomValue } from "jotai";
+import { useCallback, useEffect, useRef, useState } from "react";
+
+import { supabaseAtom } from "@/atoms";
 
 export const TeamAutocomplete: React.FC<AutocompleteProps> = ({
   value,

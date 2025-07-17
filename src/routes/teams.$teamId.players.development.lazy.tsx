@@ -3,9 +3,30 @@ import {
   Group,
   SegmentedControl,
   Stack,
+  Text,
   Title,
   Tooltip,
 } from "@mantine/core";
+import { createLazyFileRoute, Link } from "@tanstack/react-router";
+import { createColumnHelper } from "@tanstack/react-table";
+import { useAtomValue, useSetAtom } from "jotai";
+import { useEffect, useMemo, useState } from "react";
+
+import { breadcrumbsAtom, supabaseAtom } from "@/atoms";
+import { BaseIcon } from "@/components/base/CommonIcons";
+import { LocalDataTable } from "@/components/base/LocalDataTable";
+import { PlayerFlag } from "@/components/player/PlayerFlag";
+import { PositionFilterPopover } from "@/components/player/PositionFilterPopover";
+import { PlayerStatusFilter } from "@/constants";
+import { useTeam } from "@/hooks/useTeam";
+import { Player, PlayerHistoryData } from "@/types";
+import { assertType } from "@/utils/assert";
+import {
+  abbrevValue,
+  ovrColor,
+  playerRecordAt,
+  playerValueColor,
+} from "@/utils/player";
 
 type PlayerData = Pick<
   Player,
@@ -172,7 +193,7 @@ function PlayerDevelopmentPage() {
         cell: (info) => {
           const value = info.getValue();
           return (
-            <MText
+            <Text
               c={statDiffColor(
                 "ovr",
                 value / (info.row.original.numSeasons || 1),
@@ -180,7 +201,7 @@ function PlayerDevelopmentPage() {
             >
               {value > 0 ? "+" : null}
               {value}
-            </MText>
+            </Text>
           );
         },
         meta: { align: "end", sortable: true },
@@ -189,7 +210,7 @@ function PlayerDevelopmentPage() {
         header: "Start",
         cell: (info) => {
           const value = info.getValue();
-          return <MText c={ovrColor(value)}>{value}</MText>;
+          return <Text c={ovrColor(value)}>{value}</Text>;
         },
         meta: { align: "end", sortable: true },
       }),
@@ -204,9 +225,7 @@ function PlayerDevelopmentPage() {
           },
           cell: (info) => {
             const value = info.row.original.seasons[season]?.ovr;
-            return (
-              <MText c={value ? ovrColor(value) : undefined}>{value}</MText>
-            );
+            return <Text c={value ? ovrColor(value) : undefined}>{value}</Text>;
           },
           meta: { sortable: true, align: "end" },
         }),
@@ -216,12 +235,12 @@ function PlayerDevelopmentPage() {
         cell: (info) => {
           const value = info.getValue();
           return (
-            <MText
+            <Text
               c={statDiffColor("value", value / info.row.original.start.value)}
             >
               {value > 0 ? "+" : null}
               {abbrevValue(value, team?.currency)}
-            </MText>
+            </Text>
           );
         },
         meta: { align: "end", sortable: true },
@@ -231,9 +250,9 @@ function PlayerDevelopmentPage() {
         cell: (info) => {
           const value = info.getValue();
           return (
-            <MText c={playerValueColor(value)}>
+            <Text c={playerValueColor(value)}>
               {abbrevValue(value, team?.currency)}
-            </MText>
+            </Text>
           );
         },
         meta: { align: "end", sortable: true },
@@ -250,9 +269,9 @@ function PlayerDevelopmentPage() {
           cell: (info) => {
             const value = info.row.original.seasons[season]?.value;
             return (
-              <MText c={value ? playerValueColor(value) : undefined}>
+              <Text c={value ? playerValueColor(value) : undefined}>
                 {abbrevValue(value, team?.currency)}
-              </MText>
+              </Text>
             );
           },
           meta: { sortable: true, align: "end" },

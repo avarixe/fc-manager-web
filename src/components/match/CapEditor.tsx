@@ -4,8 +4,16 @@ import {
   Group,
   LoadingOverlay,
   Select,
+  Text,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { useAtom, useAtomValue } from "jotai";
+import { useMemo, useState } from "react";
+
+import { capsAtom, supabaseAtom } from "@/atoms";
+import { matchPositions } from "@/constants";
+import { Cap, Player } from "@/types";
+import { assertType } from "@/utils/assert";
 
 type PlayerOption = Pick<
   Player,
@@ -81,10 +89,10 @@ export const CapEditor: React.FC<{
           assertType<PlayerIdOption>(option);
           return (
             <Group>
-              <MText size="xs" fw="bold">
+              <Text size="xs" fw="bold">
                 {option.pos}
-              </MText>
-              <MText size="xs">{option.name}</MText>
+              </Text>
+              <Text size="xs">{option.name}</Text>
             </Group>
           );
         }}

@@ -6,6 +6,28 @@ import {
   Title,
   Tooltip,
 } from "@mantine/core";
+import { createLazyFileRoute, Link } from "@tanstack/react-router";
+import { createColumnHelper } from "@tanstack/react-table";
+import dayjs from "dayjs";
+import { useAtomValue, useSetAtom } from "jotai";
+import { useCallback, useEffect, useMemo, useState } from "react";
+
+import { breadcrumbsAtom, supabaseAtom } from "@/atoms";
+import { BaseIcon } from "@/components/base/CommonIcons";
+import { DataTable } from "@/components/base/DataTable";
+import { PlayerFlag } from "@/components/player/PlayerFlag";
+import {
+  PlayerKitNo,
+  PlayerOvr,
+  PlayerValue,
+} from "@/components/player/PlayerInlineFields";
+import { PlayerStatus } from "@/components/player/PlayerStatus";
+import { PositionFilterPopover } from "@/components/player/PositionFilterPopover";
+import { PlayerStatusFilter } from "@/constants";
+import { useTeam } from "@/hooks/useTeam";
+import { Player } from "@/types";
+import { assertType } from "@/utils/assert";
+import { formatDate } from "@/utils/format";
 
 export const Route = createLazyFileRoute("/teams/$teamId/players/")({
   component: PlayersPage,

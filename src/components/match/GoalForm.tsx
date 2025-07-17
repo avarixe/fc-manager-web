@@ -8,9 +8,17 @@ import {
   NumberInput,
   SegmentedControl,
   Select,
+  Text,
   TextInput,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { useAtomValue } from "jotai";
+import { useCallback, useEffect, useMemo, useState } from "react";
+
+import { matchAtom, teamAtom } from "@/atoms";
+import { useMatchState } from "@/hooks/useMatchState";
+import { Cap, Goal } from "@/types";
+import { assertType } from "@/utils/assert";
 
 type CapOption = ComboboxItem & Cap;
 
@@ -177,10 +185,10 @@ export const BaseGoalForm: React.FC<{
                 assertType<CapOption>(option);
                 return (
                   <Group>
-                    <MText size="xs" fw="bold">
+                    <Text size="xs" fw="bold">
                       {option.pos}
-                    </MText>
-                    <MText size="xs">{option.value}</MText>
+                    </Text>
+                    <Text size="xs">{option.value}</Text>
                   </Group>
                 );
               }}
@@ -196,10 +204,10 @@ export const BaseGoalForm: React.FC<{
               assertType<CapOption>(option);
               return (
                 <Group>
-                  <MText size="xs" fw="bold">
+                  <Text size="xs" fw="bold">
                     {option.pos}
-                  </MText>
-                  <MText size="xs">{option.value}</MText>
+                  </Text>
+                  <Text size="xs">{option.value}</Text>
                 </Group>
               );
             }}

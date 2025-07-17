@@ -1,4 +1,12 @@
+import { Text } from "@mantine/core";
 import { modals } from "@mantine/modals";
+import { useAtom, useAtomValue } from "jotai";
+import { useCallback } from "react";
+
+import { matchAtom, supabaseAtom } from "@/atoms";
+import { useMatchCallbacks } from "@/hooks/useMatchCallbacks";
+import { Booking, Match } from "@/types";
+import { assertType } from "@/utils/assert";
 
 function useManageBookings() {
   const [match, setMatch] = useAtom(matchAtom);
@@ -34,10 +42,10 @@ function useManageBookings() {
         title: "Delete Booking",
         centered: true,
         children: (
-          <MText size="sm">
+          <Text size="sm">
             Are you sure you want to delete this booking? This action cannot be
             undone.
-          </MText>
+          </Text>
         ),
         labels: {
           confirm: "Delete",

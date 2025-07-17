@@ -9,6 +9,7 @@ import {
   TableOptions,
   useReactTable,
 } from "@tanstack/react-table";
+import { useCallback, useMemo } from "react";
 
 export interface LocalDataTableProps<TData extends RowData>
   extends Pick<TableOptions<TData>, "data" | "columns">,

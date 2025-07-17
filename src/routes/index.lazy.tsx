@@ -1,4 +1,3 @@
-import { Tables } from "@/database-generated.types";
 import {
   ActionIcon,
   Avatar,
@@ -8,9 +7,19 @@ import {
   Divider,
   Group,
   Stack,
+  Text,
   Title,
 } from "@mantine/core";
+import { createLazyFileRoute, Link } from "@tanstack/react-router";
+import dayjs from "dayjs";
+import { useAtomValue, useSetAtom } from "jotai";
 import { keyBy } from "lodash-es";
+import { useEffect, useMemo, useState } from "react";
+
+import { breadcrumbsAtom, supabaseAtom } from "@/atoms";
+import { BaseIcon } from "@/components/base/CommonIcons";
+import { Tables } from "@/database-generated.types";
+import { formatDate } from "@/utils/format";
 
 export const Route = createLazyFileRoute("/")({
   component: HomePage,
@@ -86,44 +95,44 @@ function HomePage() {
               </Group>
               <Divider my="xs" />
               <Box>
-                <MText component="span" mr="xs">
+                <Text component="span" mr="xs">
                   Game:
-                </MText>
-                <MText component="span" fw="bold">
+                </Text>
+                <Text component="span" fw="bold">
                   {currentTeam.game}
-                </MText>
+                </Text>
               </Box>
               <Box>
-                <MText component="span" mr="xs">
+                <Text component="span" mr="xs">
                   Manager Name:
-                </MText>
-                <MText component="span" fw="bold">
+                </Text>
+                <Text component="span" fw="bold">
                   {currentTeam.manager_name}
-                </MText>
+                </Text>
               </Box>
               <Box>
-                <MText component="span" mr="xs">
+                <Text component="span" mr="xs">
                   Start Date:
-                </MText>
-                <MText component="span" fw="bold">
+                </Text>
+                <Text component="span" fw="bold">
                   {formatDate(currentTeam.started_on)}
-                </MText>
+                </Text>
               </Box>
               <Box>
-                <MText component="span" mr="xs">
+                <Text component="span" mr="xs">
                   Current Date:
-                </MText>
-                <MText component="span" fw="bold">
+                </Text>
+                <Text component="span" fw="bold">
                   {formatDate(currentTeam.currently_on)}
-                </MText>
+                </Text>
               </Box>
               <Box>
-                <MText component="span" mr="xs">
+                <Text component="span" mr="xs">
                   Currency:
-                </MText>
-                <MText component="span" fw="bold">
+                </Text>
+                <Text component="span" fw="bold">
                   {currentTeam.currency}
-                </MText>
+                </Text>
               </Box>
             </Box>
           </Group>
@@ -196,10 +205,10 @@ function HomePage() {
                         >
                           {team.name}
                         </Button>
-                        <MText size="sm" pl="lg">
+                        <Text size="sm" pl="lg">
                           {formatDate(team.started_on, "YYYY")} -{" "}
                           {formatDate(team.currently_on, "YYYY")}
-                        </MText>
+                        </Text>
                       </Box>
                     </Group>
                     <Card.Section p="xs">

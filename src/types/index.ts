@@ -1,3 +1,4 @@
+import { PlayerEventKey } from "@/constants";
 import { Tables } from "@/database-generated.types";
 
 export type StateSetter<T> = React.Dispatch<React.SetStateAction<T>>;

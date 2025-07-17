@@ -1,4 +1,11 @@
 import { Stack, Title } from "@mantine/core";
+import { createLazyFileRoute } from "@tanstack/react-router";
+import { useSetAtom } from "jotai";
+import { useEffect } from "react";
+
+import { breadcrumbsAtom } from "@/atoms";
+import { TeamForm } from "@/components/team/TeamForm";
+import { useTeam } from "@/hooks/useTeam";
 
 export const Route = createLazyFileRoute("/teams/$teamId/edit")({
   component: EditTeamPage,
