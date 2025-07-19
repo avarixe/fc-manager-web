@@ -67,6 +67,19 @@ export const positionsByType = positions.reduce(
   {} as Record<MatchPosType, string[]>,
 );
 
+export const statGradientColors = [
+  "green.8",
+  "green.6",
+  "green",
+  "lime.2",
+  "yellow",
+  "orange.2",
+  "orange",
+  "orange.6",
+  "red",
+  "red.6",
+];
+
 export enum PlayerEventKey {
   Contract = "contracts",
   Injury = "injuries",

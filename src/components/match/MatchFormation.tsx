@@ -4,31 +4,18 @@ import {
   Divider,
   Grid,
   Group,
-  Indicator,
   Stack,
   Text,
 } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
 import { useAtomValue } from "jotai";
 import { chunk } from "lodash-es";
 import React, { useEffect, useMemo, useState } from "react";
 
 import { capsAtom, matchAtom, teamAtom } from "@/atoms";
-import {
-  AssistIcon,
-  BaseIcon,
-  GoalIcon,
-  MatchInjuryIcon,
-  RedCardIcon,
-  SubInIcon,
-  SubOutIcon,
-  YellowCardIcon,
-} from "@/components/base/CommonIcons";
+import { BaseIcon } from "@/components/base/CommonIcons";
 import { FormationGrid } from "@/components/formation/FormationGrid";
-import { CapModal } from "@/components/match/CapModal";
-import { CapRating } from "@/components/match/CapRating";
+import { MatchFormationItem } from "@/components/match/MatchFormationItem";
 import { SideSummary } from "@/components/match/SideSummary";
-import { useCapStats } from "@/hooks/useCapStats";
 import { useMatchState } from "@/hooks/useMatchState";
 import { Cap, Player } from "@/types";
 
@@ -87,10 +74,10 @@ export const MatchFormation: React.FC<{
   }, [caps, isTeamHome, match.bookings]);
 
   useEffect(() => {
-    if (changeMinutes.length > 1) {
+    if (changeMinutes.length > 1 && !readonly) {
       setMinute(changeMinutes[changeMinutes.length - 1]);
     }
-  }, [changeMinutes]);
+  }, [changeMinutes, readonly]);
 
   return (
     <Stack gap="xs">
@@ -160,185 +147,6 @@ export const MatchFormation: React.FC<{
   );
 };
 
-const MatchFormationItem: React.FC<{
-  cap: Cap;
-  readonly: boolean;
-  playerOptions: PlayerOption[];
-  bench?: boolean;
-}> = ({ cap, readonly, playerOptions, bench }) => {
-  const [opened, { open, close }] = useDisclosure();
-
-  const team = useAtomValue(teamAtom)!;
-  const match = useAtomValue(matchAtom)!;
-  const isTeamHome = team.name === match.home_team;
-
-  const {
-    startMinute,
-    stopMinute,
-    numGoals,
-    numOwnGoals,
-    numAssists,
-    numYellowCards,
-    numRedCards,
-    subbedOut,
-    injured,
-  } = useCapStats(cap.player_id);
-
-  return (
-    <Stack gap={readonly ? 4 : 0}>
-      <Box pos="relative" ta="center">
-        {/* Position text */}
-        <Text fw="bold" mb="xs">
-          {cap.pos}
-        </Text>
-
-        {/* Main shirt button */}
-        <ActionIcon
-          onClick={readonly || bench ? undefined : open}
-          variant="transparent"
-          color="gray"
-          size={50}
-        >
-          <Indicator
-            label={cap.kit_no}
-            color="transparent"
-            position="middle-center"
-            zIndex={1}
-          >
-            <BaseIcon
-              name="i-mdi:tshirt-crew"
-              c={isTeamHome ? "cyan.6" : "teal.6"}
-              fz={50}
-            />
-          </Indicator>
-        </ActionIcon>
-
-        {/* Top left - Subbed in */}
-        {startMinute > 0 && (
-          <Box pos="absolute" top="25%" right="65%" style={{ zIndex: 2 }}>
-            <Indicator
-              label={`${startMinute}'`}
-              color="transparent"
-              inline
-              position="bottom-end"
-              zIndex={1}
-            >
-              <SubInIcon fz={16} />
-            </Indicator>
-          </Box>
-        )}
-
-        {/* Top right - Subbed out or injured */}
-        {subbedOut && (
-          <Box pos="absolute" top="25%" right="30%" style={{ zIndex: 2 }}>
-            <Indicator
-              label={`${stopMinute}'`}
-              color="transparent"
-              inline
-              position="bottom-end"
-              zIndex={1}
-            >
-              {injured ? <MatchInjuryIcon fz={16} /> : <SubOutIcon fz={16} />}
-            </Indicator>
-          </Box>
-        )}
-
-        {/* Bottom right - Bookings */}
-        <Box pos="absolute" bottom="33%" right="58%" style={{ zIndex: 2 }}>
-          <Box pos="relative">
-            {numYellowCards > 0 && (
-              <Box pos="absolute" top={0} right={numRedCards > 0 ? 5 : 0}>
-                <YellowCardIcon fz={16} />
-              </Box>
-            )}
-            {numRedCards > 0 && (
-              <Box
-                pos="absolute"
-                top={numYellowCards > 0 ? 2 : 0}
-                right={0}
-                style={{ zIndex: 100 }}
-              >
-                <RedCardIcon fz={16} />
-              </Box>
-            )}
-          </Box>
-        </Box>
-
-        {/* Bottom right - Goals and assists */}
-        <Box pos="absolute" bottom="35%" left="60%" style={{ zIndex: 2 }}>
-          <Box pos="relative">
-            {Array.from({ length: numGoals }).map((_, i) => (
-              <Box
-                key={i}
-                pos="absolute"
-                top={0}
-                left={`${i * 8}px`}
-                style={{ zIndex: 20 - i }}
-              >
-                <ActionIcon
-                  color="blue"
-                  radius="xl"
-                  size="xs"
-                  bd="1px solid black"
-                >
-                  <GoalIcon fz={16} c="white" />
-                </ActionIcon>
-              </Box>
-            ))}
-            {Array.from({ length: numOwnGoals }).map((_, i) => (
-              <Box
-                key={i}
-                pos="absolute"
-                top={0}
-                left={`${(i + numGoals) * 8}px`}
-                style={{ zIndex: 20 - i - numGoals }}
-              >
-                <ActionIcon
-                  color="red.9"
-                  radius="xl"
-                  size="xs"
-                  bd="1px solid black"
-                >
-                  <GoalIcon c="white" fz={16} />
-                </ActionIcon>
-              </Box>
-            ))}
-            {Array.from({ length: numAssists }).map((_, i) => (
-              <Box
-                key={i}
-                pos="absolute"
-                top={0}
-                left={`${(i + numGoals + numOwnGoals) * 8}px`}
-                style={{ zIndex: 20 - i - numGoals - numOwnGoals }}
-              >
-                <ActionIcon
-                  color="blue.3"
-                  radius="xl"
-                  size="xs"
-                  bd="1px solid black"
-                >
-                  <AssistIcon c="gray.8" fz={16} />
-                </ActionIcon>
-              </Box>
-            ))}
-          </Box>
-        </Box>
-
-        {/* Player name */}
-        <Text size="xs">{cap.players.name}</Text>
-      </Box>
-
-      <CapRating cap={cap} readonly={readonly} justify="center" gap={2} />
-      <CapModal
-        cap={cap}
-        opened={opened}
-        onClose={close}
-        playerOptions={playerOptions}
-      />
-    </Stack>
-  );
-};
-
 const SideItem: React.FC<{
   side: "home" | "away";
 }> = ({ side }) => {
@@ -347,12 +155,7 @@ const SideItem: React.FC<{
   return (
     <Box ta="center">
       <Text fw="bold">{side === "home" ? "HOME" : "AWAY"}</Text>
-      <BaseIcon
-        name="i-mdi:shield-sword"
-        w="auto"
-        c={side === "home" ? "cyan.6" : "teal.6"}
-        fz={50}
-      />
+      <BaseIcon name="i-mdi:shield-sword" w="auto" c={"gray.7"} fz={50} />
       <Text size="xs">
         {side === "home" ? match.home_team : match.away_team}
       </Text>

@@ -5,6 +5,7 @@ import { useCallback, useMemo, useState } from "react";
 import { capsAtom, supabaseAtom } from "@/atoms";
 import { BaseIcon } from "@/components/base/CommonIcons";
 import { Cap } from "@/types";
+import { ratingColor } from "@/utils/match";
 
 export const CapRating: React.FC<
   GroupProps & {
@@ -18,18 +19,8 @@ export const CapRating: React.FC<
   }, []);
 
   const color = useMemo(() => {
-    switch (hoverValue || cap.rating) {
-      case 1:
-        return "red";
-      case 2:
-        return "orange";
-      case 3:
-        return "yellow";
-      case 4:
-        return "lime";
-      case 5:
-        return "green";
-    }
+    const rating = hoverValue ?? cap.rating;
+    return rating ? ratingColor(rating) : undefined;
   }, [cap.rating, hoverValue]);
 
   const supabase = useAtomValue(supabaseAtom);

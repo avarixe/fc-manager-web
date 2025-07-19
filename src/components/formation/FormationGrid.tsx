@@ -22,7 +22,7 @@ export const FormationGrid = <T,>({
   hideEmptyCells?: boolean;
 }) => {
   return (
-    <Stack justify="space-around">
+    <Stack justify="space-around" gap={4}>
       {positions.map((row, i) => (
         <Group key={i} grow align="start">
           {row.map((position, j) => (

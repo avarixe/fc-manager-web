@@ -1,5 +1,6 @@
 import { round } from "lodash-es";
 
+import { statGradientColors } from "@/constants";
 import { Player } from "@/types";
 
 export function playerRecordAt(
@@ -25,52 +26,22 @@ export function playerValueAt(
   return playerRecordAt(player, date)?.value;
 }
 
+const ovrThresholds = [90, 85, 80, 75, 70, 65, 60, 55, 50];
+const playerValueThresholds = [
+  150_000_000, 50_000_000, 25_000_000, 10_000_000, 5_000_000, 1_000_000,
+  700_000, 300_000,
+];
+
 export function ovrColor(ovr: number) {
-  if (ovr >= 90) {
-    return "green.8";
-  } else if (ovr >= 85) {
-    return "green.6";
-  } else if (ovr >= 80) {
-    return "green";
-  } else if (ovr >= 75) {
-    return "lime.2";
-  } else if (ovr >= 70) {
-    return "yellow";
-  } else if (ovr >= 65) {
-    return "orange.2";
-  } else if (ovr >= 60) {
-    return "orange";
-  } else if (ovr >= 55) {
-    return "orange.6";
-  } else if (ovr >= 50) {
-    return "red";
-  } else {
-    return "red.6";
-  }
+  const index = ovrThresholds.findIndex((threshold) => ovr >= threshold);
+  return statGradientColors[index ?? 9];
 }
 
 export function playerValueColor(value: number) {
-  if (value >= 150_000_000) {
-    return "green.8";
-  } else if (value >= 100_000_000) {
-    return "green.6";
-  } else if (value >= 50_000_000) {
-    return "green";
-  } else if (value >= 25_000_000) {
-    return "lime.2";
-  } else if (value >= 10_000_000) {
-    return "yellow";
-  } else if (value >= 5_000_000) {
-    return "orange.2";
-  } else if (value >= 1_000_000) {
-    return "orange";
-  } else if (value >= 700_000) {
-    return "orange.6";
-  } else if (value >= 300_000) {
-    return "red";
-  } else {
-    return "red.6";
-  }
+  const index = playerValueThresholds.findIndex(
+    (threshold) => value >= threshold,
+  );
+  return statGradientColors[index ?? 9];
 }
 
 export function abbrevValue(value?: number, prefix = "") {

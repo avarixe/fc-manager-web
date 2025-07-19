@@ -494,7 +494,7 @@ function MatchPage() {
                 },
               ]}
             />
-            <Stack gap="xl">
+            <Stack gap="xs">
               <FormationOvr data={formationOvrData} />
               {lineupMode === "formation" ? (
                 <MatchFormation
@@ -627,26 +627,30 @@ const MatchInfo: React.FC<{
     <Table withRowBorders={false}>
       <Table.Tbody>
         <Table.Tr>
-          <Table.Td w="40%" fz="xl" fw={1000} c="cyan">
-            <Group gap="xs" justify="flex-end">
+          <Table.Td w="40%">
+            <Group gap="xs" justify="flex-end" wrap="nowrap">
               {homeRedCards > 0 && (
-                <Group gap={4}>
+                <Group gap={4} wrap="nowrap">
                   {Array.from({ length: homeRedCards }, (_, i) => (
                     <RedCardIcon key={i} />
                   ))}
                 </Group>
               )}
-              {match.home_team}
+              <Text fz="xl" fw={1000} c="cyan" ta="end">
+                {match.home_team}
+              </Text>
             </Group>
           </Table.Td>
           <Table.Td w="20%" ta="center">
             Team
           </Table.Td>
           <Table.Td w="40%" fz="xl" fw={1000} c="teal">
-            <Group gap="xs">
-              {match.away_team}
+            <Group gap="xs" wrap="nowrap">
+              <Text fz="xl" fw={1000} c="teal">
+                {match.away_team}
+              </Text>
               {awayRedCards > 0 && (
-                <Group gap={4}>
+                <Group gap={4} wrap="nowrap">
                   {Array.from({ length: awayRedCards }, (_, i) => (
                     <RedCardIcon key={i} fz="sm" />
                   ))}
