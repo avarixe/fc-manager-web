@@ -49,9 +49,9 @@ type MatchInfo = Pick<
 >;
 type InjuryInfo = Pick<Player, "id" | "name" | "pos" | "injuries">;
 type LoanInfo = Pick<Player, "id" | "name" | "pos" | "value" | "loans">;
-type ExpiringContractInfo = Pick<
+type PlayerContractInfo = Pick<
   Player,
-  "id" | "name" | "pos" | "value" | "wage"
+  "id" | "name" | "pos" | "value" | "wage" | "contracts"
 >;
 
 export const Route = createLazyFileRoute("/teams/$teamId/")({
@@ -144,28 +144,48 @@ function TeamPage() {
   }, [supabase, teamId]);
 
   const [expiringContracts, setExpiringContracts] = useState<
-    ExpiringContractInfo[]
+    PlayerContractInfo[]
+  >([]);
+  const [releaseClausePlayers, setReleaseClausePlayers] = useState<
+    PlayerContractInfo[]
   >([]);
   useEffect(() => {
-    const fetchExpiringContracts = async () => {
-      if (!endOfCurrentSeason) {
-        return;
-      }
-
+    const fetchContractData = async () => {
       const { data, error } = await supabase
         .from("players")
-        .select("id, name, pos, value, wage")
+        .select("id, name, pos, value, wage, contracts, contract_ends_on")
         .eq("team_id", Number(teamId))
-        .lte("contract_ends_on", endOfCurrentSeason)
         .neq("status", null);
       if (error) {
         console.error(error);
       } else {
-        setExpiringContracts(data);
+        // Filter expiring contracts
+        const expiring = data.filter((player) => {
+          if (!endOfCurrentSeason) return false;
+          return (
+            player.contract_ends_on &&
+            player.contract_ends_on <= endOfCurrentSeason
+          );
+        });
+        assertType<PlayerContractInfo[]>(expiring);
+
+        // Filter players with release clauses
+        const withReleaseClauses = data.filter((player) => {
+          if (!player.contracts || !Array.isArray(player.contracts))
+            return false;
+          const latestContract = player.contracts[
+            player.contracts.length - 1
+          ] as Player["contracts"][0];
+          return latestContract && latestContract.release_clause;
+        });
+        assertType<PlayerContractInfo[]>(withReleaseClauses);
+
+        setExpiringContracts(expiring);
+        setReleaseClausePlayers(withReleaseClauses);
       }
     };
 
-    fetchExpiringContracts();
+    fetchContractData();
   }, [endOfCurrentSeason, supabase, teamId]);
 
   const setAppLoading = useSetAtom(appLoadingAtom);
@@ -364,6 +384,8 @@ function TeamPage() {
               <Table.Tbody>
                 {loanedPlayers.map((player) => {
                   const latestLoan = player.loans[player.loans.length - 1];
+                  const isValueHigher =
+                    player.value > (latestLoan.transfer_fee ?? 0);
                   return (
                     <Table.Tr key={player.id}>
                       <Table.Td>
@@ -377,10 +399,10 @@ function TeamPage() {
                         </Button>
                       </Table.Td>
                       <Table.Td ta="center">{player.pos}</Table.Td>
-                      <Table.Td ta="end">
+                      <Table.Td ta="end" c={playerValueColor(player.value)}>
                         {abbrevValue(player.value, team.currency)}
                       </Table.Td>
-                      <Table.Td ta="end">
+                      <Table.Td ta="end" c={isValueHigher ? "red" : undefined}>
                         {abbrevValue(
                           latestLoan.transfer_fee ?? undefined,
                           team.currency,
@@ -438,6 +460,58 @@ function TeamPage() {
                   <Table.Tr>
                     <Table.Td colSpan={4} ta="center" fs="italic">
                       No Expiring Contracts
+                    </Table.Td>
+                  </Table.Tr>
+                )}
+              </Table.Tbody>
+            </Table>
+          </Card>
+          <Card bg="transparent" withBorder>
+            <Title order={4} mb="lg">
+              Release Clauses
+            </Title>
+            <Table>
+              <Table.Thead>
+                <Table.Tr>
+                  <Table.Th>Player</Table.Th>
+                  <Table.Th ta="center">Position</Table.Th>
+                  <Table.Th ta="end">Value</Table.Th>
+                  <Table.Th ta="end">Release Clause</Table.Th>
+                </Table.Tr>
+              </Table.Thead>
+              <Table.Tbody>
+                {releaseClausePlayers.map((player) => {
+                  const latestContract =
+                    player.contracts[player.contracts.length - 1];
+                  const releaseClause = latestContract?.release_clause;
+                  const isValueHigher = player.value > (releaseClause ?? 0);
+
+                  return (
+                    <Table.Tr key={player.id}>
+                      <Table.Td>
+                        <Button
+                          component={Link}
+                          to={`/teams/${teamId}/players/${player.id}`}
+                          variant="subtle"
+                          size="compact-sm"
+                        >
+                          {player.name}
+                        </Button>
+                      </Table.Td>
+                      <Table.Td ta="center">{player.pos}</Table.Td>
+                      <Table.Td ta="end" c={playerValueColor(player.value)}>
+                        {abbrevValue(player.value, team.currency)}
+                      </Table.Td>
+                      <Table.Td ta="end" c={isValueHigher ? "red" : undefined}>
+                        {abbrevValue(releaseClause ?? 0, team.currency)}
+                      </Table.Td>
+                    </Table.Tr>
+                  );
+                })}
+                {releaseClausePlayers.length === 0 && (
+                  <Table.Tr>
+                    <Table.Td colSpan={4} ta="center" fs="italic">
+                      No Release Clauses
                     </Table.Td>
                   </Table.Tr>
                 )}
