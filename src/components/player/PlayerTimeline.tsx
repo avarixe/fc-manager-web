@@ -190,6 +190,50 @@ export const PlayerTimeline: React.FC<{
     },
   });
 
+  const onClickActivateTransfer = useCallback(
+    async (loan: Loan & PlayerTimelineEvent) => {
+      modals.openConfirmModal({
+        title: `Activate transfer for ${player.name}?`,
+        centered: true,
+        labels: {
+          confirm: "Yes",
+          cancel: "No",
+        },
+        onConfirm: async () => {
+          // Update loan end date to current team date
+          const updatedLoan = { ...loan, ended_on: team.currently_on };
+          await updateLoan(loan.index, updatedLoan);
+
+          // Create transfer event
+          const transfer: Transfer = {
+            signed_on: team.currently_on,
+            moved_on: team.currently_on,
+            origin: loan.origin,
+            destination: loan.destination,
+            fee: loan.transfer_fee ?? 0,
+            addon_clause: loan.addon_clause ?? 0,
+          };
+          await createTransfer(transfer);
+
+          // Update current contract
+          const contracts = [...player.contracts];
+          const currentContract = contracts[contracts.length - 1];
+          currentContract.ended_on = team.currently_on;
+          currentContract.conclusion = "Transferred";
+          await updateContract(contracts.length - 1, currentContract);
+        },
+      });
+    },
+    [
+      team.currently_on,
+      updateLoan,
+      createTransfer,
+      updateContract,
+      player.contracts,
+      player.name,
+    ],
+  );
+
   const { endOfCurrentSeason } = useTeamHelpers(team);
   const onClickRetire = useCallback(() => {
     modals.openConfirmModal({
@@ -255,6 +299,7 @@ export const PlayerTimeline: React.FC<{
               loan={item}
               onSubmit={(loan) => updateLoan(item.index, loan)}
               onRemove={() => removeLoan(item.index)}
+              onClickActivateTransfer={() => onClickActivateTransfer(item)}
             />
           );
         case PlayerEventType.Transfer:
@@ -269,14 +314,15 @@ export const PlayerTimeline: React.FC<{
       }
     },
     [
-      removeContract,
-      removeInjury,
-      removeLoan,
-      removeTransfer,
       updateContract,
+      removeContract,
       updateInjury,
+      removeInjury,
       updateLoan,
+      removeLoan,
+      onClickActivateTransfer,
       updateTransfer,
+      removeTransfer,
     ],
   );
 
@@ -555,7 +601,8 @@ const LoanEvent: React.FC<{
   loan: Loan;
   onSubmit: (loan: Loan) => Promise<void>;
   onRemove: () => Promise<void>;
-}> = ({ loan, onSubmit, onRemove }) => {
+  onClickActivateTransfer: () => Promise<void>;
+}> = ({ loan, onSubmit, onRemove, onClickActivateTransfer }) => {
   const team = useAtomValue(teamAtom)!;
 
   const direction = loan.destination === team.name ? "in" : "out";
@@ -665,6 +712,16 @@ const LoanEvent: React.FC<{
           onClose={close}
           onSubmit={onSubmit}
         />
+        {Boolean(loan.transfer_fee || loan.addon_clause) && (
+          <Button
+            onClick={onClickActivateTransfer}
+            variant="subtle"
+            size="compact-sm"
+            color="red"
+          >
+            Activate Transfer
+          </Button>
+        )}
         <Button
           onClick={onRemove}
           variant="subtle"
