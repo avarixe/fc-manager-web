@@ -131,9 +131,31 @@ export const useMatchCallbacks = () => {
         playerMap[player.name] = player;
       }
 
-      const ratingsMap: Record<string, number | null> = {};
+      const statsMap: Record<
+        string,
+        {
+          num_goals: number;
+          num_own_goals: number;
+          num_assists: number;
+          num_yellow_cards: number;
+          num_red_cards: number;
+          clean_sheet: boolean;
+          rating: number | null;
+        }
+      > = {};
       for (const cap of caps) {
-        ratingsMap[cap.players.name] = cap.rating;
+        if (!statsMap[cap.players.name]) {
+          // Only set stats once per player
+          statsMap[cap.players.name] = {
+            num_goals: cap.num_goals,
+            num_assists: cap.num_assists,
+            num_own_goals: cap.num_own_goals,
+            num_yellow_cards: cap.num_yellow_cards,
+            num_red_cards: cap.num_red_cards,
+            clean_sheet: cap.clean_sheet,
+            rating: cap.rating,
+          };
+        }
       }
 
       const starters = caps.filter((cap) => cap.start_minute === 0);
@@ -147,6 +169,8 @@ export const useMatchCallbacks = () => {
       // For each sorted change, create corresponding cap
       const newCapData: TablesInsert<"caps">[] = [];
       for (const change of sortedChanges) {
+        const playerStats = statsMap[change.in.name];
+        const isFirstCapForPlayer = !currentCapByPlayer[change.in.name];
         const newCap = {
           user_id: session.user.id,
           match_id: updatedMatch.id,
@@ -156,7 +180,16 @@ export const useMatchCallbacks = () => {
           start_minute: change.minute,
           stop_minute: match.extra_time ? 120 : 90,
           pos: change.in.pos,
-          rating: ratingsMap[change.in.name],
+          rating: playerStats.rating,
+          // Only the first cap for a player gets the accumulated stats
+          num_goals: isFirstCapForPlayer ? playerStats.num_goals : 0,
+          num_own_goals: isFirstCapForPlayer ? playerStats.num_own_goals : 0,
+          num_assists: isFirstCapForPlayer ? playerStats.num_assists : 0,
+          num_yellow_cards: isFirstCapForPlayer
+            ? playerStats.num_yellow_cards
+            : 0,
+          num_red_cards: isFirstCapForPlayer ? playerStats.num_red_cards : 0,
+          clean_sheet: isFirstCapForPlayer ? playerStats.clean_sheet : false,
         };
 
         const outCap = currentCapByPlayer[change.out.name];
