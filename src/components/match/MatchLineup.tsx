@@ -5,8 +5,8 @@ import { orderBy } from "lodash-es";
 import { useMemo } from "react";
 
 import { matchAtom, teamAtom } from "@/atoms";
+import { BaseCapRating } from "@/components/match/BaseCapRating";
 import { CapModal } from "@/components/match/CapModal";
-import { CapRating } from "@/components/match/CapRating";
 import { CapSummary } from "@/components/match/CapSummary";
 import { SideSummary } from "@/components/match/SideSummary";
 import { useCapHelpers } from "@/hooks/useCapHelpers";
@@ -117,7 +117,7 @@ const MatchLineupItem: React.FC<{
           {cap.pos}
         </Box>
       }
-      rightSection={<CapRating cap={cap} readonly={readonly} />}
+      rightSection={<BaseCapRating cap={cap} readonly={readonly} />}
       classNames={{
         body: "overflow-visible",
       }}

@@ -1,6 +1,7 @@
 import {
   ActionIcon,
   Box,
+  Group,
   Indicator,
   isLightColor,
   Stack,
@@ -224,13 +225,14 @@ export const MatchFormationItem: React.FC<{
           </Box>
         </Box>
 
-        {/* Player name */}
-        <Text size="xs" ta="center" lineClamp={1}>
-          {cap.players.name}
-        </Text>
+        {/* Player name and rating */}
+        <Group justify="center" align="center" gap="xs">
+          <Text size="xs" ta="center" lineClamp={1}>
+            {cap.players.name}
+          </Text>
+          <CapRating cap={cap} readonly={readonly} />
+        </Group>
       </Box>
-
-      <CapRating cap={cap} readonly={readonly} justify="center" gap={2} />
       <CapModal
         cap={cap}
         opened={opened}
