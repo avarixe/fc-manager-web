@@ -573,7 +573,7 @@ const TransferActivity: React.FC<{
     return players.reduce((departures: TransferActivityItem[], player) => {
       player.contracts.forEach((contract) => {
         if (
-          seasonStart <= contract.ended_on &&
+          seasonStart < contract.ended_on &&
           contract.ended_on <= seasonEnd &&
           !["Renewed", "Transferred"].includes(contract.conclusion ?? "") &&
           // Exclude loaned out players that triggered Buy-out clauses.
