@@ -1,15 +1,16 @@
 import { Button, Group, Select, Stack, Title } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { createLazyFileRoute, Link } from "@tanstack/react-router";
-import { useAtomValue, useSetAtom } from "jotai";
+import { useSetAtom } from "jotai";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { breadcrumbsAtom, supabaseAtom } from "@/atoms";
+import { breadcrumbsAtom } from "@/atoms";
 import { BaseIcon } from "@/components/base/CommonIcons";
 import { MatchTable } from "@/components/match/MatchTable";
 import { TeamAutocomplete } from "@/components/team/TeamAutocomplete";
 import { useTeam } from "@/hooks/useTeam";
 import { MatchFilters } from "@/types";
+import { supabase } from "@/utils/supabase";
 
 export const Route = createLazyFileRoute("/teams/$teamId/matches/")({
   component: MatchesPage,
@@ -42,7 +43,7 @@ function MatchesPage() {
   );
 
   const [competitions, setCompetitions] = useState<string[]>([]);
-  const supabase = useAtomValue(supabaseAtom);
+
   useEffect(() => {
     const fetchCompetitions = async () => {
       const { data } = await supabase
@@ -57,7 +58,7 @@ function MatchesPage() {
       }
     };
     fetchCompetitions();
-  }, [supabase, teamId]);
+  }, [teamId]);
 
   const toggleResult = useCallback(
     (result: string) => {

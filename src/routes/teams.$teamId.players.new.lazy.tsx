@@ -21,7 +21,7 @@ import dayjs from "dayjs";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useEffect, useState } from "react";
 
-import { breadcrumbsAtom, sessionAtom, supabaseAtom } from "@/atoms";
+import { breadcrumbsAtom, sessionAtom } from "@/atoms";
 import { TeamAutocomplete } from "@/components/team/TeamAutocomplete";
 import { positions } from "@/constants";
 import { countryCodes } from "@/constants/countryCodes";
@@ -32,6 +32,7 @@ import { useTeamHelpers } from "@/hooks/useTeamHelpers";
 import { Player } from "@/types";
 import { assertType } from "@/utils/assert";
 import { formatDate } from "@/utils/format";
+import { supabase } from "@/utils/supabase";
 
 export const Route = createLazyFileRoute("/teams/$teamId/players/new")({
   component: NewPlayerPage,
@@ -97,7 +98,6 @@ const PlayerForm: React.FC<{ team: Tables<"teams"> }> = ({ team }) => {
     form.setFieldValue("loans", []);
   });
 
-  const supabase = useAtomValue(supabaseAtom);
   const navigate = useNavigate();
   const { updatePlayerStatus } = usePlayerCallbacks();
   const handleSubmit = useCallback(
@@ -124,7 +124,7 @@ const PlayerForm: React.FC<{ team: Tables<"teams"> }> = ({ team }) => {
         console.error(error);
       }
     },
-    [form, navigate, supabase, team.currently_on, team.id, updatePlayerStatus],
+    [form, navigate, team.currently_on, team.id, updatePlayerStatus],
   );
 
   const addContract = useCallback(() => {

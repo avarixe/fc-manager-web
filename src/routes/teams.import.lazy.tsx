@@ -11,11 +11,12 @@ import { createLazyFileRoute } from "@tanstack/react-router";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { breadcrumbsAtom, sessionAtom, supabaseAtom } from "@/atoms";
+import { breadcrumbsAtom, sessionAtom } from "@/atoms";
 import { Tables, TablesInsert } from "@/database-generated.types";
 import { useProgress } from "@/hooks/useProgress";
 import { Change } from "@/types";
 import { assertType } from "@/utils/assert";
+import { supabase } from "@/utils/supabase";
 
 export const Route = createLazyFileRoute("/teams/import")({
   component: ImportTeamPage,
@@ -33,7 +34,6 @@ async function parseJsonFile(file: File) {
 
 function ImportTeamPage() {
   const session = useAtomValue(sessionAtom);
-  const supabase = useAtomValue(supabaseAtom);
 
   const [file, setFile] = useState<File | null>(null);
   const [disabled, setDisabled] = useState(true);
@@ -473,7 +473,6 @@ function ImportTeamPage() {
     capProgress,
     optionProgress,
     session?.user.id,
-    supabase,
   ]);
 
   const setBreadcrumbs = useSetAtom(breadcrumbsAtom);

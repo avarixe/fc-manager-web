@@ -20,16 +20,11 @@ import { isNotEmpty, useField, useForm } from "@mantine/form";
 import { useDisclosure } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
 import { createLazyFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { cloneDeep, omit } from "lodash-es";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import {
-  appLoadingAtom,
-  breadcrumbsAtom,
-  competitionAtom,
-  supabaseAtom,
-} from "@/atoms";
+import { appLoadingAtom, breadcrumbsAtom, competitionAtom } from "@/atoms";
 import { BaseIcon } from "@/components/base/CommonIcons";
 import { MatchTable } from "@/components/match/MatchTable";
 import { TeamAutocomplete } from "@/components/team/TeamAutocomplete";
@@ -43,6 +38,7 @@ import {
   StageTableRowData,
 } from "@/types";
 import { assertType } from "@/utils/assert";
+import { supabase } from "@/utils/supabase";
 
 interface NewStage extends Stage {
   amount: number;
@@ -62,7 +58,7 @@ function CompetitionPage() {
   const { team, seasonLabel } = useTeam(teamId);
 
   const [competition, setCompetition] = useAtom(competitionAtom);
-  const supabase = useAtomValue(supabaseAtom);
+
   useEffect(() => {
     const fetchCompetition = async () => {
       const { data, error } = await supabase
@@ -81,7 +77,7 @@ function CompetitionPage() {
     };
 
     fetchCompetition();
-  }, [id, setCompetition, supabase, teamId]);
+  }, [id, setCompetition, teamId]);
 
   const setAppLoading = useSetAtom(appLoadingAtom);
   const navigate = useNavigate();
@@ -112,7 +108,7 @@ function CompetitionPage() {
         }
       },
     });
-  }, [id, navigate, setAppLoading, supabase, teamId]);
+  }, [id, navigate, setAppLoading, teamId]);
 
   const [readonly, setReadonly] = useState(false);
 
@@ -164,7 +160,7 @@ function CompetitionPage() {
         setCompetition(data[0]);
       }
     },
-    [competition, setCompetition, supabase],
+    [competition, setCompetition],
   );
 
   const onChangeStage = useCallback(
@@ -195,7 +191,7 @@ function CompetitionPage() {
         setCompetition(data[0]);
       }
     },
-    [competition, groupStages, knockoutStages, setCompetition, supabase],
+    [competition, groupStages, knockoutStages, setCompetition],
   );
 
   const onDeleteStage = useCallback(
@@ -228,7 +224,7 @@ function CompetitionPage() {
         setCompetition(data[0]);
       }
     },
-    [competition, groupStages, knockoutStages, setCompetition, supabase],
+    [competition, groupStages, knockoutStages, setCompetition],
   );
 
   const [addStageOpened, { open: openAddStage, close: closeAddStage }] =

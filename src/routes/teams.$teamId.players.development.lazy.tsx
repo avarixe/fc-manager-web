@@ -9,10 +9,10 @@ import {
 } from "@mantine/core";
 import { createLazyFileRoute, Link } from "@tanstack/react-router";
 import { createColumnHelper } from "@tanstack/react-table";
-import { useAtomValue, useSetAtom } from "jotai";
+import { useSetAtom } from "jotai";
 import { useEffect, useMemo, useState } from "react";
 
-import { breadcrumbsAtom, supabaseAtom } from "@/atoms";
+import { breadcrumbsAtom } from "@/atoms";
 import { BaseIcon } from "@/components/base/CommonIcons";
 import { LocalDataTable } from "@/components/base/LocalDataTable";
 import { PlayerFlag } from "@/components/player/PlayerFlag";
@@ -27,6 +27,7 @@ import {
   playerRecordAt,
   playerValueColor,
 } from "@/utils/player";
+import { supabase } from "@/utils/supabase";
 
 type PlayerData = Pick<
   Player,
@@ -61,7 +62,7 @@ function PlayerDevelopmentPage() {
     useTeam(teamId);
 
   const [players, setPlayers] = useState<PlayerData[]>([]);
-  const supabase = useAtomValue(supabaseAtom);
+
   useEffect(() => {
     const fetchPlayers = async () => {
       const { data } = await supabase
@@ -76,7 +77,7 @@ function PlayerDevelopmentPage() {
     };
 
     fetchPlayers();
-  }, [supabase, teamId]);
+  }, [teamId]);
 
   const seasons = useMemo(
     () => Array.from(Array(currentSeason + 1).keys()),

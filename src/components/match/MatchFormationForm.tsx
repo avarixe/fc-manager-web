@@ -13,11 +13,12 @@ import { useAtom, useAtomValue } from "jotai";
 import { keyBy } from "lodash-es";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { capsAtom, matchAtom, supabaseAtom, teamAtom } from "@/atoms";
+import { capsAtom, matchAtom, teamAtom } from "@/atoms";
 import { FormationGrid } from "@/components/formation/FormationGrid";
 import { useMatchCallbacks } from "@/hooks/useMatchCallbacks";
 import { useMatchState } from "@/hooks/useMatchState";
 import { Change, Player } from "@/types";
+import { supabase } from "@/utils/supabase";
 
 interface FormationChange {
   minute: number | string;
@@ -38,7 +39,7 @@ export const MatchFormationForm: React.FC<{
 }> = ({ opened, onClose }) => {
   const [players, setPlayers] = useState<PlayerOption[]>([]);
   const team = useAtomValue(teamAtom)!;
-  const supabase = useAtomValue(supabaseAtom);
+
   useEffect(() => {
     const fetchPlayers = async () => {
       const { data } = await supabase
@@ -51,7 +52,7 @@ export const MatchFormationForm: React.FC<{
     };
 
     fetchPlayers();
-  }, [supabase, team.id]);
+  }, [team.id]);
   const playersById = useMemo(() => keyBy(players, "id"), [players]);
 
   const [loading, setLoading] = useState(false);
@@ -208,7 +209,6 @@ export const MatchFormationForm: React.FC<{
     playersById,
     resolveFormationChanges,
     setMatch,
-    supabase,
   ]);
 
   useEffect(() => {

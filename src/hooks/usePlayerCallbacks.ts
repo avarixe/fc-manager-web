@@ -1,11 +1,11 @@
 import { useAtomValue } from "jotai";
 import { useCallback } from "react";
 
-import { supabaseAtom, teamAtom } from "@/atoms";
+import { teamAtom } from "@/atoms";
 import { Player } from "@/types";
+import { supabase } from "@/utils/supabase";
 
 export const usePlayerCallbacks = () => {
-  const supabase = useAtomValue(supabaseAtom);
   const savePlayerStatus = useCallback(
     async (player: Pick<Player, "id" | "status">, updates: Partial<Player>) => {
       if (player.status === updates.status) return;
@@ -20,7 +20,7 @@ export const usePlayerCallbacks = () => {
         return updates;
       }
     },
-    [supabase],
+    [],
   );
 
   const team = useAtomValue(teamAtom)!;

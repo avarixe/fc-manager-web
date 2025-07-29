@@ -3,7 +3,7 @@ import { modals } from "@mantine/modals";
 import { useAtomValue } from "jotai";
 import { useCallback } from "react";
 
-import { supabaseAtom, teamAtom } from "@/atoms";
+import { teamAtom } from "@/atoms";
 import { PlayerEventKey, PlayerEventType } from "@/constants";
 import { usePlayerCallbacks } from "@/hooks/usePlayerCallbacks";
 import {
@@ -15,6 +15,7 @@ import {
   StateSetter,
   Transfer,
 } from "@/types";
+import { supabase } from "@/utils/supabase";
 
 interface UsePlayerEventsReturnType<T extends PlayerEvent> {
   create: (event: T) => Promise<void>;
@@ -67,7 +68,6 @@ function useManagePlayerEvents<T extends PlayerEvent>(
   const team = useAtomValue(teamAtom)!;
   const { updatePlayerStatus } = usePlayerCallbacks();
 
-  const supabase = useAtomValue(supabaseAtom);
   const create = useCallback(
     async (event: T) => {
       const events = player[key].slice() as T[];
@@ -98,7 +98,7 @@ function useManagePlayerEvents<T extends PlayerEvent>(
         );
       }
     },
-    [callbacks, key, player, setPlayer, supabase, team, updatePlayerStatus],
+    [callbacks, key, player, setPlayer, team, updatePlayerStatus],
   );
 
   const update = useCallback(
@@ -131,15 +131,7 @@ function useManagePlayerEvents<T extends PlayerEvent>(
         );
       }
     },
-    [
-      callbacks,
-      key,
-      player,
-      setPlayer,
-      supabase,
-      team.currently_on,
-      updatePlayerStatus,
-    ],
+    [callbacks, key, player, setPlayer, team.currently_on, updatePlayerStatus],
   );
 
   const remove = useCallback(
@@ -186,7 +178,7 @@ function useManagePlayerEvents<T extends PlayerEvent>(
         },
       });
     },
-    [key, player, setPlayer, supabase, team, updatePlayerStatus],
+    [key, player, setPlayer, team, updatePlayerStatus],
   );
 
   return {

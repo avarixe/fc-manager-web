@@ -1,17 +1,18 @@
 import { Text } from "@mantine/core";
 import { modals } from "@mantine/modals";
-import { useAtom, useAtomValue } from "jotai";
+import { useAtom } from "jotai";
 import { useCallback } from "react";
 
-import { matchAtom, supabaseAtom } from "@/atoms";
+import { matchAtom } from "@/atoms";
 import { useMatchCallbacks } from "@/hooks/useMatchCallbacks";
 import { Goal, Match } from "@/types";
 import { assertType } from "@/utils/assert";
+import { supabase } from "@/utils/supabase";
 
 function useManageGoals() {
   const [match, setMatch] = useAtom(matchAtom);
   assertType<Match>(match);
-  const supabase = useAtomValue(supabaseAtom);
+
   const { resolvePlayerStats, resolveMatchScores } = useMatchCallbacks();
 
   const createGoal = useCallback(
@@ -22,7 +23,7 @@ function useManageGoals() {
       await resolvePlayerStats({ ...match, goals });
       await resolveMatchScores({ ...match, goals });
     },
-    [match, resolveMatchScores, resolvePlayerStats, setMatch, supabase],
+    [match, resolveMatchScores, resolvePlayerStats, setMatch],
   );
 
   const updateGoal = useCallback(
@@ -35,7 +36,7 @@ function useManageGoals() {
       await resolvePlayerStats({ ...match, goals });
       await resolveMatchScores({ ...match, goals });
     },
-    [match, resolveMatchScores, resolvePlayerStats, setMatch, supabase],
+    [match, resolveMatchScores, resolvePlayerStats, setMatch],
   );
 
   const removeGoal = useCallback(
@@ -65,7 +66,7 @@ function useManageGoals() {
         },
       });
     },
-    [match, resolveMatchScores, resolvePlayerStats, setMatch, supabase],
+    [match, resolveMatchScores, resolvePlayerStats, setMatch],
   );
 
   return {

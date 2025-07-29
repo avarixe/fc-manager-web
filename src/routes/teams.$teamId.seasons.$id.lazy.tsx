@@ -17,7 +17,7 @@ import { Odometer } from "odometer_countup";
 import { useEffect, useMemo, useState } from "react";
 import CountUp from "react-countup";
 
-import { breadcrumbsAtom, supabaseAtom, teamAtom } from "@/atoms";
+import { breadcrumbsAtom, teamAtom } from "@/atoms";
 import { BaseIcon } from "@/components/base/CommonIcons";
 import { CompetitionStatusIcon } from "@/components/competition/CompetitionList";
 import { useTeam } from "@/hooks/useTeam";
@@ -26,6 +26,7 @@ import { Player } from "@/types";
 import { assertType } from "@/utils/assert";
 import { formatDate } from "@/utils/format";
 import { playerRecordAt, playerValueAt } from "@/utils/player";
+import { supabase } from "@/utils/supabase";
 
 export const Route = createLazyFileRoute("/teams/$teamId/seasons/$id")({
   component: SeasonPage,
@@ -71,7 +72,7 @@ function SeasonPage() {
 
   const [players, setPlayers] = useState<PlayerData[]>([]);
   const [competitions, setCompetitions] = useState<CompetitionStat[]>([]);
-  const supabase = useAtomValue(supabaseAtom);
+
   useEffect(() => {
     const fetchPlayers = async () => {
       const { data } = await supabase
@@ -98,7 +99,7 @@ function SeasonPage() {
 
     fetchPlayers();
     fetchStats();
-  }, [season, supabase, teamId]);
+  }, [season, teamId]);
 
   const setBreadcrumbs = useSetAtom(breadcrumbsAtom);
   useEffect(() => {

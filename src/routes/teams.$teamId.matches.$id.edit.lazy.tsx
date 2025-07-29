@@ -1,12 +1,13 @@
 import { Stack, Title } from "@mantine/core";
 import { createLazyFileRoute } from "@tanstack/react-router";
-import { useAtomValue, useSetAtom } from "jotai";
+import { useSetAtom } from "jotai";
 import { useEffect, useState } from "react";
 
-import { breadcrumbsAtom, supabaseAtom } from "@/atoms";
+import { breadcrumbsAtom } from "@/atoms";
 import { MatchForm } from "@/components/match/MatchForm";
 import { Tables } from "@/database-generated.types";
 import { useTeam } from "@/hooks/useTeam";
+import { supabase } from "@/utils/supabase";
 
 export const Route = createLazyFileRoute("/teams/$teamId/matches/$id/edit")({
   component: EditMatchPage,
@@ -17,7 +18,7 @@ function EditMatchPage() {
   const { team } = useTeam(teamId);
 
   const [match, setMatch] = useState<Tables<"matches"> | null>(null);
-  const supabase = useAtomValue(supabaseAtom);
+
   useEffect(() => {
     const fetchMatch = async () => {
       const { data, error } = await supabase
@@ -34,7 +35,7 @@ function EditMatchPage() {
     };
 
     fetchMatch();
-  }, [id, supabase, teamId]);
+  }, [id, teamId]);
 
   const setBreadcrumbs = useSetAtom(breadcrumbsAtom);
   useEffect(() => {

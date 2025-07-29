@@ -1,11 +1,11 @@
-import { useAtom, useAtomValue } from "jotai";
+import { useAtom } from "jotai";
 import { useEffect } from "react";
 
-import { supabaseAtom, teamAtom } from "@/atoms";
+import { teamAtom } from "@/atoms";
 import { useTeamHelpers } from "@/hooks/useTeamHelpers";
+import { supabase } from "@/utils/supabase";
 
 export const useTeam = (teamId?: string) => {
-  const supabase = useAtomValue(supabaseAtom);
   const [team, setTeam] = useAtom(teamAtom);
 
   useEffect(() => {
@@ -25,7 +25,7 @@ export const useTeam = (teamId?: string) => {
     };
 
     loadTeam();
-  }, [setTeam, supabase, teamId]);
+  }, [setTeam, teamId]);
 
   const {
     seasonOn,

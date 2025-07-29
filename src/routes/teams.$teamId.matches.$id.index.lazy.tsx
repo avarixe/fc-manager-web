@@ -27,7 +27,6 @@ import {
   capsAtom,
   matchAtom,
   sessionAtom,
-  supabaseAtom,
   teamAtom,
 } from "@/atoms";
 import { BaseIcon, RedCardIcon } from "@/components/base/CommonIcons";
@@ -43,6 +42,7 @@ import { Cap, Match, Player, Squad } from "@/types";
 import { assertType } from "@/utils/assert";
 import { formatDate } from "@/utils/format";
 import { matchScoreColor } from "@/utils/match";
+import { supabase } from "@/utils/supabase";
 
 type PlayerOption = Pick<
   Player,
@@ -63,7 +63,7 @@ function MatchPage() {
   const playerOvrByIdRef = useRef(new Map<number, number>());
   const playerKitNoByIdRef = useRef(new Map<number, number | null>());
   const setCaps = useSetAtom(capsAtom);
-  const supabase = useAtomValue(supabaseAtom);
+
   useEffect(() => {
     const fetchMatch = async () => {
       const { data, error } = await supabase
@@ -113,7 +113,7 @@ function MatchPage() {
     fetchMatch();
     fetchSquads();
     fetchPlayerOvr();
-  }, [id, setCaps, setMatch, supabase, teamId]);
+  }, [id, setCaps, setMatch, teamId]);
 
   const [prevId, setPrevId] = useState<number>();
   const [nextId, setNextId] = useState<number>();
@@ -146,7 +146,7 @@ function MatchPage() {
       fetchPrevMatch();
       fetchNextMatch();
     }
-  }, [match?.played_on, supabase, teamId]);
+  }, [match?.played_on, teamId]);
 
   const setAppLoading = useSetAtom(appLoadingAtom);
   const navigate = useNavigate();
@@ -177,7 +177,7 @@ function MatchPage() {
         }
       },
     });
-  }, [id, navigate, setAppLoading, supabase, teamId]);
+  }, [id, navigate, setAppLoading, teamId]);
 
   const caps = useAtomValue(capsAtom);
   const session = useAtomValue(sessionAtom);
@@ -237,7 +237,7 @@ function MatchPage() {
         setCaps(data);
       }
     },
-    [caps, id, session?.user?.id, setCaps, setMatch, supabase],
+    [caps, id, session?.user?.id, setCaps, setMatch],
   );
 
   const [squadName, setSquadName] = useState("");
@@ -278,7 +278,7 @@ function MatchPage() {
         });
       }
     },
-    [caps, session?.user?.id, squadName, supabase, teamId],
+    [caps, session?.user?.id, squadName, teamId],
   );
 
   const [newCapOpened, { open: openNewCap, close: closeNewCap }] =
@@ -584,7 +584,6 @@ const MatchInfo: React.FC<{
     match.home_xg,
   ]);
 
-  const supabase = useAtomValue(supabaseAtom);
   const onClick = useCallback(async () => {
     if (!form.validate()) {
       return;
@@ -601,7 +600,7 @@ const MatchInfo: React.FC<{
       setMatch((prev) => (prev ? { ...prev, ...changes } : prev));
       form.resetDirty();
     }
-  }, [form, match.id, setMatch, supabase]);
+  }, [form, match.id, setMatch]);
 
   const team = useAtomValue(teamAtom);
   const scoreColor = useMemo(

@@ -10,11 +10,11 @@ import {
 } from "@mantine/core";
 import { createLazyFileRoute, Link } from "@tanstack/react-router";
 import { createColumnHelper } from "@tanstack/react-table";
-import { useAtomValue, useSetAtom } from "jotai";
+import { useSetAtom } from "jotai";
 import { groupBy, round } from "lodash-es";
 import { useEffect, useMemo, useState } from "react";
 
-import { breadcrumbsAtom, supabaseAtom } from "@/atoms";
+import { breadcrumbsAtom } from "@/atoms";
 import { BaseIcon } from "@/components/base/CommonIcons";
 import { LocalDataTable } from "@/components/base/LocalDataTable";
 import { PlayerFlag } from "@/components/player/PlayerFlag";
@@ -24,6 +24,7 @@ import { useTeam } from "@/hooks/useTeam";
 import { Player } from "@/types";
 import { assertType } from "@/utils/assert";
 import { ratingColor } from "@/utils/match";
+import { supabase } from "@/utils/supabase";
 
 type PlayerData = Pick<
   Player,
@@ -59,7 +60,7 @@ function PlayerStatisticsPage() {
 
   const [players, setPlayers] = useState<PlayerData[]>([]);
   const [stats, setStats] = useState<PlayerStats[]>([]);
-  const supabase = useAtomValue(supabaseAtom);
+
   useEffect(() => {
     const fetchPlayers = async () => {
       const { data } = await supabase
@@ -79,7 +80,7 @@ function PlayerStatisticsPage() {
     };
 
     fetchPlayers();
-  }, [supabase, teamId]);
+  }, [teamId]);
   const statsByPlayerId = useMemo(() => groupBy(stats, "player_id"), [stats]);
 
   const [season, setSeason] = useState<string | null>(null);
@@ -112,7 +113,7 @@ function PlayerStatisticsPage() {
       }
     };
     fetchCompetitions();
-  }, [supabase, teamId]);
+  }, [teamId]);
 
   const [statusFilter, setStatusFilter] = useState(PlayerStatusFilter.Active);
   const [positionFilter, setPositionFilter] = useState<Set<string>>(new Set());

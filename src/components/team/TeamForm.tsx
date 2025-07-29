@@ -13,10 +13,11 @@ import dayjs from "dayjs";
 import { useAtomValue } from "jotai";
 import { useCallback, useEffect, useState } from "react";
 
-import { sessionAtom, supabaseAtom } from "@/atoms";
+import { sessionAtom } from "@/atoms";
 import { TeamAutocomplete } from "@/components/team/TeamAutocomplete";
 import { Tables } from "@/database-generated.types";
 import { assertType } from "@/utils/assert";
+import { supabase } from "@/utils/supabase";
 
 type TeamOption = ComboboxItem & Tables<"teams">;
 
@@ -38,7 +39,6 @@ export function TeamForm({ record }: { record?: Tables<"teams"> }) {
     form.setFieldValue("currentlyOn", value);
   });
 
-  const supabase = useAtomValue(supabaseAtom);
   const navigate = useNavigate();
   const handleSubmit = useCallback(
     async (values: typeof form.values) => {
@@ -52,7 +52,7 @@ export function TeamForm({ record }: { record?: Tables<"teams"> }) {
         console.error(error);
       }
     },
-    [form, navigate, record?.id, supabase],
+    [form, navigate, record?.id],
   );
 
   const [teams, setTeams] = useState<TeamOption[]>([]);
@@ -82,7 +82,7 @@ export function TeamForm({ record }: { record?: Tables<"teams"> }) {
     };
 
     fetchTeams();
-  }, [record?.id, supabase]);
+  }, [record?.id]);
 
   return (
     <form onSubmit={form.onSubmit(handleSubmit)}>

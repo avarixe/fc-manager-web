@@ -1,21 +1,21 @@
 import { NavLink, Popover } from "@mantine/core";
 import { Calendar } from "@mantine/dates";
-import { useAtomValue, useSetAtom } from "jotai";
+import { useSetAtom } from "jotai";
 import { useCallback, useState } from "react";
 
-import { appLoadingAtom, supabaseAtom, teamAtom } from "@/atoms";
+import { appLoadingAtom, teamAtom } from "@/atoms";
 import { Tables } from "@/database-generated.types";
 import { usePlayerCallbacks } from "@/hooks/usePlayerCallbacks";
 import { Player } from "@/types";
 import { assertType } from "@/utils/assert";
 import { formatDate } from "@/utils/format";
+import { supabase } from "@/utils/supabase";
 
 export const TeamDatePicker: React.FC<{ team: Tables<"teams"> }> = ({
   team,
 }) => {
   const [opened, setOpened] = useState(false);
 
-  const supabase = useAtomValue(supabaseAtom);
   const setAppLoading = useSetAtom(appLoadingAtom);
   const setTeam = useSetAtom(teamAtom);
   const { updatePlayerStatus } = usePlayerCallbacks();
@@ -56,7 +56,7 @@ export const TeamDatePicker: React.FC<{ team: Tables<"teams"> }> = ({
       setAppLoading(false);
       setOpened(false);
     },
-    [setAppLoading, setTeam, supabase, team, updatePlayerStatus],
+    [setAppLoading, setTeam, team, updatePlayerStatus],
   );
 
   return (

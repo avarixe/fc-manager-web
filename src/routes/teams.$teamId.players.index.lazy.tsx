@@ -9,10 +9,10 @@ import {
 import { createLazyFileRoute, Link } from "@tanstack/react-router";
 import { createColumnHelper } from "@tanstack/react-table";
 import dayjs from "dayjs";
-import { useAtomValue, useSetAtom } from "jotai";
+import { useSetAtom } from "jotai";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { breadcrumbsAtom, supabaseAtom } from "@/atoms";
+import { breadcrumbsAtom } from "@/atoms";
 import { BaseIcon } from "@/components/base/CommonIcons";
 import { DataTable } from "@/components/base/DataTable";
 import { PlayerFlag } from "@/components/player/PlayerFlag";
@@ -28,6 +28,7 @@ import { useTeam } from "@/hooks/useTeam";
 import { Player } from "@/types";
 import { assertType } from "@/utils/assert";
 import { formatDate } from "@/utils/format";
+import { supabase } from "@/utils/supabase";
 
 export const Route = createLazyFileRoute("/teams/$teamId/players/")({
   component: PlayersPage,
@@ -38,7 +39,7 @@ function PlayersPage() {
   const { team } = useTeam(teamId);
 
   const [players, setPlayers] = useState<Player[]>([]);
-  const supabase = useAtomValue(supabaseAtom);
+
   const [tableState, setTableState] = useState({
     pageIndex: 0,
     pageSize: 10,
@@ -125,7 +126,6 @@ function PlayersPage() {
   }, [
     statusFilter,
     positionFilter,
-    supabase,
     tableState.pageIndex,
     tableState.pageSize,
     tableState.sorting.desc,

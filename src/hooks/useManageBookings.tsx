@@ -1,17 +1,18 @@
 import { Text } from "@mantine/core";
 import { modals } from "@mantine/modals";
-import { useAtom, useAtomValue } from "jotai";
+import { useAtom } from "jotai";
 import { useCallback } from "react";
 
-import { matchAtom, supabaseAtom } from "@/atoms";
+import { matchAtom } from "@/atoms";
 import { useMatchCallbacks } from "@/hooks/useMatchCallbacks";
 import { Booking, Match } from "@/types";
 import { assertType } from "@/utils/assert";
+import { supabase } from "@/utils/supabase";
 
 function useManageBookings() {
   const [match, setMatch] = useAtom(matchAtom);
   assertType<Match>(match);
-  const supabase = useAtomValue(supabaseAtom);
+
   const { resolvePlayerStats } = useMatchCallbacks();
 
   const createBooking = useCallback(
@@ -21,7 +22,7 @@ function useManageBookings() {
       setMatch((prev) => (prev ? { ...prev, bookings } : prev));
       await resolvePlayerStats({ ...match, bookings });
     },
-    [match, resolvePlayerStats, setMatch, supabase],
+    [match, resolvePlayerStats, setMatch],
   );
 
   const updateBooking = useCallback(
@@ -33,7 +34,7 @@ function useManageBookings() {
       setMatch((prev) => (prev ? { ...prev, bookings } : prev));
       await resolvePlayerStats({ ...match, bookings });
     },
-    [match, resolvePlayerStats, setMatch, supabase],
+    [match, resolvePlayerStats, setMatch],
   );
 
   const removeBooking = useCallback(
@@ -65,7 +66,7 @@ function useManageBookings() {
         },
       });
     },
-    [match, resolvePlayerStats, setMatch, supabase],
+    [match, resolvePlayerStats, setMatch],
   );
 
   return {

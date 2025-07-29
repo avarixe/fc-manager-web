@@ -15,17 +15,18 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { useAtomValue } from "jotai";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { supabaseAtom, teamAtom } from "@/atoms";
+import { teamAtom } from "@/atoms";
 import { BaseIcon } from "@/components/base/CommonIcons";
 import { TeamDatePicker } from "@/components/team/TeamDatePicker";
 import { useTeamHelpers } from "@/hooks/useTeamHelpers";
 import { Player } from "@/types";
 import { assertType } from "@/utils/assert";
+import { supabase } from "@/utils/supabase";
 
 export const AppNavbar = () => {
   const team = useAtomValue(teamAtom);
   const { currentSeason } = useTeamHelpers(team);
-  const supabase = useAtomValue(supabaseAtom);
+
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleLogout = useCallback(async () => {
@@ -35,7 +36,7 @@ export const AppNavbar = () => {
     } finally {
       setIsLoggingOut(false);
     }
-  }, [supabase]);
+  }, []);
 
   return (
     <AppShell.Navbar p="md">
@@ -189,7 +190,7 @@ const PlayerSearch = () => {
   const [options, setOptions] = useState<PlayerOption[]>([]);
   const [loading, setLoading] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
-  const supabase = useAtomValue(supabaseAtom);
+
   const team = useAtomValue(teamAtom)!;
   const onSearchChange = useCallback(
     async (input: string) => {
@@ -220,7 +221,7 @@ const PlayerSearch = () => {
         setLoading(false);
       }, 300);
     },
-    [supabase, team.id],
+    [team.id],
   );
 
   const navigate = useNavigate();

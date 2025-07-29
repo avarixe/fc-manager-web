@@ -1,17 +1,18 @@
 import { Text } from "@mantine/core";
 import { modals } from "@mantine/modals";
-import { useAtom, useAtomValue } from "jotai";
+import { useAtom } from "jotai";
 import { useCallback } from "react";
 
-import { matchAtom, supabaseAtom } from "@/atoms";
+import { matchAtom } from "@/atoms";
 import { useMatchCallbacks } from "@/hooks/useMatchCallbacks";
 import { Change, Match } from "@/types";
 import { assertType } from "@/utils/assert";
+import { supabase } from "@/utils/supabase";
 
 function useManageChanges() {
   const [match, setMatch] = useAtom(matchAtom);
   assertType<Match>(match);
-  const supabase = useAtomValue(supabaseAtom);
+
   const { resolveFormationChanges } = useMatchCallbacks();
 
   const createChange = useCallback(
@@ -21,7 +22,7 @@ function useManageChanges() {
       setMatch((prev) => (prev ? { ...prev, changes } : prev));
       resolveFormationChanges({ ...match, changes });
     },
-    [match, resolveFormationChanges, setMatch, supabase],
+    [match, resolveFormationChanges, setMatch],
   );
 
   const updateChange = useCallback(
@@ -33,7 +34,7 @@ function useManageChanges() {
       setMatch((prev) => (prev ? { ...prev, changes } : prev));
       resolveFormationChanges({ ...match, changes });
     },
-    [match, resolveFormationChanges, setMatch, supabase],
+    [match, resolveFormationChanges, setMatch],
   );
 
   const removeChange = useCallback(
@@ -62,7 +63,7 @@ function useManageChanges() {
         },
       });
     },
-    [match, resolveFormationChanges, setMatch, supabase],
+    [match, resolveFormationChanges, setMatch],
   );
 
   return {

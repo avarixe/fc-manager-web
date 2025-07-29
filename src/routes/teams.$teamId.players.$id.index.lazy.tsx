@@ -22,12 +22,7 @@ import { useAtomValue, useSetAtom } from "jotai";
 import { round } from "lodash-es";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import {
-  appLoadingAtom,
-  breadcrumbsAtom,
-  supabaseAtom,
-  teamAtom,
-} from "@/atoms";
+import { appLoadingAtom, breadcrumbsAtom, teamAtom } from "@/atoms";
 import { PlayerFlag } from "@/components/player/PlayerFlag";
 import {
   PlayerKitNo,
@@ -41,6 +36,7 @@ import { useTeam } from "@/hooks/useTeam";
 import { Player } from "@/types";
 import { assertType } from "@/utils/assert";
 import { ratingColor } from "@/utils/match";
+import { supabase } from "@/utils/supabase";
 
 export const Route = createLazyFileRoute("/teams/$teamId/players/$id/")({
   component: PlayerPage,
@@ -67,7 +63,7 @@ function PlayerPage() {
     numAssists: 0,
     avgRating: 0,
   });
-  const supabase = useAtomValue(supabaseAtom);
+
   useEffect(() => {
     const fetchPlayer = async () => {
       const { data, error } = await supabase
@@ -113,7 +109,7 @@ function PlayerPage() {
 
     fetchPlayer();
     fetchStats();
-  }, [id, supabase, teamId, team?.currently_on]);
+  }, [id, teamId, team?.currently_on]);
 
   const setAppLoading = useSetAtom(appLoadingAtom);
   const navigate = useNavigate();
@@ -144,7 +140,7 @@ function PlayerPage() {
         }
       },
     });
-  }, [id, navigate, setAppLoading, supabase, teamId]);
+  }, [id, navigate, setAppLoading, teamId]);
 
   const updatePlayer = useCallback(async (changes: Partial<Player>) => {
     setPlayer((prev) => (prev ? { ...prev, ...changes } : null));

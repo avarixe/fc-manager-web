@@ -12,7 +12,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useAtomValue } from "jotai";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { sessionAtom, supabaseAtom } from "@/atoms";
+import { sessionAtom } from "@/atoms";
 import { BaseIcon } from "@/components/base/CommonIcons";
 import { TeamAutocomplete } from "@/components/team/TeamAutocomplete";
 import { Tables } from "@/database-generated.types";
@@ -20,6 +20,7 @@ import { useManageOptions } from "@/hooks/useManageOptions";
 import { useTeamHelpers } from "@/hooks/useTeamHelpers";
 import { Competition } from "@/types";
 import { assertType } from "@/utils/assert";
+import { supabase } from "@/utils/supabase";
 
 type CompetitionOption = Pick<Competition, "name" | "stages">;
 
@@ -50,7 +51,6 @@ export function MatchForm({
     form.setFieldValue("season", seasonOn(value));
   });
 
-  const supabase = useAtomValue(supabaseAtom);
   const navigate = useNavigate();
   const { saveTeamOptions } = useManageOptions();
   const handleSubmit = useCallback(
@@ -75,7 +75,7 @@ export function MatchForm({
         console.error(error);
       }
     },
-    [form, navigate, record, saveTeamOptions, supabase, team.id],
+    [form, navigate, record, saveTeamOptions, team.id],
   );
 
   const [competitions, setCompetitions] = useState<CompetitionOption[]>([]);
@@ -94,7 +94,7 @@ export function MatchForm({
       }
     };
     fetchCompetitions();
-  }, [form.values.season, supabase, team.id]);
+  }, [form.values.season, team.id]);
 
   const stageOptions = useMemo(() => {
     const competition = competitions.find(

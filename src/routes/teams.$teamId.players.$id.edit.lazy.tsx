@@ -12,15 +12,16 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
-import { useAtomValue, useSetAtom } from "jotai";
+import { useSetAtom } from "jotai";
 import { useCallback, useEffect, useState } from "react";
 
-import { breadcrumbsAtom, supabaseAtom } from "@/atoms";
+import { breadcrumbsAtom } from "@/atoms";
 import { positions } from "@/constants";
 import { countryCodes } from "@/constants/countryCodes";
 import { Tables } from "@/database-generated.types";
 import { useTeam } from "@/hooks/useTeam";
 import { useTeamHelpers } from "@/hooks/useTeamHelpers";
+import { supabase } from "@/utils/supabase";
 
 export const Route = createLazyFileRoute("/teams/$teamId/players/$id/edit")({
   component: EditPlayerPage,
@@ -31,7 +32,7 @@ function EditPlayerPage() {
   const { team } = useTeam(teamId);
 
   const [player, setPlayer] = useState<Tables<"players"> | null>(null);
-  const supabase = useAtomValue(supabaseAtom);
+
   useEffect(() => {
     const fetchPlayer = async () => {
       const { data, error } = await supabase
@@ -48,7 +49,7 @@ function EditPlayerPage() {
     };
 
     fetchPlayer();
-  }, [id, supabase, teamId]);
+  }, [id, teamId]);
 
   const setBreadcrumbs = useSetAtom(breadcrumbsAtom);
   useEffect(() => {
@@ -94,7 +95,6 @@ const PlayerForm: React.FC<{
     },
   });
 
-  const supabase = useAtomValue(supabaseAtom);
   const navigate = useNavigate();
   const handleSubmit = useCallback(
     async (values: typeof form.values) => {
@@ -108,7 +108,7 @@ const PlayerForm: React.FC<{
         navigate({ to: `/teams/${team.id}/players/${record.id}` });
       }
     },
-    [form, navigate, record.id, supabase, team.id],
+    [form, navigate, record.id, team.id],
   );
 
   return (

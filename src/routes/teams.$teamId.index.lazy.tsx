@@ -13,15 +13,10 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
 import { createLazyFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useAtomValue, useSetAtom } from "jotai";
+import { useSetAtom } from "jotai";
 import { useEffect, useState } from "react";
 
-import {
-  appLoadingAtom,
-  breadcrumbsAtom,
-  supabaseAtom,
-  teamAtom,
-} from "@/atoms";
+import { appLoadingAtom, breadcrumbsAtom, teamAtom } from "@/atoms";
 import { BaseIcon } from "@/components/base/CommonIcons";
 import { CompetitionList } from "@/components/competition/CompetitionList";
 import { TeamBadgeUploader } from "@/components/team/TeamBadgeUploader";
@@ -32,6 +27,7 @@ import { assertType } from "@/utils/assert";
 import { formatDate } from "@/utils/format";
 import { matchScore } from "@/utils/match";
 import { abbrevValue, playerValueColor } from "@/utils/player";
+import { supabase } from "@/utils/supabase";
 
 type CompetitionInfo = Pick<Tables<"competitions">, "id" | "name" | "champion">;
 type MatchInfo = Pick<
@@ -64,7 +60,7 @@ function TeamPage() {
   const setTeam = useSetAtom(teamAtom);
 
   const [competitions, setCompetitions] = useState<CompetitionInfo[]>([]);
-  const supabase = useAtomValue(supabaseAtom);
+
   useEffect(() => {
     const fetchCompetitions = async () => {
       const { data, error } = await supabase
@@ -81,7 +77,7 @@ function TeamPage() {
     };
 
     fetchCompetitions();
-  }, [supabase, teamId, currentSeason]);
+  }, [teamId, currentSeason]);
 
   const [latestMatch, setLatestMatch] = useState<MatchInfo | null>(null);
   useEffect(() => {
@@ -103,7 +99,7 @@ function TeamPage() {
     };
 
     fetchLatestMatch();
-  }, [supabase, teamId]);
+  }, [teamId]);
 
   const [injuredPlayers, setInjuredPlayers] = useState<InjuryInfo[]>([]);
   useEffect(() => {
@@ -122,7 +118,7 @@ function TeamPage() {
     };
 
     fetchInjuredPlayers();
-  }, [supabase, teamId]);
+  }, [teamId]);
 
   const [loanedPlayers, setLoanedPlayers] = useState<LoanInfo[]>([]);
   useEffect(() => {
@@ -141,7 +137,7 @@ function TeamPage() {
     };
 
     fetchLoanedPlayers();
-  }, [supabase, teamId]);
+  }, [teamId]);
 
   const [expiringContracts, setExpiringContracts] = useState<
     PlayerContractInfo[]
@@ -186,7 +182,7 @@ function TeamPage() {
     };
 
     fetchContractData();
-  }, [endOfCurrentSeason, supabase, teamId]);
+  }, [endOfCurrentSeason, teamId]);
 
   const setAppLoading = useSetAtom(appLoadingAtom);
   const navigate = useNavigate();

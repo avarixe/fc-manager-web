@@ -7,11 +7,12 @@ import {
   Modal,
   Paper,
 } from "@mantine/core";
-import { useAtom, useAtomValue } from "jotai";
+import { useAtom } from "jotai";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { supabaseAtom, teamAtom } from "@/atoms";
+import { teamAtom } from "@/atoms";
 import { BaseIcon } from "@/components/base/CommonIcons";
+import { supabase } from "@/utils/supabase";
 
 export const TeamBadgeUploader: React.FC<{
   opened: boolean;
@@ -21,7 +22,7 @@ export const TeamBadgeUploader: React.FC<{
 
   const [badge, setBadge] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
-  const supabase = useAtomValue(supabaseAtom);
+
   const onClick = useCallback(async () => {
     if (badge && team?.id) {
       setLoading(true);
@@ -36,7 +37,7 @@ export const TeamBadgeUploader: React.FC<{
       setLoading(false);
     }
     onClose();
-  }, [badge, onClose, setTeam, supabase, team?.id]);
+  }, [badge, onClose, setTeam, team?.id]);
 
   const [dragging, setDragging] = useState(false);
   const onDrop = useCallback((event: React.DragEvent<HTMLDivElement>) => {

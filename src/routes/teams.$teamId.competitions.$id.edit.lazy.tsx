@@ -1,13 +1,14 @@
 import { Stack, Title } from "@mantine/core";
 import { createLazyFileRoute } from "@tanstack/react-router";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import { useEffect } from "react";
 
-import { breadcrumbsAtom, competitionAtom, supabaseAtom } from "@/atoms";
+import { breadcrumbsAtom, competitionAtom } from "@/atoms";
 import { CompetitionForm } from "@/components/competition/CompetitionForm";
 import { useTeam } from "@/hooks/useTeam";
 import { Competition } from "@/types";
 import { assertType } from "@/utils/assert";
+import { supabase } from "@/utils/supabase";
 
 export const Route = createLazyFileRoute(
   "/teams/$teamId/competitions/$id/edit",
@@ -20,7 +21,7 @@ function EditCompetitionPage() {
   const { team } = useTeam(teamId);
 
   const [competition, setCompetition] = useAtom(competitionAtom);
-  const supabase = useAtomValue(supabaseAtom);
+
   useEffect(() => {
     const fetchCompetition = async () => {
       const { data, error } = await supabase
@@ -38,7 +39,7 @@ function EditCompetitionPage() {
     };
 
     fetchCompetition();
-  }, [id, setCompetition, supabase, teamId]);
+  }, [id, setCompetition, teamId]);
 
   const setBreadcrumbs = useSetAtom(breadcrumbsAtom);
   useEffect(() => {

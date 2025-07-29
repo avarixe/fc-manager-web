@@ -19,13 +19,14 @@ import { useAtomValue, useSetAtom } from "jotai";
 import { keyBy } from "lodash-es";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { breadcrumbsAtom, sessionAtom, supabaseAtom } from "@/atoms";
+import { breadcrumbsAtom, sessionAtom } from "@/atoms";
 import { FormationGrid } from "@/components/formation/FormationGrid";
 import { FormationOvr } from "@/components/formation/FormationOvr";
 import { matchPositionTypes } from "@/constants";
 import { useTeam } from "@/hooks/useTeam";
 import { Player, Squad } from "@/types";
 import { assertType } from "@/utils/assert";
+import { supabase } from "@/utils/supabase";
 
 type PlayerOption = Pick<Player, "id" | "name" | "status" | "pos" | "ovr">;
 
@@ -39,7 +40,7 @@ function SquadsPage() {
 
   const [squads, setSquads] = useState<Squad[]>([]);
   const [players, setPlayers] = useState<PlayerOption[]>([]);
-  const supabase = useAtomValue(supabaseAtom);
+
   useEffect(() => {
     const fetchCompetitions = async () => {
       const { data, error } = await supabase
@@ -69,7 +70,7 @@ function SquadsPage() {
 
     fetchCompetitions();
     fetchPlayers();
-  }, [supabase, teamId]);
+  }, [teamId]);
 
   const setBreadcrumbs = useSetAtom(breadcrumbsAtom);
   useEffect(() => {
@@ -172,7 +173,6 @@ const SquadCard: React.FC<
     }
   };
 
-  const supabase = useAtomValue(supabaseAtom);
   const session = useAtomValue(sessionAtom);
   const [loading, setLoading] = useState(false);
   const onClickSave = async () => {

@@ -12,21 +12,21 @@ import {
 } from "@mantine/core";
 import { createLazyFileRoute, Link } from "@tanstack/react-router";
 import dayjs from "dayjs";
-import { useAtomValue, useSetAtom } from "jotai";
+import { useSetAtom } from "jotai";
 import { keyBy } from "lodash-es";
 import { useEffect, useMemo, useState } from "react";
 
-import { breadcrumbsAtom, supabaseAtom } from "@/atoms";
+import { breadcrumbsAtom } from "@/atoms";
 import { BaseIcon } from "@/components/base/CommonIcons";
 import { Tables } from "@/database-generated.types";
 import { formatDate } from "@/utils/format";
+import { supabase } from "@/utils/supabase";
 
 export const Route = createLazyFileRoute("/")({
   component: HomePage,
 });
 
 function HomePage() {
-  const supabase = useAtomValue(supabaseAtom);
   const [currentTeam, setCurrentTeam] = useState<Tables<"teams"> | null>(null);
   const [teams, setTeams] = useState<Tables<"teams">[]>([]);
   useEffect(() => {
@@ -44,7 +44,7 @@ function HomePage() {
     };
 
     fetchTeams();
-  }, [supabase]);
+  }, []);
 
   const teamsById = useMemo(() => keyBy(teams, "id"), [teams]);
   const teamFiles = useMemo(() => {

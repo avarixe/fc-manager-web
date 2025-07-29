@@ -7,13 +7,14 @@ import {
   Text,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { useAtom, useAtomValue } from "jotai";
+import { useAtom } from "jotai";
 import { useMemo, useState } from "react";
 
-import { capsAtom, supabaseAtom } from "@/atoms";
+import { capsAtom } from "@/atoms";
 import { matchPositions } from "@/constants";
 import { Cap, Player } from "@/types";
 import { assertType } from "@/utils/assert";
+import { supabase } from "@/utils/supabase";
 
 type PlayerOption = Pick<
   Player,
@@ -27,7 +28,7 @@ export const CapEditor: React.FC<{
 }> = ({ cap, playerOptions }) => {
   const [caps, setCaps] = useAtom(capsAtom);
   const [loading, setLoading] = useState(false);
-  const supabase = useAtomValue(supabaseAtom);
+
   const form = useForm({
     mode: "uncontrolled",
     initialValues: {

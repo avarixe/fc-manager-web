@@ -1,13 +1,14 @@
 import { Button, Group, Stack, Timeline, Title } from "@mantine/core";
 import { createLazyFileRoute, Link } from "@tanstack/react-router";
-import { useAtomValue, useSetAtom } from "jotai";
+import { useSetAtom } from "jotai";
 import { groupBy } from "lodash-es";
 import { useEffect, useMemo, useState } from "react";
 
-import { breadcrumbsAtom, supabaseAtom } from "@/atoms";
+import { breadcrumbsAtom } from "@/atoms";
 import { CompetitionList } from "@/components/competition/CompetitionList";
 import { Tables } from "@/database-generated.types";
 import { useTeam } from "@/hooks/useTeam";
+import { supabase } from "@/utils/supabase";
 
 type Competition = Pick<
   Tables<"competitions">,
@@ -23,7 +24,7 @@ function CompetitionsPage() {
   const { team, currentSeason } = useTeam(teamId);
 
   const [competitions, setCompetitions] = useState<Competition[]>([]);
-  const supabase = useAtomValue(supabaseAtom);
+
   useEffect(() => {
     const fetchCompetitions = async () => {
       const { data, error } = await supabase
@@ -39,7 +40,7 @@ function CompetitionsPage() {
     };
 
     fetchCompetitions();
-  }, [supabase, teamId]);
+  }, [teamId]);
 
   const competitionsBySeason = useMemo(
     () => groupBy(competitions, "season"),

@@ -11,10 +11,11 @@ import { isNotEmpty, useForm } from "@mantine/form";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { capsAtom, matchAtom, sessionAtom, supabaseAtom } from "@/atoms";
+import { capsAtom, matchAtom, sessionAtom } from "@/atoms";
 import { matchPositions } from "@/constants";
 import { Cap, Player } from "@/types";
 import { assertType } from "@/utils/assert";
+import { supabase } from "@/utils/supabase";
 
 type PlayerOption = Pick<
   Player,
@@ -46,7 +47,7 @@ export const CapForm: React.FC<{
   }, [opened]);
 
   const [loading, setLoading] = useState(false);
-  const supabase = useAtomValue(supabaseAtom);
+
   const session = useAtomValue(sessionAtom)!;
   const match = useAtomValue(matchAtom)!;
   const setCaps = useSetAtom(capsAtom);
@@ -89,7 +90,6 @@ export const CapForm: React.FC<{
     playerOptions,
     session.user.id,
     setCaps,
-    supabase,
   ]);
 
   const playerIdOptions = useMemo(

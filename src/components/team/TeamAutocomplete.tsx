@@ -1,8 +1,7 @@
 import { Autocomplete, AutocompleteProps, Loader } from "@mantine/core";
-import { useAtomValue } from "jotai";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { supabaseAtom } from "@/atoms";
+import { supabase } from "@/utils/supabase";
 
 export const TeamAutocomplete: React.FC<AutocompleteProps> = ({
   value,
@@ -14,7 +13,7 @@ export const TeamAutocomplete: React.FC<AutocompleteProps> = ({
   const [options, setOptions] = useState(defaultOptions ?? []);
   const [loading, setLoading] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
-  const supabase = useAtomValue(supabaseAtom);
+
   const onChangeValue = useCallback(
     async (input: string) => {
       onChange?.(input);
@@ -43,7 +42,7 @@ export const TeamAutocomplete: React.FC<AutocompleteProps> = ({
         setLoading(false);
       }, 300);
     },
-    [defaultOptions, onChange, options, supabase],
+    [defaultOptions, onChange, options],
   );
 
   useEffect(() => {

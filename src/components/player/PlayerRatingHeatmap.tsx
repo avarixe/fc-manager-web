@@ -1,13 +1,12 @@
 import { Heatmap } from "@mantine/charts";
 import { Box, Group, Rating, Text } from "@mantine/core";
-import { useAtomValue } from "jotai";
 import { useEffect, useMemo, useState } from "react";
 
-import { supabaseAtom } from "@/atoms";
 import { BaseIcon } from "@/components/base/CommonIcons";
 import { Match, Player } from "@/types";
 import { formatDate } from "@/utils/format";
 import { matchScore } from "@/utils/match";
+import { supabase } from "@/utils/supabase";
 
 interface PlayerRatingHeatmapProps {
   player: Player;
@@ -38,7 +37,6 @@ export const PlayerRatingHeatmap: React.FC<PlayerRatingHeatmapProps> = ({
 }) => {
   const [chartData, setChartData] = useState<Record<string, number>>({});
   const [matchData, setMatchData] = useState<Record<string, MatchData>>({});
-  const supabase = useAtomValue(supabaseAtom);
 
   // Determine date range based on contracts
   const dateRange = useMemo(() => {
@@ -101,7 +99,7 @@ export const PlayerRatingHeatmap: React.FC<PlayerRatingHeatmapProps> = ({
     };
 
     fetchCaps();
-  }, [supabase, player.id, dateRange]);
+  }, [player.id, dateRange]);
 
   if (!dateRange || Object.keys(chartData).length === 0) {
     return (

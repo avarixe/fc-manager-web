@@ -1,5 +1,4 @@
 dist
-auto-imports.d.ts
 src/database-generated.types.ts
 src/routeTree.gen.ts
 bun.lock

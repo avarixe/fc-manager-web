@@ -2,17 +2,12 @@ import { useAtom, useAtomValue } from "jotai";
 import { keyBy, omit, orderBy } from "lodash-es";
 import { useCallback } from "react";
 
-import {
-  capsAtom,
-  matchAtom,
-  sessionAtom,
-  supabaseAtom,
-  teamAtom,
-} from "@/atoms";
+import { capsAtom, matchAtom, sessionAtom, teamAtom } from "@/atoms";
 import { TablesInsert } from "@/database-generated.types";
 import { useCapHelpers } from "@/hooks/useCapHelpers";
 import { Cap, Match } from "@/types";
 import { assertType } from "@/utils/assert";
+import { supabase } from "@/utils/supabase";
 
 export const useMatchCallbacks = () => {
   const team = useAtomValue(teamAtom)!;
@@ -20,7 +15,6 @@ export const useMatchCallbacks = () => {
   const [match, setMatch] = useAtom(matchAtom);
   assertType<Match>(match);
 
-  const supabase = useAtomValue(supabaseAtom);
   const { getFirstCaps } = useCapHelpers();
   const resolvePlayerStats = useCallback(
     async (updatedMatch?: Match) => {
@@ -82,7 +76,7 @@ export const useMatchCallbacks = () => {
       );
       setCaps(newCaps);
     },
-    [caps, getFirstCaps, match, setCaps, supabase, team.name],
+    [caps, getFirstCaps, match, setCaps, team.name],
   );
 
   const resolveMatchScores = useCallback(
@@ -103,7 +97,7 @@ export const useMatchCallbacks = () => {
         away_score: awayScore,
       });
     },
-    [match, setMatch, supabase],
+    [match, setMatch],
   );
 
   const session = useAtomValue(sessionAtom)!;
@@ -213,7 +207,7 @@ export const useMatchCallbacks = () => {
       assertType<Cap[]>(newCaps);
       setCaps([...starters, ...newCaps]);
     },
-    [caps, match, session.user.id, setCaps, supabase, team.id],
+    [caps, match, session.user.id, setCaps, team.id],
   );
 
   return {

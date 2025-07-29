@@ -1,11 +1,12 @@
 import { ActionIcon, Group, GroupProps, Rating } from "@mantine/core";
-import { useAtomValue, useSetAtom } from "jotai";
+import { useSetAtom } from "jotai";
 import { useCallback, useMemo, useState } from "react";
 
-import { capsAtom, supabaseAtom } from "@/atoms";
+import { capsAtom } from "@/atoms";
 import { BaseIcon } from "@/components/base/CommonIcons";
 import { Cap } from "@/types";
 import { ratingColor } from "@/utils/match";
+import { supabase } from "@/utils/supabase";
 
 export const BaseCapRating: React.FC<
   GroupProps & {
@@ -23,7 +24,6 @@ export const BaseCapRating: React.FC<
     return rating ? ratingColor(rating) : undefined;
   }, [cap.rating, hoverValue]);
 
-  const supabase = useAtomValue(supabaseAtom);
   const setCaps = useSetAtom(capsAtom);
   const onChange = useCallback(
     async (value: number | null) => {
@@ -37,7 +37,7 @@ export const BaseCapRating: React.FC<
         });
       });
     },
-    [supabase, cap.id, cap.player_id, setCaps],
+    [cap.id, cap.player_id, setCaps],
   );
 
   const stopPropagation = useCallback((event: React.MouseEvent<unknown>) => {

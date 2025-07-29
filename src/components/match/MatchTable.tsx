@@ -4,12 +4,13 @@ import { createColumnHelper } from "@tanstack/react-table";
 import { useAtomValue } from "jotai";
 import { useEffect, useMemo, useState } from "react";
 
-import { supabaseAtom, teamAtom } from "@/atoms";
+import { teamAtom } from "@/atoms";
 import { DataTable } from "@/components/base/DataTable";
 import { Tables } from "@/database-generated.types";
 import { MatchFilters } from "@/types";
 import { formatDate } from "@/utils/format";
 import { matchScore, matchScoreColor } from "@/utils/match";
+import { supabase } from "@/utils/supabase";
 
 type Match = Pick<
   Tables<"matches">,
@@ -32,7 +33,7 @@ export const MatchTable: React.FC<{ filters?: MatchFilters }> = ({
   const team = useAtomValue(teamAtom)!;
 
   const [matches, setMatches] = useState<Match[]>([]);
-  const supabase = useAtomValue(supabaseAtom);
+
   const [tableState, setTableState] = useState({
     pageIndex: 0,
     pageSize: 10,
@@ -128,7 +129,6 @@ export const MatchTable: React.FC<{ filters?: MatchFilters }> = ({
     tableState.pageSize,
     tableState.sorting.id,
     tableState.sorting.desc,
-    supabase,
     team.id,
     filters,
     team.name,

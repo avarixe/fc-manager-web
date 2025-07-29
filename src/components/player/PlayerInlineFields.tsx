@@ -9,9 +9,10 @@ import { isNotEmpty, useField } from "@mantine/form";
 import { useAtomValue } from "jotai";
 import { useCallback, useMemo } from "react";
 
-import { supabaseAtom, teamAtom } from "@/atoms";
+import { teamAtom } from "@/atoms";
 import { Player } from "@/types";
 import { ovrColor } from "@/utils/player";
+import { supabase } from "@/utils/supabase";
 
 export const PlayerInlineField = <T,>({
   target,
@@ -75,7 +76,6 @@ export const PlayerKitNo: React.FC<{
     initialValue: player.kit_no ?? undefined,
   });
 
-  const supabase = useAtomValue(supabaseAtom);
   const onChange = useCallback(async () => {
     const changes = { kit_no: field.getValue() || null };
     const { error } = await supabase
@@ -87,7 +87,7 @@ export const PlayerKitNo: React.FC<{
     } else {
       setPlayer(changes);
     }
-  }, [field, player.id, setPlayer, supabase]);
+  }, [field, player.id, setPlayer]);
 
   return (
     <PlayerInlineField
@@ -119,7 +119,6 @@ export const PlayerOvr: React.FC<{
     validate: isNotEmpty(),
   });
 
-  const supabase = useAtomValue(supabaseAtom);
   const team = useAtomValue(teamAtom)!;
   const onChange = useCallback(async () => {
     if (field.getValue() === player.ovr) {
@@ -148,7 +147,6 @@ export const PlayerOvr: React.FC<{
     player.ovr,
     player.value,
     setPlayer,
-    supabase,
     team.currently_on,
   ]);
 
@@ -183,7 +181,6 @@ export const PlayerValue: React.FC<{
     validate: isNotEmpty(),
   });
 
-  const supabase = useAtomValue(supabaseAtom);
   const team = useAtomValue(teamAtom)!;
   const onChange = useCallback(async () => {
     if (field.getValue() === player.value) {
@@ -212,7 +209,6 @@ export const PlayerValue: React.FC<{
     player.ovr,
     player.value,
     setPlayer,
-    supabase,
     team.currently_on,
   ]);
 

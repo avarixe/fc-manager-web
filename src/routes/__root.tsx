@@ -17,16 +17,16 @@ import { useCallback, useEffect, useState } from "react";
 
 import googleSsoButton from "@/assets/google-sso-button.png";
 import logo from "@/assets/logo.png";
-import { appLoadingAtom, sessionAtom, supabaseAtom } from "@/atoms";
+import { appLoadingAtom, sessionAtom } from "@/atoms";
 import { AppBreadcrumbs } from "@/components/app/AppBreadcrumbs";
 import { AppNavbar } from "@/components/app/AppNavbar";
+import { supabase } from "@/utils/supabase";
 
 export const Route = createRootRoute({
   component: App,
 });
 
 function App() {
-  const [supabase] = useAtom(supabaseAtom);
   const [session, setSession] = useAtom(sessionAtom);
   const [ready, setReady] = useState(false);
   useEffect(() => {
@@ -44,7 +44,7 @@ function App() {
     return () => {
       subscription.unsubscribe();
     };
-  }, [setSession, supabase.auth]);
+  }, [setSession]);
 
   const [opened, { toggle }] = useDisclosure();
   const appLoading = useAtomValue(appLoadingAtom);

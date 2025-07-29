@@ -16,7 +16,7 @@ import { useAtom, useAtomValue } from "jotai";
 import { groupBy, orderBy } from "lodash-es";
 import { useCallback, useMemo } from "react";
 
-import { capsAtom, matchAtom, supabaseAtom, teamAtom } from "@/atoms";
+import { capsAtom, matchAtom, teamAtom } from "@/atoms";
 import {
   AssistIcon,
   BaseIcon,
@@ -38,6 +38,7 @@ import { useManageChanges } from "@/hooks/useManageChanges";
 import { useManageGoals } from "@/hooks/useManageGoals";
 import { Booking, Cap, Change, Goal, Match, Player } from "@/types";
 import { assertType } from "@/utils/assert";
+import { supabase } from "@/utils/supabase";
 
 enum MatchEventType {
   Goal = "Goal",
@@ -140,7 +141,6 @@ export const MatchTimeline: React.FC<{
     [match.goals],
   );
 
-  const supabase = useAtomValue(supabaseAtom);
   const updateMatch = useCallback(
     async (changes: Partial<Match>) => {
       const { error } = await supabase
@@ -153,7 +153,7 @@ export const MatchTimeline: React.FC<{
         setMatch((prev) => (prev ? { ...prev, ...changes } : prev));
       }
     },
-    [match, setMatch, supabase],
+    [match, setMatch],
   );
 
   const [caps, setCaps] = useAtom(capsAtom);
@@ -184,7 +184,7 @@ export const MatchTimeline: React.FC<{
       );
       setCaps(newCaps);
     },
-    [caps, getUnsubbedCaps, setCaps, supabase, updateMatch],
+    [caps, getUnsubbedCaps, setCaps, updateMatch],
   );
 
   const renderMatchEvent = useCallback(

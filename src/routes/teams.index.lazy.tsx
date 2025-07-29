@@ -1,13 +1,14 @@
 import { Button, Group, Stack, Title } from "@mantine/core";
 import { createLazyFileRoute, Link } from "@tanstack/react-router";
 import { createColumnHelper } from "@tanstack/react-table";
-import { useAtomValue, useSetAtom } from "jotai";
+import { useSetAtom } from "jotai";
 import { useEffect, useState } from "react";
 
-import { breadcrumbsAtom, supabaseAtom } from "@/atoms";
+import { breadcrumbsAtom } from "@/atoms";
 import { LocalDataTable } from "@/components/base/LocalDataTable";
 import { Tables } from "@/database-generated.types";
 import { formatDate } from "@/utils/format";
+import { supabase } from "@/utils/supabase";
 
 export const Route = createLazyFileRoute("/teams/")({
   component: TeamsPage,
@@ -59,7 +60,6 @@ const columns = [
 ];
 
 function TeamsPage() {
-  const supabase = useAtomValue(supabaseAtom);
   const [teams, setTeams] = useState<Tables<"teams">[]>([]);
   useEffect(() => {
     const fetchTeams = async () => {
@@ -70,7 +70,7 @@ function TeamsPage() {
     };
 
     fetchTeams();
-  }, [supabase]);
+  }, []);
 
   const setBreadcrumbs = useSetAtom(breadcrumbsAtom);
   useEffect(() => {

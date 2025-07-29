@@ -4,13 +4,14 @@ import { useNavigate } from "@tanstack/react-router";
 import { useAtomValue } from "jotai";
 import { useCallback, useEffect, useState } from "react";
 
-import { sessionAtom, supabaseAtom } from "@/atoms";
+import { sessionAtom } from "@/atoms";
 import { TeamAutocomplete } from "@/components/team/TeamAutocomplete";
 import { Tables } from "@/database-generated.types";
 import { useCompetitionHelpers } from "@/hooks/useCompetitionHelpers";
 import { useTeamHelpers } from "@/hooks/useTeamHelpers";
 import { Stage } from "@/types";
 import { assertType } from "@/utils/assert";
+import { supabase } from "@/utils/supabase";
 
 export function CompetitionForm({
   record,
@@ -33,7 +34,6 @@ export function CompetitionForm({
     },
   });
 
-  const supabase = useAtomValue(supabaseAtom);
   const navigate = useNavigate();
   const [copyFormat, setCopyFormat] = useState(false);
   const handleSubmit = useCallback(
@@ -86,7 +86,7 @@ export function CompetitionForm({
         console.error(error);
       }
     },
-    [copyFormat, form, navigate, record, supabase, team.id],
+    [copyFormat, form, navigate, record, team.id],
   );
 
   const [competitions, setCompetitions] = useState<string[]>([]);
@@ -104,7 +104,7 @@ export function CompetitionForm({
       }
     };
     fetchCompetitions();
-  }, [form.values.season, supabase, team.id]);
+  }, [form.values.season, team.id]);
 
   const { championOptions } = useCompetitionHelpers();
 

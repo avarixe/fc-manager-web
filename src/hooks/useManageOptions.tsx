@@ -1,10 +1,10 @@
 import { useAtomValue } from "jotai";
 import { useCallback } from "react";
 
-import { sessionAtom, supabaseAtom } from "@/atoms";
+import { sessionAtom } from "@/atoms";
+import { supabase } from "@/utils/supabase";
 
 export const useManageOptions = () => {
-  const supabase = useAtomValue(supabaseAtom);
   const session = useAtomValue(sessionAtom)!;
   const saveTeamOptions = useCallback(
     async (values: string[]) => {
@@ -19,7 +19,7 @@ export const useManageOptions = () => {
         ignoreDuplicates: true,
       });
     },
-    [session.user.id, supabase],
+    [session.user.id],
   );
 
   return {

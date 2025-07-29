@@ -1,16 +1,17 @@
 import { DonutChart, ScatterChart } from "@mantine/charts";
 import { Card, Group, Stack, Text, Title } from "@mantine/core";
 import { createLazyFileRoute } from "@tanstack/react-router";
-import { useAtomValue, useSetAtom } from "jotai";
+import { useSetAtom } from "jotai";
 import { useEffect, useMemo, useState } from "react";
 
-import { breadcrumbsAtom, supabaseAtom } from "@/atoms";
+import { breadcrumbsAtom } from "@/atoms";
 import { BaseIcon } from "@/components/base/CommonIcons";
 import { FormationOvr } from "@/components/formation/FormationOvr";
 import { matchPositionTypes } from "@/constants";
 import { useTeam } from "@/hooks/useTeam";
 import { Player } from "@/types";
 import { assertType } from "@/utils/assert";
+import { supabase } from "@/utils/supabase";
 
 export const Route = createLazyFileRoute("/teams/$teamId/players/analytics")({
   component: PlayerAnalyticsPage,
@@ -21,7 +22,7 @@ function PlayerAnalyticsPage() {
   const { team } = useTeam(teamId);
 
   const [players, setPlayers] = useState<Player[]>([]);
-  const supabase = useAtomValue(supabaseAtom);
+
   useEffect(() => {
     const fetchPlayers = async () => {
       const { data } = await supabase
@@ -35,7 +36,7 @@ function PlayerAnalyticsPage() {
     };
 
     fetchPlayers();
-  }, [supabase, teamId]);
+  }, [teamId]);
 
   const setBreadcrumbs = useSetAtom(breadcrumbsAtom);
   useEffect(() => {
