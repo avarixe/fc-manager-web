@@ -89,7 +89,7 @@ function SeasonPage() {
       const { data } = await supabase.rpc("get_competition_stats", {
         team_id: Number(teamId),
         season,
-        competition: null,
+        competition: "",
       });
       if (data) {
         assertType<CompetitionStat[]>(data);
