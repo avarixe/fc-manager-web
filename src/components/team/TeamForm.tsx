@@ -15,7 +15,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import { sessionAtom } from "@/atoms";
 import { TeamAutocomplete } from "@/components/team/TeamAutocomplete";
-import { Tables } from "@/database-generated.types";
+import { Tables } from "@/database.types";
 import { assertType } from "@/utils/assert";
 import { supabase } from "@/utils/supabase";
 

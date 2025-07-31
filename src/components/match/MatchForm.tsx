@@ -15,7 +15,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { sessionAtom } from "@/atoms";
 import { BaseIcon } from "@/components/base/CommonIcons";
 import { TeamAutocomplete } from "@/components/team/TeamAutocomplete";
-import { Tables } from "@/database-generated.types";
+import { Tables } from "@/database.types";
 import { useManageOptions } from "@/hooks/useManageOptions";
 import { useTeamHelpers } from "@/hooks/useTeamHelpers";
 import { Competition } from "@/types";
@@ -61,8 +61,9 @@ export function MatchForm({
             id: record.id,
             goals: record.goals,
             bookings: record.bookings,
+            changes: record.changes,
           }
-        : { ...values, goals: [], bookings: [] };
+        : { ...values, goals: [], bookings: [], changes: [] };
 
       const { data, error } = await supabase
         .from("matches")

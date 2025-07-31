@@ -25,7 +25,7 @@ import { breadcrumbsAtom, sessionAtom } from "@/atoms";
 import { TeamAutocomplete } from "@/components/team/TeamAutocomplete";
 import { positions } from "@/constants";
 import { countryCodes } from "@/constants/countryCodes";
-import { Tables, TablesInsert } from "@/database-generated.types";
+import { Tables, TablesInsert } from "@/database.types";
 import { usePlayerCallbacks } from "@/hooks/usePlayerCallbacks";
 import { useTeam } from "@/hooks/useTeam";
 import { useTeamHelpers } from "@/hooks/useTeamHelpers";

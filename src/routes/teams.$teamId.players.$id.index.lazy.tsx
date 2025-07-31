@@ -81,7 +81,7 @@ function PlayerPage() {
     };
     const fetchStats = async () => {
       const { data } = await supabase.rpc("get_player_stats", {
-        player_ids: [id],
+        player_ids: [Number(id)],
       });
       if (data) {
         assertType<PlayerStats[]>(data);

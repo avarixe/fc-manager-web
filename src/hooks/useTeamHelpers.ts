@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import { useCallback, useMemo } from "react";
 
-import { Tables } from "@/database-generated.types";
+import { Tables } from "@/database.types";
 
 export const useTeamHelpers = (team: Tables<"teams"> | null) => {
   const seasonOn = useCallback(

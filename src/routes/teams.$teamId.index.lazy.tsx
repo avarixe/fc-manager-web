@@ -20,7 +20,7 @@ import { appLoadingAtom, breadcrumbsAtom, teamAtom } from "@/atoms";
 import { BaseIcon } from "@/components/base/CommonIcons";
 import { CompetitionList } from "@/components/competition/CompetitionList";
 import { TeamBadgeUploader } from "@/components/team/TeamBadgeUploader";
-import { Tables } from "@/database-generated.types";
+import { Tables } from "@/database.types";
 import { useTeam } from "@/hooks/useTeam";
 import { Player } from "@/types";
 import { assertType } from "@/utils/assert";

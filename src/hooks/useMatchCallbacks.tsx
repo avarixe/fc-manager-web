@@ -3,7 +3,7 @@ import { keyBy, omit, orderBy } from "lodash-es";
 import { useCallback } from "react";
 
 import { capsAtom, matchAtom, sessionAtom, teamAtom } from "@/atoms";
-import { TablesInsert } from "@/database-generated.types";
+import { TablesInsert } from "@/database.types";
 import { useCapHelpers } from "@/hooks/useCapHelpers";
 import { Cap, Match } from "@/types";
 import { assertType } from "@/utils/assert";

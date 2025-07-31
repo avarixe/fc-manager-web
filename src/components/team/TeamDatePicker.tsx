@@ -4,7 +4,7 @@ import { useSetAtom } from "jotai";
 import { useCallback, useState } from "react";
 
 import { appLoadingAtom, teamAtom } from "@/atoms";
-import { Tables } from "@/database-generated.types";
+import { Tables } from "@/database.types";
 import { usePlayerCallbacks } from "@/hooks/usePlayerCallbacks";
 import { Player } from "@/types";
 import { assertType } from "@/utils/assert";

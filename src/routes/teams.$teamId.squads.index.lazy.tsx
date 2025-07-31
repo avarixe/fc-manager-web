@@ -23,6 +23,7 @@ import { breadcrumbsAtom, sessionAtom } from "@/atoms";
 import { FormationGrid } from "@/components/formation/FormationGrid";
 import { FormationOvr } from "@/components/formation/FormationOvr";
 import { matchPositionTypes } from "@/constants";
+import { TablesInsert } from "@/database.types";
 import { useTeam } from "@/hooks/useTeam";
 import { Player, Squad } from "@/types";
 import { assertType } from "@/utils/assert";
@@ -146,7 +147,7 @@ const SquadCard: React.FC<
     onCancel?: () => void;
   }
 > = ({ squad, players, teamId, onCancel, ...rest }) => {
-  const form = useForm({
+  const form = useForm<TablesInsert<"squads">>({
     initialValues: {
       id: squad?.id,
       name: squad?.name || "",

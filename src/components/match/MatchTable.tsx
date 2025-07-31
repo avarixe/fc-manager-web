@@ -6,7 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import { teamAtom } from "@/atoms";
 import { DataTable } from "@/components/base/DataTable";
-import { Tables } from "@/database-generated.types";
+import { Tables } from "@/database.types";
 import { MatchFilters } from "@/types";
 import { formatDate } from "@/utils/format";
 import { matchScore, matchScoreColor } from "@/utils/match";

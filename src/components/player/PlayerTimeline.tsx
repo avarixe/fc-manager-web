@@ -29,7 +29,7 @@ import { InjuryForm } from "@/components/player/InjuryForm";
 import { LoanForm } from "@/components/player/LoanForm";
 import { TransferForm } from "@/components/player/TransferForm";
 import { PlayerEventKey, PlayerEventType } from "@/constants";
-import { Tables } from "@/database-generated.types";
+import { Tables } from "@/database.types";
 import { useManagePlayerEvents } from "@/hooks/useManagePlayerEvents";
 import { useTeamHelpers } from "@/hooks/useTeamHelpers";
 import {

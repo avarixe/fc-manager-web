@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 
 import { breadcrumbsAtom } from "@/atoms";
 import { LocalDataTable } from "@/components/base/LocalDataTable";
-import { Tables } from "@/database-generated.types";
+import { Tables } from "@/database.types";
 import { formatDate } from "@/utils/format";
 import { supabase } from "@/utils/supabase";
 
