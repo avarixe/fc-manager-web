@@ -1,3 +1,5 @@
+import { ComboboxItem as MantineComboboxItem } from "@mantine/core";
+
 import { Tables } from "@/database.types";
 
 export type StateSetter<T> = React.Dispatch<React.SetStateAction<T>>;
@@ -39,3 +41,5 @@ export interface MatchFilters {
   team?: string;
   results?: string[];
 }
+
+export type ComboboxItem<T extends object> = MantineComboboxItem & Partial<T>;

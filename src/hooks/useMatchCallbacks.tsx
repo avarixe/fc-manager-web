@@ -6,14 +6,14 @@ import { capsAtom, matchAtom, sessionAtom, teamAtom } from "@/atoms";
 import { TablesInsert } from "@/database.types";
 import { useCapHelpers } from "@/hooks/useCapHelpers";
 import { Cap, Match } from "@/types";
-import { assertType } from "@/utils/assert";
+import { assertDefined, assertType } from "@/utils/assert";
 import { supabase } from "@/utils/supabase";
 
 export const useMatchCallbacks = () => {
   const team = useAtomValue(teamAtom)!;
   const [caps, setCaps] = useAtom(capsAtom);
   const [match, setMatch] = useAtom(matchAtom);
-  assertType<Match>(match);
+  assertDefined(match);
 
   const { getFirstCaps } = useCapHelpers();
   const resolvePlayerStats = useCallback(

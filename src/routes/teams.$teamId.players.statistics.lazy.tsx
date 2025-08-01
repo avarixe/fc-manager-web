@@ -22,7 +22,6 @@ import { PositionFilterPopover } from "@/components/player/PositionFilterPopover
 import { PlayerStatusFilter } from "@/constants";
 import { useTeam } from "@/hooks/useTeam";
 import { Player } from "@/types";
-import { assertType } from "@/utils/assert";
 import { ratingColor } from "@/utils/match";
 import { supabase } from "@/utils/supabase";
 
@@ -68,15 +67,13 @@ function PlayerStatisticsPage() {
         .select("id, name, nationality, status, pos, pos_order, youth")
         .eq("team_id", Number(teamId))
         .order("pos_order");
-      assertType<PlayerData[]>(data);
-      setPlayers(data);
+      setPlayers(data ?? []);
 
-      const playerIds = data.map((player) => player.id);
+      const playerIds = data?.map((player) => player.id) ?? [];
       const { data: statsData } = await supabase.rpc("get_player_stats", {
         player_ids: playerIds,
       });
-      assertType<PlayerStats[]>(statsData);
-      setStats(statsData);
+      setStats(statsData ?? []);
     };
 
     fetchPlayers();

@@ -20,7 +20,6 @@ import { PositionFilterPopover } from "@/components/player/PositionFilterPopover
 import { PlayerStatusFilter } from "@/constants";
 import { useTeam } from "@/hooks/useTeam";
 import { Player, PlayerHistoryData } from "@/types";
-import { assertType } from "@/utils/assert";
 import {
   abbrevValue,
   ovrColor,
@@ -72,8 +71,7 @@ function PlayerDevelopmentPage() {
         )
         .eq("team_id", Number(teamId))
         .order("pos_order");
-      assertType<PlayerData[]>(data);
-      setPlayers(data);
+      setPlayers(data ?? []);
     };
 
     fetchPlayers();

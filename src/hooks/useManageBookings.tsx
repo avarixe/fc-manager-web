@@ -5,13 +5,13 @@ import { useCallback } from "react";
 
 import { matchAtom } from "@/atoms";
 import { useMatchCallbacks } from "@/hooks/useMatchCallbacks";
-import { Booking, Match } from "@/types";
-import { assertType } from "@/utils/assert";
+import { Booking } from "@/types";
+import { assertDefined } from "@/utils/assert";
 import { supabase } from "@/utils/supabase";
 
 function useManageBookings() {
   const [match, setMatch] = useAtom(matchAtom);
-  assertType<Match>(match);
+  assertDefined(match);
 
   const { resolvePlayerStats } = useMatchCallbacks();
 

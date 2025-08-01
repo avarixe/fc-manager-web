@@ -34,22 +34,12 @@ import { PlayerStatus } from "@/components/player/PlayerStatus";
 import { PlayerTimeline } from "@/components/player/PlayerTimeline";
 import { useTeam } from "@/hooks/useTeam";
 import { Player } from "@/types";
-import { assertType } from "@/utils/assert";
 import { ratingColor } from "@/utils/match";
 import { supabase } from "@/utils/supabase";
 
 export const Route = createLazyFileRoute("/teams/$teamId/players/$id/")({
   component: PlayerPage,
 });
-
-interface PlayerStats {
-  num_matches: number;
-  num_minutes: number;
-  num_clean_sheets: number;
-  num_goals: number;
-  num_assists: number;
-  avg_rating: number;
-}
 
 function PlayerPage() {
   const { teamId, id } = Route.useParams();
@@ -75,7 +65,6 @@ function PlayerPage() {
       if (error) {
         console.error(error);
       } else {
-        assertType<Player>(data);
         setPlayer(data);
       }
     };
@@ -84,7 +73,6 @@ function PlayerPage() {
         player_ids: [Number(id)],
       });
       if (data) {
-        assertType<PlayerStats[]>(data);
         let numMinutes = 0;
         const totalStats = {
           numMatches: 0,

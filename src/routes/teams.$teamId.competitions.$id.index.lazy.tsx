@@ -31,13 +31,7 @@ import { TeamAutocomplete } from "@/components/team/TeamAutocomplete";
 import { useCompetitionHelpers } from "@/hooks/useCompetitionHelpers";
 import { useManageOptions } from "@/hooks/useManageOptions";
 import { useTeam } from "@/hooks/useTeam";
-import {
-  Competition,
-  Stage,
-  StageFixtureData,
-  StageTableRowData,
-} from "@/types";
-import { assertType } from "@/utils/assert";
+import { Stage, StageFixtureData, StageTableRowData } from "@/types";
 import { supabase } from "@/utils/supabase";
 
 interface NewStage extends Stage {
@@ -70,7 +64,6 @@ function CompetitionPage() {
       if (error) {
         console.error(error);
       } else {
-        assertType<Competition>(data);
         setCompetition(data);
         setReadonly(data.champion !== null);
       }
@@ -156,7 +149,6 @@ function CompetitionPage() {
       if (error) {
         console.error(error);
       } else {
-        assertType<Competition[]>(data);
         setCompetition(data[0]);
       }
     },
@@ -187,7 +179,6 @@ function CompetitionPage() {
       if (error) {
         console.error(error);
       } else {
-        assertType<Competition[]>(data);
         setCompetition(data[0]);
       }
     },
@@ -220,7 +211,6 @@ function CompetitionPage() {
       if (error) {
         console.error(error);
       } else {
-        assertType<Competition[]>(data);
         setCompetition(data[0]);
       }
     },

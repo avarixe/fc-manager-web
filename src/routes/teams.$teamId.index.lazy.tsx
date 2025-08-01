@@ -23,7 +23,6 @@ import { TeamBadgeUploader } from "@/components/team/TeamBadgeUploader";
 import { Tables } from "@/database.types";
 import { useTeam } from "@/hooks/useTeam";
 import { Player } from "@/types";
-import { assertType } from "@/utils/assert";
 import { formatDate } from "@/utils/format";
 import { matchScore } from "@/utils/match";
 import { abbrevValue, playerValueColor } from "@/utils/player";
@@ -112,7 +111,6 @@ function TeamPage() {
       if (error) {
         console.error(error);
       } else {
-        assertType<InjuryInfo[]>(data);
         setInjuredPlayers(data);
       }
     };
@@ -131,7 +129,6 @@ function TeamPage() {
       if (error) {
         console.error(error);
       } else {
-        assertType<LoanInfo[]>(data);
         setLoanedPlayers(data);
       }
     };
@@ -163,18 +160,14 @@ function TeamPage() {
             player.contract_ends_on <= endOfCurrentSeason
           );
         });
-        assertType<PlayerContractInfo[]>(expiring);
 
         // Filter players with release clauses
         const withReleaseClauses = data.filter((player) => {
           if (!player.contracts || !Array.isArray(player.contracts))
             return false;
-          const latestContract = player.contracts[
-            player.contracts.length - 1
-          ] as Player["contracts"][0];
+          const latestContract = player.contracts[player.contracts.length - 1];
           return latestContract && latestContract.release_clause;
         });
-        assertType<PlayerContractInfo[]>(withReleaseClauses);
 
         setExpiringContracts(expiring);
         setReleaseClausePlayers(withReleaseClauses);

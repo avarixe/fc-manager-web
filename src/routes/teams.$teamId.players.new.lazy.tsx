@@ -30,7 +30,6 @@ import { usePlayerCallbacks } from "@/hooks/usePlayerCallbacks";
 import { useTeam } from "@/hooks/useTeam";
 import { useTeamHelpers } from "@/hooks/useTeamHelpers";
 import { Player } from "@/types";
-import { assertType } from "@/utils/assert";
 import { formatDate } from "@/utils/format";
 import { supabase } from "@/utils/supabase";
 
@@ -117,7 +116,6 @@ const PlayerForm: React.FC<{ team: Tables<"teams"> }> = ({ team }) => {
         .select()
         .single();
       if (data) {
-        assertType<Player>(data);
         updatePlayerStatus(data, team.currently_on);
         navigate({ to: `/teams/${team.id}/players/${data.id}` });
       } else {

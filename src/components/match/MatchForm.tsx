@@ -19,7 +19,6 @@ import { Tables } from "@/database.types";
 import { useManageOptions } from "@/hooks/useManageOptions";
 import { useTeamHelpers } from "@/hooks/useTeamHelpers";
 import { Competition } from "@/types";
-import { assertType } from "@/utils/assert";
 import { supabase } from "@/utils/supabase";
 
 type CompetitionOption = Pick<Competition, "name" | "stages">;
@@ -90,7 +89,6 @@ export function MatchForm({
         .is("champion", null)
         .order("name");
       if (data) {
-        assertType<CompetitionOption[]>(data);
         setCompetitions(data);
       }
     };

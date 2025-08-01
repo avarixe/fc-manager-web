@@ -2,7 +2,6 @@ import {
   AppShell,
   Avatar,
   Button,
-  ComboboxItem,
   Group,
   Loader,
   NavLink,
@@ -19,8 +18,7 @@ import { teamAtom } from "@/atoms";
 import { BaseIcon } from "@/components/base/CommonIcons";
 import { TeamDatePicker } from "@/components/team/TeamDatePicker";
 import { useTeamHelpers } from "@/hooks/useTeamHelpers";
-import { Player } from "@/types";
-import { assertType } from "@/utils/assert";
+import { ComboboxItem, Player } from "@/types";
 import { supabase } from "@/utils/supabase";
 
 export const AppNavbar = () => {
@@ -184,7 +182,7 @@ export const AppNavbar = () => {
   );
 };
 
-type PlayerOption = ComboboxItem & Pick<Player, "name" | "pos">;
+type PlayerOption = ComboboxItem<Pick<Player, "name" | "pos">>;
 
 const PlayerSearch = () => {
   const [options, setOptions] = useState<PlayerOption[]>([]);
@@ -245,8 +243,7 @@ const PlayerSearch = () => {
       onChange={onChange}
       leftSection={loading ? <Loader size="xs" type="dots" /> : null}
       searchable
-      renderOption={({ option }) => {
-        assertType<PlayerOption>(option);
+      renderOption={({ option }: { option: PlayerOption }) => {
         return (
           <Group gap="xs" wrap="nowrap">
             <Text size="xs" fw="bold">

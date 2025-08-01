@@ -10,7 +10,6 @@ import { Tables } from "@/database.types";
 import { useCompetitionHelpers } from "@/hooks/useCompetitionHelpers";
 import { useTeamHelpers } from "@/hooks/useTeamHelpers";
 import { Stage } from "@/types";
-import { assertType } from "@/utils/assert";
 import { supabase } from "@/utils/supabase";
 
 export function CompetitionForm({
@@ -51,7 +50,6 @@ export function CompetitionForm({
           .limit(1)
           .single();
         if (data?.stages) {
-          assertType<Stage[]>(data.stages);
           const cleanStages: Stage[] = data.stages.map((stage) => ({
             ...stage,
             table: stage.table.map(() => ({

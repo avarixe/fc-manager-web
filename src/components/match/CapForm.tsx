@@ -1,6 +1,5 @@
 import {
   Button,
-  ComboboxItem,
   Group,
   LoadingOverlay,
   Modal,
@@ -13,7 +12,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { capsAtom, matchAtom, sessionAtom } from "@/atoms";
 import { matchPositions } from "@/constants";
-import { Cap, Player } from "@/types";
+import { Cap, ComboboxItem, Player } from "@/types";
 import { assertType } from "@/utils/assert";
 import { supabase } from "@/utils/supabase";
 
@@ -21,7 +20,7 @@ type PlayerOption = Pick<
   Player,
   "id" | "name" | "status" | "pos" | "ovr" | "kit_no"
 >;
-type PlayerIdOption = ComboboxItem & PlayerOption;
+type PlayerIdOption = ComboboxItem<PlayerOption>;
 
 export const CapForm: React.FC<{
   opened: boolean;
@@ -124,8 +123,7 @@ export const CapForm: React.FC<{
           searchable
           required
           data={playerIdOptions}
-          renderOption={({ option }) => {
-            assertType<PlayerIdOption>(option);
+          renderOption={({ option }: { option: PlayerIdOption }) => {
             return (
               <Group>
                 <Text size="xs" fw="bold">

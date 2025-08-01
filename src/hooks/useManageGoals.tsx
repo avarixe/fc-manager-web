@@ -5,13 +5,13 @@ import { useCallback } from "react";
 
 import { matchAtom } from "@/atoms";
 import { useMatchCallbacks } from "@/hooks/useMatchCallbacks";
-import { Goal, Match } from "@/types";
-import { assertType } from "@/utils/assert";
+import { Goal } from "@/types";
+import { assertDefined } from "@/utils/assert";
 import { supabase } from "@/utils/supabase";
 
 function useManageGoals() {
   const [match, setMatch] = useAtom(matchAtom);
-  assertType<Match>(match);
+  assertDefined(match);
 
   const { resolvePlayerStats, resolveMatchScores } = useMatchCallbacks();
 

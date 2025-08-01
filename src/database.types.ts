@@ -81,7 +81,7 @@ export type Database = MergeDeep<
             losses: number;
             goals_for: number;
             goals_against: number;
-          };
+          }[];
         };
         get_player_stats: {
           Args: {
@@ -97,7 +97,7 @@ export type Database = MergeDeep<
             num_goals: number;
             num_assists: number;
             avg_rating: number;
-          };
+          }[];
         };
       };
     };

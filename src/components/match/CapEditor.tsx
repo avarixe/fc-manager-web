@@ -1,18 +1,11 @@
-import {
-  Box,
-  ComboboxItem,
-  Group,
-  LoadingOverlay,
-  Select,
-  Text,
-} from "@mantine/core";
+import { Box, Group, LoadingOverlay, Select, Text } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { useAtom } from "jotai";
 import { useMemo, useState } from "react";
 
 import { capsAtom } from "@/atoms";
 import { matchPositions } from "@/constants";
-import { Cap, Player } from "@/types";
+import { Cap, ComboboxItem, Player } from "@/types";
 import { assertType } from "@/utils/assert";
 import { supabase } from "@/utils/supabase";
 
@@ -20,7 +13,7 @@ type PlayerOption = Pick<
   Player,
   "id" | "name" | "status" | "pos" | "ovr" | "kit_no"
 >;
-type PlayerIdOption = ComboboxItem & PlayerOption;
+type PlayerIdOption = ComboboxItem<PlayerOption>;
 
 export const CapEditor: React.FC<{
   cap: Cap;
@@ -86,8 +79,7 @@ export const CapEditor: React.FC<{
         searchable
         required
         data={playerIdOptions}
-        renderOption={({ option }) => {
-          assertType<PlayerIdOption>(option);
+        renderOption={({ option }: { option: PlayerIdOption }) => {
           return (
             <Group>
               <Text size="xs" fw="bold">
