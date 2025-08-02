@@ -12,8 +12,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { capsAtom, matchAtom, sessionAtom } from "@/atoms";
 import { matchPositions } from "@/constants";
-import { Cap, ComboboxItem, Player } from "@/types";
-import { assertType } from "@/utils/assert";
+import { ComboboxItem, Player } from "@/types";
 import { supabase } from "@/utils/supabase";
 
 type PlayerOption = Pick<
@@ -75,7 +74,6 @@ export const CapForm: React.FC<{
       .select("*, players(name)")
       .single();
     if (data) {
-      assertType<Cap>(data);
       setCaps((prev) => [...prev, data]);
     }
 

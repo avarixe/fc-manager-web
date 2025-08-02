@@ -6,7 +6,6 @@ import { useMemo, useState } from "react";
 import { capsAtom } from "@/atoms";
 import { matchPositions } from "@/constants";
 import { Cap, ComboboxItem, Player } from "@/types";
-import { assertType } from "@/utils/assert";
 import { supabase } from "@/utils/supabase";
 
 type PlayerOption = Pick<
@@ -44,8 +43,9 @@ export const CapEditor: React.FC<{
             .eq("id", cap.id)
             .select("*, players(name)")
             .single();
-          assertType<Cap>(data);
-          newCaps.push(data);
+          if (data) {
+            newCaps.push(data);
+          }
         } else {
           newCaps.push(oldCap);
         }

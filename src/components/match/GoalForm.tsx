@@ -17,7 +17,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { matchAtom, teamAtom } from "@/atoms";
 import { useMatchState } from "@/hooks/useMatchState";
 import { Cap, ComboboxItem, Goal } from "@/types";
-import { assertType } from "@/utils/assert";
 
 type CapOption = ComboboxItem<Cap>;
 
@@ -106,8 +105,10 @@ export const BaseGoalForm: React.FC<{
     }
 
     setLoading(true);
-    assertType<Goal>(form.values);
-    await onSubmit(form.values);
+    await onSubmit({
+      ...form.values,
+      minute: Number(form.values.minute),
+    });
     setLoading(false);
   }, [form, onSubmit]);
 

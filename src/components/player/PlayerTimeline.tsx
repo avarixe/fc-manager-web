@@ -32,24 +32,36 @@ import { PlayerEventKey, PlayerEventType } from "@/constants";
 import { Tables } from "@/database.types";
 import { useManagePlayerEvents } from "@/hooks/useManagePlayerEvents";
 import { useTeamHelpers } from "@/hooks/useTeamHelpers";
-import {
-  Contract,
-  Injury,
-  Loan,
-  Player,
-  PlayerEvent,
-  StateSetter,
-  Transfer,
-} from "@/types";
-import { assertType } from "@/utils/assert";
+import { Contract, Injury, Loan, Player, StateSetter, Transfer } from "@/types";
 import { formatDate } from "@/utils/format";
 
-type PlayerTimelineEvent = PlayerEvent & {
-  type: PlayerEventType;
+interface BasePlayerEvent {
   date: string;
   priority: number;
   index: number;
-};
+}
+
+interface ContractEvent extends BasePlayerEvent, Contract {
+  type: PlayerEventType.Contract;
+}
+
+interface InjuryEvent extends BasePlayerEvent, Injury {
+  type: PlayerEventType.Injury;
+}
+
+interface LoanEvent extends BasePlayerEvent, Loan {
+  type: PlayerEventType.Loan;
+}
+
+interface TransferEvent extends BasePlayerEvent, Transfer {
+  type: PlayerEventType.Transfer;
+}
+
+type PlayerTimelineEvent =
+  | ContractEvent
+  | InjuryEvent
+  | LoanEvent
+  | TransferEvent;
 
 export const PlayerTimeline: React.FC<{
   player: Player;
@@ -61,28 +73,28 @@ export const PlayerTimeline: React.FC<{
       orderBy(
         [
           ...player.contracts.map((contract, index) => ({
-            type: PlayerEventType.Contract,
+            type: PlayerEventType.Contract as const,
             date: contract.started_on,
             priority: 2,
             index,
             ...contract,
           })),
           ...player.injuries.map((injury, index) => ({
-            type: PlayerEventType.Injury,
+            type: PlayerEventType.Injury as const,
             date: injury.started_on,
             priority: 3,
             index,
             ...injury,
           })),
           ...player.loans.map((loan, index) => ({
-            type: PlayerEventType.Loan,
+            type: PlayerEventType.Loan as const,
             date: loan.started_on,
             priority: loan.destination === team.name ? 1 : 4,
             index,
             ...loan,
           })),
           ...player.transfers.map((transfer, index) => ({
-            type: PlayerEventType.Transfer,
+            type: PlayerEventType.Transfer as const,
             date: transfer.moved_on,
             priority: transfer.destination === team.name ? 0 : 5,
             index,
@@ -275,7 +287,6 @@ export const PlayerTimeline: React.FC<{
     (item: PlayerTimelineEvent) => {
       switch (item.type) {
         case PlayerEventType.Contract:
-          assertType<Contract>(item);
           return (
             <ContractEvent
               contract={item}
@@ -284,7 +295,6 @@ export const PlayerTimeline: React.FC<{
             />
           );
         case PlayerEventType.Injury:
-          assertType<Injury>(item);
           return (
             <InjuryEvent
               injury={item}
@@ -293,7 +303,6 @@ export const PlayerTimeline: React.FC<{
             />
           );
         case PlayerEventType.Loan:
-          assertType<Loan>(item);
           return (
             <LoanEvent
               loan={item}
@@ -303,7 +312,6 @@ export const PlayerTimeline: React.FC<{
             />
           );
         case PlayerEventType.Transfer:
-          assertType<Transfer>(item);
           return (
             <TransferEvent
               transfer={item}
@@ -831,7 +839,6 @@ function playerEventIcon(item: PlayerTimelineEvent, team: Tables<"teams">) {
     case PlayerEventType.Loan:
       return <LoanIcon c="white" />;
     case PlayerEventType.Transfer:
-      assertType<Transfer>(item);
       if (item.destination === team.name) {
         return <TransferInIcon c="white" />;
       } else {
@@ -852,13 +859,10 @@ function playerEventColor(
     case PlayerEventType.Loan:
       return "orange";
     case PlayerEventType.Transfer:
-      assertType<Transfer>(item);
       if (item.destination === team.name) {
         return "green";
       } else {
         return "red";
       }
-    default:
-      throw new Error(`Unknown player event type: ${item.type}`);
   }
 }

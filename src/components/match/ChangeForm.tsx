@@ -16,7 +16,6 @@ import { capsAtom, matchAtom } from "@/atoms";
 import { matchPositions } from "@/constants";
 import { useMatchState } from "@/hooks/useMatchState";
 import { Cap, Change, ComboboxItem, Player } from "@/types";
-import { assertType } from "@/utils/assert";
 
 type CapOption = ComboboxItem<Cap>;
 type PlayerOption = Pick<Player, "id" | "name" | "status" | "pos" | "ovr">;
@@ -117,8 +116,10 @@ export const BaseChangeForm: React.FC<{
     }
 
     setLoading(true);
-    assertType<Change>(form.values);
-    await onSubmit(form.values);
+    await onSubmit({
+      ...form.values,
+      minute: Number(form.values.minute),
+    });
     setLoading(false);
   }, [form, onSubmit]);
 
