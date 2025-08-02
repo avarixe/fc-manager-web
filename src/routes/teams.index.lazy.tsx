@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 
 import { breadcrumbsAtom } from "@/atoms";
 import { LocalDataTable } from "@/components/base/LocalDataTable";
-import { Tables } from "@/database.types";
+import { Team } from "@/types";
 import { formatDate } from "@/utils/format";
 import { supabase } from "@/utils/supabase";
 
@@ -14,7 +14,7 @@ export const Route = createLazyFileRoute("/teams/")({
   component: TeamsPage,
 });
 
-const columnHelper = createColumnHelper<Tables<"teams">>();
+const columnHelper = createColumnHelper<Team>();
 const columns = [
   columnHelper.accessor("name", {
     header: "Name",
@@ -60,7 +60,7 @@ const columns = [
 ];
 
 function TeamsPage() {
-  const [teams, setTeams] = useState<Tables<"teams">[]>([]);
+  const [teams, setTeams] = useState<Team[]>([]);
   useEffect(() => {
     const fetchTeams = async () => {
       const { data } = await supabase.from("teams").select();

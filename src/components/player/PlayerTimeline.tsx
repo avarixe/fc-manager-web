@@ -29,10 +29,17 @@ import { InjuryForm } from "@/components/player/InjuryForm";
 import { LoanForm } from "@/components/player/LoanForm";
 import { TransferForm } from "@/components/player/TransferForm";
 import { PlayerEventKey, PlayerEventType } from "@/constants";
-import { Tables } from "@/database.types";
 import { useManagePlayerEvents } from "@/hooks/useManagePlayerEvents";
 import { useTeamHelpers } from "@/hooks/useTeamHelpers";
-import { Contract, Injury, Loan, Player, StateSetter, Transfer } from "@/types";
+import {
+  Contract,
+  Injury,
+  Loan,
+  Player,
+  StateSetter,
+  Team,
+  Transfer,
+} from "@/types";
 import { formatDate } from "@/utils/format";
 
 interface BasePlayerEvent {
@@ -830,7 +837,7 @@ const TransferEvent: React.FC<{
   );
 };
 
-function playerEventIcon(item: PlayerTimelineEvent, team: Tables<"teams">) {
+function playerEventIcon(item: PlayerTimelineEvent, team: Team) {
   switch (item.type) {
     case PlayerEventType.Contract:
       return <ContractIcon c="white" />;
@@ -847,10 +854,7 @@ function playerEventIcon(item: PlayerTimelineEvent, team: Tables<"teams">) {
   }
 }
 
-function playerEventColor(
-  item: PlayerTimelineEvent,
-  team: Tables<"teams">,
-): string {
+function playerEventColor(item: PlayerTimelineEvent, team: Team): string {
   switch (item.type) {
     case PlayerEventType.Contract:
       return "indigo";

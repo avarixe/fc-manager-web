@@ -15,21 +15,14 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { sessionAtom } from "@/atoms";
 import { BaseIcon } from "@/components/base/CommonIcons";
 import { TeamAutocomplete } from "@/components/team/TeamAutocomplete";
-import { Tables } from "@/database.types";
 import { useManageOptions } from "@/hooks/useManageOptions";
 import { useTeamHelpers } from "@/hooks/useTeamHelpers";
-import { Competition } from "@/types";
+import { Competition, Match, Team } from "@/types";
 import { supabase } from "@/utils/supabase";
 
 type CompetitionOption = Pick<Competition, "name" | "stages">;
 
-export function MatchForm({
-  record,
-  team,
-}: {
-  record?: Tables<"matches">;
-  team: Tables<"teams">;
-}) {
+export function MatchForm({ record, team }: { record?: Match; team: Team }) {
   const { currentSeason, seasonOn } = useTeamHelpers(team);
 
   const session = useAtomValue(sessionAtom);

@@ -20,17 +20,16 @@ import { appLoadingAtom, breadcrumbsAtom, teamAtom } from "@/atoms";
 import { BaseIcon } from "@/components/base/CommonIcons";
 import { CompetitionList } from "@/components/competition/CompetitionList";
 import { TeamBadgeUploader } from "@/components/team/TeamBadgeUploader";
-import { Tables } from "@/database.types";
 import { useTeam } from "@/hooks/useTeam";
-import { Player } from "@/types";
+import { Competition, Match, Player } from "@/types";
 import { formatDate } from "@/utils/format";
 import { matchScore } from "@/utils/match";
 import { abbrevValue, playerValueColor } from "@/utils/player";
 import { supabase } from "@/utils/supabase";
 
-type CompetitionInfo = Pick<Tables<"competitions">, "id" | "name" | "champion">;
+type CompetitionInfo = Pick<Competition, "id" | "name" | "champion">;
 type MatchInfo = Pick<
-  Tables<"matches">,
+  Match,
   | "id"
   | "home_team"
   | "away_team"

@@ -6,14 +6,11 @@ import { useEffect, useMemo, useState } from "react";
 
 import { breadcrumbsAtom } from "@/atoms";
 import { CompetitionList } from "@/components/competition/CompetitionList";
-import { Tables } from "@/database.types";
 import { useTeam } from "@/hooks/useTeam";
+import { Competition } from "@/types";
 import { supabase } from "@/utils/supabase";
 
-type Competition = Pick<
-  Tables<"competitions">,
-  "id" | "name" | "season" | "champion"
->;
+type CompetitionItem = Pick<Competition, "id" | "name" | "season" | "champion">;
 
 export const Route = createLazyFileRoute("/teams/$teamId/competitions/")({
   component: CompetitionsPage,
@@ -23,7 +20,7 @@ function CompetitionsPage() {
   const { teamId } = Route.useParams();
   const { team, currentSeason } = useTeam(teamId);
 
-  const [competitions, setCompetitions] = useState<Competition[]>([]);
+  const [competitions, setCompetitions] = useState<CompetitionItem[]>([]);
 
   useEffect(() => {
     const fetchCompetitions = async () => {

@@ -8,13 +8,12 @@ import { useCallback, useEffect, useState } from "react";
 
 import { sessionAtom } from "@/atoms";
 import { TeamAutocomplete } from "@/components/team/TeamAutocomplete";
-import { Tables } from "@/database.types";
-import { ComboboxItem } from "@/types";
+import { ComboboxItem, Team } from "@/types";
 import { supabase } from "@/utils/supabase";
 
-type TeamOption = ComboboxItem<Tables<"teams">>;
+type TeamOption = ComboboxItem<Team>;
 
-export function TeamForm({ record }: { record?: Tables<"teams"> }) {
+export function TeamForm({ record }: { record?: Team }) {
   const session = useAtomValue(sessionAtom);
   const form = useForm({
     mode: "uncontrolled",

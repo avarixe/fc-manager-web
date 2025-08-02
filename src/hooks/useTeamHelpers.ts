@@ -1,9 +1,9 @@
 import dayjs from "dayjs";
 import { useCallback, useMemo } from "react";
 
-import { Tables } from "@/database.types";
+import { Team } from "@/types";
 
-export const useTeamHelpers = (team: Tables<"teams"> | null) => {
+export const useTeamHelpers = (team: Team | null) => {
   const seasonOn = useCallback(
     (date: string): number => {
       if (!team) {

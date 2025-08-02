@@ -18,7 +18,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import { breadcrumbsAtom } from "@/atoms";
 import { BaseIcon } from "@/components/base/CommonIcons";
-import { Tables } from "@/database.types";
+import { Team } from "@/types";
 import { formatDate } from "@/utils/format";
 import { supabase } from "@/utils/supabase";
 
@@ -27,8 +27,8 @@ export const Route = createLazyFileRoute("/")({
 });
 
 function HomePage() {
-  const [currentTeam, setCurrentTeam] = useState<Tables<"teams"> | null>(null);
-  const [teams, setTeams] = useState<Tables<"teams">[]>([]);
+  const [currentTeam, setCurrentTeam] = useState<Team | null>(null);
+  const [teams, setTeams] = useState<Team[]>([]);
   useEffect(() => {
     const fetchTeams = async () => {
       const { data, error } = await supabase

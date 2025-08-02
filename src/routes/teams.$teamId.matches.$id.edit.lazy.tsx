@@ -5,8 +5,8 @@ import { useEffect, useState } from "react";
 
 import { breadcrumbsAtom } from "@/atoms";
 import { MatchForm } from "@/components/match/MatchForm";
-import { Tables } from "@/database.types";
 import { useTeam } from "@/hooks/useTeam";
+import { Match } from "@/types";
 import { supabase } from "@/utils/supabase";
 
 export const Route = createLazyFileRoute("/teams/$teamId/matches/$id/edit")({
@@ -17,7 +17,7 @@ function EditMatchPage() {
   const { id, teamId } = Route.useParams();
   const { team } = useTeam(teamId);
 
-  const [match, setMatch] = useState<Tables<"matches"> | null>(null);
+  const [match, setMatch] = useState<Match | null>(null);
 
   useEffect(() => {
     const fetchMatch = async () => {

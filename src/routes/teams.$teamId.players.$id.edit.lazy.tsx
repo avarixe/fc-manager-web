@@ -18,9 +18,9 @@ import { useCallback, useEffect, useState } from "react";
 import { breadcrumbsAtom } from "@/atoms";
 import { positions } from "@/constants";
 import { countryCodes } from "@/constants/countryCodes";
-import { Tables } from "@/database.types";
 import { useTeam } from "@/hooks/useTeam";
 import { useTeamHelpers } from "@/hooks/useTeamHelpers";
+import { Player, Team } from "@/types";
 import { supabase } from "@/utils/supabase";
 
 export const Route = createLazyFileRoute("/teams/$teamId/players/$id/edit")({
@@ -31,7 +31,7 @@ function EditPlayerPage() {
   const { teamId, id } = Route.useParams();
   const { team } = useTeam(teamId);
 
-  const [player, setPlayer] = useState<Tables<"players"> | null>(null);
+  const [player, setPlayer] = useState<Player | null>(null);
 
   useEffect(() => {
     const fetchPlayer = async () => {
@@ -79,8 +79,8 @@ function EditPlayerPage() {
 }
 
 const PlayerForm: React.FC<{
-  team: Tables<"teams">;
-  record: Tables<"players">;
+  team: Team;
+  record: Player;
 }> = ({ team, record }) => {
   const { currentYear } = useTeamHelpers(team);
 

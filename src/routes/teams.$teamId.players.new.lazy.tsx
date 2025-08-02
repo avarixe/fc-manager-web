@@ -25,11 +25,11 @@ import { breadcrumbsAtom, sessionAtom } from "@/atoms";
 import { TeamAutocomplete } from "@/components/team/TeamAutocomplete";
 import { positions } from "@/constants";
 import { countryCodes } from "@/constants/countryCodes";
-import { Tables, TablesInsert } from "@/database.types";
+import { TablesInsert } from "@/database.types";
 import { usePlayerCallbacks } from "@/hooks/usePlayerCallbacks";
 import { useTeam } from "@/hooks/useTeam";
 import { useTeamHelpers } from "@/hooks/useTeamHelpers";
-import { Player } from "@/types";
+import { Player, Team } from "@/types";
 import { formatDate } from "@/utils/format";
 import { supabase } from "@/utils/supabase";
 
@@ -67,7 +67,7 @@ function NewPlayerPage() {
   );
 }
 
-const PlayerForm: React.FC<{ team: Tables<"teams"> }> = ({ team }) => {
+const PlayerForm: React.FC<{ team: Team }> = ({ team }) => {
   const { currentYear } = useTeamHelpers(team);
 
   const session = useAtomValue(sessionAtom)!;

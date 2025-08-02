@@ -6,14 +6,13 @@ import { useEffect, useMemo, useState } from "react";
 
 import { teamAtom } from "@/atoms";
 import { DataTable } from "@/components/base/DataTable";
-import { Tables } from "@/database.types";
-import { MatchFilters } from "@/types";
+import { Match, MatchFilters } from "@/types";
 import { formatDate } from "@/utils/format";
 import { matchScore, matchScoreColor } from "@/utils/match";
 import { supabase } from "@/utils/supabase";
 
-type Match = Pick<
-  Tables<"matches">,
+type MatchItem = Pick<
+  Match,
   | "id"
   | "home_team"
   | "away_team"
@@ -32,7 +31,7 @@ export const MatchTable: React.FC<{ filters?: MatchFilters }> = ({
 }) => {
   const team = useAtomValue(teamAtom)!;
 
-  const [matches, setMatches] = useState<Match[]>([]);
+  const [matches, setMatches] = useState<MatchItem[]>([]);
 
   const [tableState, setTableState] = useState({
     pageIndex: 0,
@@ -134,7 +133,7 @@ export const MatchTable: React.FC<{ filters?: MatchFilters }> = ({
     team.name,
   ]);
 
-  const columnHelper = createColumnHelper<Match>();
+  const columnHelper = createColumnHelper<MatchItem>();
   const columns = useMemo(
     () => [
       columnHelper.display({

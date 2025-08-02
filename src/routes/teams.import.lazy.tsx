@@ -12,9 +12,9 @@ import { useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { breadcrumbsAtom, sessionAtom } from "@/atoms";
-import { Tables, TablesInsert } from "@/database.types";
+import { TablesInsert } from "@/database.types";
 import { useProgress } from "@/hooks/useProgress";
-import { Change } from "@/types";
+import { Cap, Change } from "@/types";
 import { assertType } from "@/utils/assert";
 import { supabase } from "@/utils/supabase";
 
@@ -54,7 +54,7 @@ function ImportTeamPage() {
     cap: {},
   });
 
-  const capStats = useRef<Record<string, Record<string, Tables<"caps">>>>({});
+  const capStats = useRef<Record<string, Record<string, Cap>>>({});
 
   const onClick = useCallback(async () => {
     if (!file) return;

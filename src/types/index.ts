@@ -4,6 +4,8 @@ import { Tables } from "@/database.types";
 
 export type StateSetter<T> = React.Dispatch<React.SetStateAction<T>>;
 
+export type Team = Tables<"teams">;
+
 export type Player = Tables<"players">;
 export type PlayerHistoryData = Player["history"][number];
 export type Contract = Player["contracts"][number];

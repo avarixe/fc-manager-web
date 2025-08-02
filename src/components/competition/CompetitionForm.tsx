@@ -6,18 +6,17 @@ import { useCallback, useEffect, useState } from "react";
 
 import { sessionAtom } from "@/atoms";
 import { TeamAutocomplete } from "@/components/team/TeamAutocomplete";
-import { Tables } from "@/database.types";
 import { useCompetitionHelpers } from "@/hooks/useCompetitionHelpers";
 import { useTeamHelpers } from "@/hooks/useTeamHelpers";
-import { Stage } from "@/types";
+import { Competition, Stage, Team } from "@/types";
 import { supabase } from "@/utils/supabase";
 
 export function CompetitionForm({
   record,
   team,
 }: {
-  record?: Tables<"competitions">;
-  team: Tables<"teams">;
+  record?: Competition;
+  team: Team;
 }) {
   const { currentSeason, seasonLabel } = useTeamHelpers(team);
 

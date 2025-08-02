@@ -4,14 +4,12 @@ import { useSetAtom } from "jotai";
 import { useCallback, useState } from "react";
 
 import { appLoadingAtom, teamAtom } from "@/atoms";
-import { Tables } from "@/database.types";
 import { usePlayerCallbacks } from "@/hooks/usePlayerCallbacks";
+import { Team } from "@/types";
 import { formatDate } from "@/utils/format";
 import { supabase } from "@/utils/supabase";
 
-export const TeamDatePicker: React.FC<{ team: Tables<"teams"> }> = ({
-  team,
-}) => {
+export const TeamDatePicker: React.FC<{ team: Team }> = ({ team }) => {
   const [opened, setOpened] = useState(false);
 
   const setAppLoading = useSetAtom(appLoadingAtom);

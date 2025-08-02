@@ -1,14 +1,13 @@
 import { Session } from "@supabase/supabase-js";
 import { atom } from "jotai";
 
-import { Tables } from "@/database.types";
-import { BreadcrumbItem, Cap, Competition, Match } from "@/types";
+import { BreadcrumbItem, Cap, Competition, Match, Team } from "@/types";
 
 export const sessionAtom = atom<Session | null>(null);
 
 export const appLoadingAtom = atom(false);
 
-export const teamAtom = atom<Tables<"teams"> | null>(null);
+export const teamAtom = atom<Team | null>(null);
 
 export const matchAtom = atom<Match | null>(null);
 

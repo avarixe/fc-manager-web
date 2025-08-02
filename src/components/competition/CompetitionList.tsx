@@ -4,16 +4,15 @@ import { useAtomValue } from "jotai";
 
 import { teamAtom } from "@/atoms";
 import { BaseIcon } from "@/components/base/CommonIcons";
-import { Tables } from "@/database.types";
 import { useTeamHelpers } from "@/hooks/useTeamHelpers";
-import { Competition } from "@/types";
+import { Competition, Team } from "@/types";
 
-type CompetitionItem = Pick<Tables<"competitions">, "id" | "name" | "champion">;
+type CompetitionItem = Pick<Competition, "id" | "name" | "champion">;
 
 export const CompetitionList: React.FC<{
   competitions: CompetitionItem[];
   season: number;
-  team: Tables<"teams">;
+  team: Team;
 }> = ({ competitions, season, team }) => {
   const { seasonLabel } = useTeamHelpers(team);
 
