@@ -18,7 +18,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import { breadcrumbsAtom } from "@/atoms";
 import { BaseIcon } from "@/components/base/CommonIcons";
-import { Tables } from "@/database-generated.types";
+import { Tables } from "@/database.types";
 import { formatDate } from "@/utils/format";
 import { supabase } from "@/utils/supabase";
 

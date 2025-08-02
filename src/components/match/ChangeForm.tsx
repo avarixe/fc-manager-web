@@ -1,7 +1,6 @@
 import {
   Button,
   Checkbox,
-  ComboboxItem,
   Group,
   LoadingOverlay,
   Modal,
@@ -16,12 +15,11 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { capsAtom, matchAtom } from "@/atoms";
 import { matchPositions } from "@/constants";
 import { useMatchState } from "@/hooks/useMatchState";
-import { Cap, Change, Player } from "@/types";
-import { assertType } from "@/utils/assert";
+import { Cap, Change, ComboboxItem, Player } from "@/types";
 
-type CapOption = ComboboxItem & Cap;
+type CapOption = ComboboxItem<Cap>;
 type PlayerOption = Pick<Player, "id" | "name" | "status" | "pos" | "ovr">;
-type ReplacementOption = ComboboxItem & PlayerOption;
+type ReplacementOption = ComboboxItem<PlayerOption>;
 
 export const ChangeForm: React.FC<{
   record?: Change;
@@ -118,8 +116,10 @@ export const BaseChangeForm: React.FC<{
     }
 
     setLoading(true);
-    assertType<Change>(form.values);
-    await onSubmit(form.values);
+    await onSubmit({
+      ...form.values,
+      minute: Number(form.values.minute),
+    });
     setLoading(false);
   }, [form, onSubmit]);
 
@@ -189,14 +189,13 @@ export const BaseChangeForm: React.FC<{
           searchable
           required
           data={capOptions}
-          renderOption={({ option }) => {
-            assertType<CapOption>(option);
+          renderOption={({ option }: { option: CapOption }) => {
             return (
               <Group>
                 <Text size="xs" fw="bold">
                   {option.pos}
                 </Text>
-                <Text size="xs">{option.players.name}</Text>
+                <Text size="xs">{option.players?.name}</Text>
               </Group>
             );
           }}
@@ -210,8 +209,7 @@ export const BaseChangeForm: React.FC<{
         searchable
         required
         data={replacementOptions}
-        renderOption={({ option }) => {
-          assertType<ReplacementOption>(option);
+        renderOption={({ option }: { option: ReplacementOption }) => {
           return (
             <Group>
               <Text size="xs" fw="bold">

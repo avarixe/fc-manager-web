@@ -3,17 +3,17 @@ import { keyBy, omit, orderBy } from "lodash-es";
 import { useCallback } from "react";
 
 import { capsAtom, matchAtom, sessionAtom, teamAtom } from "@/atoms";
-import { TablesInsert } from "@/database-generated.types";
+import { TablesInsert } from "@/database.types";
 import { useCapHelpers } from "@/hooks/useCapHelpers";
 import { Cap, Match } from "@/types";
-import { assertType } from "@/utils/assert";
+import { assertDefined } from "@/utils/assert";
 import { supabase } from "@/utils/supabase";
 
 export const useMatchCallbacks = () => {
   const team = useAtomValue(teamAtom)!;
   const [caps, setCaps] = useAtom(capsAtom);
   const [match, setMatch] = useAtom(matchAtom);
-  assertType<Match>(match);
+  assertDefined(match);
 
   const { getFirstCaps } = useCapHelpers();
   const resolvePlayerStats = useCallback(
@@ -204,8 +204,7 @@ export const useMatchCallbacks = () => {
         .from("caps")
         .insert(newCapData)
         .select("*, players(name)");
-      assertType<Cap[]>(newCaps);
-      setCaps([...starters, ...newCaps]);
+      setCaps([...starters, ...(newCaps ?? [])]);
     },
     [caps, match, session.user.id, setCaps, team.id],
   );

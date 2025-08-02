@@ -18,7 +18,7 @@ import { useCallback, useEffect, useState } from "react";
 import { breadcrumbsAtom } from "@/atoms";
 import { positions } from "@/constants";
 import { countryCodes } from "@/constants/countryCodes";
-import { Tables } from "@/database-generated.types";
+import { Tables } from "@/database.types";
 import { useTeam } from "@/hooks/useTeam";
 import { useTeamHelpers } from "@/hooks/useTeamHelpers";
 import { supabase } from "@/utils/supabase";

@@ -10,18 +10,22 @@ import { FormationOvr } from "@/components/formation/FormationOvr";
 import { matchPositionTypes } from "@/constants";
 import { useTeam } from "@/hooks/useTeam";
 import { Player } from "@/types";
-import { assertType } from "@/utils/assert";
 import { supabase } from "@/utils/supabase";
 
 export const Route = createLazyFileRoute("/teams/$teamId/players/analytics")({
   component: PlayerAnalyticsPage,
 });
 
+type PlayerData = Pick<
+  Player,
+  "id" | "name" | "nationality" | "status" | "pos" | "youth" | "ovr" | "wage"
+>;
+
 function PlayerAnalyticsPage() {
   const { teamId } = Route.useParams();
   const { team } = useTeam(teamId);
 
-  const [players, setPlayers] = useState<Player[]>([]);
+  const [players, setPlayers] = useState<PlayerData[]>([]);
 
   useEffect(() => {
     const fetchPlayers = async () => {
@@ -31,8 +35,7 @@ function PlayerAnalyticsPage() {
         .eq("team_id", Number(teamId))
         .in("status", ["Active", "Injured"])
         .order("pos_order");
-      assertType<Player[]>(data);
-      setPlayers(data);
+      setPlayers(data ?? []);
     };
 
     fetchPlayers();
@@ -97,7 +100,7 @@ enum PositionColor {
 }
 
 const PositionDistribution: React.FC<{
-  players: Player[];
+  players: PlayerData[];
 }> = ({ players }) => {
   const counts = {
     GK: 0,
@@ -150,7 +153,7 @@ const PositionDistribution: React.FC<{
 };
 
 const WageDistribution: React.FC<{
-  players: Player[];
+  players: PlayerData[];
 }> = ({ players }) => {
   const chartData = players.map((player) => ({
     color:

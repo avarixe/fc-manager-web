@@ -5,13 +5,13 @@ import { useCallback } from "react";
 
 import { matchAtom } from "@/atoms";
 import { useMatchCallbacks } from "@/hooks/useMatchCallbacks";
-import { Change, Match } from "@/types";
-import { assertType } from "@/utils/assert";
+import { Change } from "@/types";
+import { assertDefined } from "@/utils/assert";
 import { supabase } from "@/utils/supabase";
 
 function useManageChanges() {
   const [match, setMatch] = useAtom(matchAtom);
-  assertType<Match>(match);
+  assertDefined(match);
 
   const { resolveFormationChanges } = useMatchCallbacks();
 

@@ -6,8 +6,6 @@ import { useEffect } from "react";
 import { breadcrumbsAtom, competitionAtom } from "@/atoms";
 import { CompetitionForm } from "@/components/competition/CompetitionForm";
 import { useTeam } from "@/hooks/useTeam";
-import { Competition } from "@/types";
-import { assertType } from "@/utils/assert";
 import { supabase } from "@/utils/supabase";
 
 export const Route = createLazyFileRoute(
@@ -33,7 +31,6 @@ function EditCompetitionPage() {
       if (error) {
         console.error(error);
       } else {
-        assertType<Competition>(data);
         setCompetition(data);
       }
     };

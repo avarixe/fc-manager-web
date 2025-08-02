@@ -37,7 +37,7 @@ import { useManageBookings } from "@/hooks/useManageBookings";
 import { useManageChanges } from "@/hooks/useManageChanges";
 import { useManageGoals } from "@/hooks/useManageGoals";
 import { Booking, Cap, Change, Goal, Match, Player } from "@/types";
-import { assertType } from "@/utils/assert";
+import { assertDefined } from "@/utils/assert";
 import { supabase } from "@/utils/supabase";
 
 enum MatchEventType {
@@ -46,14 +46,28 @@ enum MatchEventType {
   Change = "Change",
 }
 
-type MatchEvent = {
-  type: MatchEventType;
+interface BaseMatchEvent {
   timestamp?: number;
   minute: number;
   stoppage_time?: number;
   home: boolean;
   index: number;
-} & (Goal | Booking | { changes: (Change & { index: number })[] });
+}
+
+interface GoalEvent extends BaseMatchEvent, Goal {
+  type: MatchEventType.Goal;
+}
+
+interface BookingEvent extends BaseMatchEvent, Booking {
+  type: MatchEventType.Booking;
+}
+
+interface ChangesEvent extends BaseMatchEvent {
+  type: MatchEventType.Change;
+  changes: (Change & { index: number })[];
+}
+
+type MatchEvent = GoalEvent | BookingEvent | ChangesEvent;
 
 type PlayerOption = Pick<Player, "id" | "name" | "status" | "pos" | "ovr">;
 
@@ -63,7 +77,7 @@ export const MatchTimeline: React.FC<{
 }> = ({ readonly, playerOptions }) => {
   const team = useAtomValue(teamAtom)!;
   const [match, setMatch] = useAtom(matchAtom);
-  assertType<Match>(match);
+  assertDefined(match);
   const items: MatchEvent[] = useMemo(() => {
     const indexedChanges = match.changes.map((change, index) => ({
       ...change,
@@ -78,7 +92,7 @@ export const MatchTimeline: React.FC<{
     ).map(([key, changes]) => {
       const [minute, timestamp, stoppageTime] = key.split("+");
       return {
-        type: MatchEventType.Change,
+        type: MatchEventType.Change as const,
         timestamp: Number(timestamp),
         minute: Number(minute),
         stoppageTime: Number(stoppageTime),
@@ -92,12 +106,12 @@ export const MatchTimeline: React.FC<{
       [
         ...changesByMinute,
         ...match.goals.map((goal, index) => ({
-          type: MatchEventType.Goal,
+          type: MatchEventType.Goal as const,
           index,
           ...goal,
         })),
         ...match.bookings.map((booking, index) => ({
-          type: MatchEventType.Booking,
+          type: MatchEventType.Booking as const,
           index,
           ...booking,
         })),
@@ -191,7 +205,6 @@ export const MatchTimeline: React.FC<{
     (item: MatchEvent) => {
       switch (item.type) {
         case MatchEventType.Goal:
-          assertType<Goal>(item);
           return (
             <GoalEvent
               goal={item}
@@ -202,7 +215,6 @@ export const MatchTimeline: React.FC<{
             />
           );
         case MatchEventType.Booking:
-          assertType<Booking>(item);
           return (
             <BookingEvent
               booking={item}
@@ -212,7 +224,6 @@ export const MatchTimeline: React.FC<{
             />
           );
         case MatchEventType.Change:
-          assertType<{ changes: Change[] }>(item);
           return (
             <Stack>
               {item.changes.map((itemChange, i) => (

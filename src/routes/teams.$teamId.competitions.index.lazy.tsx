@@ -6,7 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import { breadcrumbsAtom } from "@/atoms";
 import { CompetitionList } from "@/components/competition/CompetitionList";
-import { Tables } from "@/database-generated.types";
+import { Tables } from "@/database.types";
 import { useTeam } from "@/hooks/useTeam";
 import { supabase } from "@/utils/supabase";
 

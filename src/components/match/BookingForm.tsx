@@ -1,6 +1,5 @@
 import {
   Button,
-  ComboboxItem,
   Group,
   LoadingOverlay,
   Modal,
@@ -17,10 +16,9 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { capsAtom, matchAtom, teamAtom } from "@/atoms";
 import { RedCardIcon, YellowCardIcon } from "@/components/base/CommonIcons";
 import { useMatchState } from "@/hooks/useMatchState";
-import { Booking, Cap } from "@/types";
-import { assertType } from "@/utils/assert";
+import { Booking, Cap, ComboboxItem } from "@/types";
 
-type CapOption = ComboboxItem & Cap;
+type CapOption = ComboboxItem<Cap>;
 
 export const BookingForm: React.FC<{
   record?: Booking;
@@ -92,8 +90,10 @@ export const BaseBookingForm: React.FC<{
     }
 
     setLoading(true);
-    assertType<Booking>(form.values);
-    await onSubmit(form.values);
+    await onSubmit({
+      ...form.values,
+      minute: Number(form.values.minute),
+    });
     setLoading(false);
   }, [form, onSubmit]);
 
@@ -178,8 +178,7 @@ export const BaseBookingForm: React.FC<{
           searchable
           required
           data={capOptions}
-          renderOption={({ option }) => {
-            assertType<CapOption>(option);
+          renderOption={({ option }: { option: CapOption }) => {
             return (
               <Group>
                 <Text size="xs" fw="bold">

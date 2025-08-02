@@ -4,7 +4,7 @@ import { useAtomValue } from "jotai";
 
 import { teamAtom } from "@/atoms";
 import { BaseIcon } from "@/components/base/CommonIcons";
-import { Tables } from "@/database-generated.types";
+import { Tables } from "@/database.types";
 import { useTeamHelpers } from "@/hooks/useTeamHelpers";
 import { Competition } from "@/types";
 

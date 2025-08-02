@@ -23,7 +23,6 @@ import { CompetitionStatusIcon } from "@/components/competition/CompetitionList"
 import { useTeam } from "@/hooks/useTeam";
 import { useTeamHelpers } from "@/hooks/useTeamHelpers";
 import { Player } from "@/types";
-import { assertType } from "@/utils/assert";
 import { formatDate } from "@/utils/format";
 import { playerRecordAt, playerValueAt } from "@/utils/player";
 import { supabase } from "@/utils/supabase";
@@ -81,7 +80,6 @@ function SeasonPage() {
         .eq("team_id", Number(teamId))
         .order("name", { ascending: true });
       if (data) {
-        assertType<PlayerData[]>(data);
         setPlayers(data);
       }
     };
@@ -92,7 +90,6 @@ function SeasonPage() {
         competition: "",
       });
       if (data) {
-        assertType<CompetitionStat[]>(data);
         setCompetitions(data);
       }
     };

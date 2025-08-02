@@ -26,7 +26,6 @@ import { PositionFilterPopover } from "@/components/player/PositionFilterPopover
 import { PlayerStatusFilter } from "@/constants";
 import { useTeam } from "@/hooks/useTeam";
 import { Player } from "@/types";
-import { assertType } from "@/utils/assert";
 import { formatDate } from "@/utils/format";
 import { supabase } from "@/utils/supabase";
 
@@ -34,11 +33,28 @@ export const Route = createLazyFileRoute("/teams/$teamId/players/")({
   component: PlayersPage,
 });
 
+type PlayerData = Pick<
+  Player,
+  | "id"
+  | "name"
+  | "nationality"
+  | "status"
+  | "birth_year"
+  | "pos"
+  | "sec_pos"
+  | "kit_no"
+  | "ovr"
+  | "value"
+  | "wage"
+  | "contract_ends_on"
+  | "history"
+>;
+
 function PlayersPage() {
   const { teamId } = Route.useParams();
   const { team } = useTeam(teamId);
 
-  const [players, setPlayers] = useState<Player[]>([]);
+  const [players, setPlayers] = useState<PlayerData[]>([]);
 
   const [tableState, setTableState] = useState({
     pageIndex: 0,
@@ -113,7 +129,6 @@ function PlayersPage() {
       if (error) {
         console.error(error);
       } else {
-        assertType<Player[]>(data);
         setPlayers(data);
         setTableState((prev) => ({
           ...prev,
@@ -154,7 +169,7 @@ function PlayersPage() {
     [players],
   );
 
-  const columnHelper = createColumnHelper<Player>();
+  const columnHelper = createColumnHelper<PlayerData>();
   const columns = useMemo(
     () => [
       columnHelper.accessor("name", {

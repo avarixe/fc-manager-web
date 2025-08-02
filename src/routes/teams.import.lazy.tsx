@@ -12,7 +12,7 @@ import { useAtomValue, useSetAtom } from "jotai";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { breadcrumbsAtom, sessionAtom } from "@/atoms";
-import { Tables, TablesInsert } from "@/database-generated.types";
+import { Tables, TablesInsert } from "@/database.types";
 import { useProgress } from "@/hooks/useProgress";
 import { Change } from "@/types";
 import { assertType } from "@/utils/assert";
@@ -677,8 +677,8 @@ interface Competition {
       homeTeam: string;
       awayTeam: string;
       legs: {
-        homeScore: number;
-        awayScore: number;
+        homeScore: string;
+        awayScore: string;
       }[];
     }[];
   }[];

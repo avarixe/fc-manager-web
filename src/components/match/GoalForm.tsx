@@ -1,7 +1,6 @@
 import {
   Button,
   Checkbox,
-  ComboboxItem,
   Group,
   LoadingOverlay,
   Modal,
@@ -17,10 +16,9 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { matchAtom, teamAtom } from "@/atoms";
 import { useMatchState } from "@/hooks/useMatchState";
-import { Cap, Goal } from "@/types";
-import { assertType } from "@/utils/assert";
+import { Cap, ComboboxItem, Goal } from "@/types";
 
-type CapOption = ComboboxItem & Cap;
+type CapOption = ComboboxItem<Cap>;
 
 export const GoalForm: React.FC<{
   record?: Goal;
@@ -107,8 +105,10 @@ export const BaseGoalForm: React.FC<{
     }
 
     setLoading(true);
-    assertType<Goal>(form.values);
-    await onSubmit(form.values);
+    await onSubmit({
+      ...form.values,
+      minute: Number(form.values.minute),
+    });
     setLoading(false);
   }, [form, onSubmit]);
 
@@ -181,8 +181,7 @@ export const BaseGoalForm: React.FC<{
               required
               searchable
               data={capOptions}
-              renderOption={({ option }) => {
-                assertType<CapOption>(option);
+              renderOption={({ option }: { option: CapOption }) => {
                 return (
                   <Group>
                     <Text size="xs" fw="bold">
@@ -200,8 +199,7 @@ export const BaseGoalForm: React.FC<{
             label="Assisted By"
             placeholder="Select player"
             data={assistedByOptions}
-            renderOption={({ option }) => {
-              assertType<CapOption>(option);
+            renderOption={({ option }: { option: CapOption }) => {
               return (
                 <Group>
                   <Text size="xs" fw="bold">

@@ -38,8 +38,8 @@ import { MatchLineup } from "@/components/match/MatchLineup";
 import { MatchTimeline } from "@/components/match/MatchTimeline";
 import { matchPositionTypes } from "@/constants";
 import { useTeam } from "@/hooks/useTeam";
-import { Cap, Match, Player, Squad } from "@/types";
-import { assertType } from "@/utils/assert";
+import { Player, Squad } from "@/types";
+import { assertDefined } from "@/utils/assert";
 import { formatDate } from "@/utils/format";
 import { matchScoreColor } from "@/utils/match";
 import { supabase } from "@/utils/supabase";
@@ -75,10 +75,7 @@ function MatchPage() {
       if (error) {
         console.error(error);
       } else {
-        assertType<Match>(data);
         setMatch(data);
-
-        assertType<Cap[]>(data.caps);
         setCaps(data.caps);
       }
     };
@@ -92,7 +89,6 @@ function MatchPage() {
       if (error) {
         console.error(error);
       } else {
-        assertType<Squad[]>(data);
         setSquads(data);
       }
     };
@@ -233,7 +229,6 @@ function MatchPage() {
       if (error) {
         console.error(error);
       } else {
-        assertType<Cap[]>(data);
         setCaps(data);
       }
     },
@@ -268,7 +263,6 @@ function MatchPage() {
       if (error) {
         console.error(error);
       } else {
-        assertType<Squad>(data);
         setSquads((prev) => {
           const index = prev.findIndex((s) => s.id === data.id);
           if (index === -1) {
@@ -531,7 +525,7 @@ const MatchInfo: React.FC<{
   readonly: boolean;
 }> = ({ readonly }) => {
   const [match, setMatch] = useAtom(matchAtom);
-  assertType<Match>(match);
+  assertDefined(match);
   const form = useForm({
     initialValues: {
       home_xg: match.home_xg,

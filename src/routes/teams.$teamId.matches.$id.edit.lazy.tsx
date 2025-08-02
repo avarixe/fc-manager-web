@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 
 import { breadcrumbsAtom } from "@/atoms";
 import { MatchForm } from "@/components/match/MatchForm";
-import { Tables } from "@/database-generated.types";
+import { Tables } from "@/database.types";
 import { useTeam } from "@/hooks/useTeam";
 import { supabase } from "@/utils/supabase";
 

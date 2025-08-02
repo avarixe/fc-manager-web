@@ -23,9 +23,9 @@ import { breadcrumbsAtom, sessionAtom } from "@/atoms";
 import { FormationGrid } from "@/components/formation/FormationGrid";
 import { FormationOvr } from "@/components/formation/FormationOvr";
 import { matchPositionTypes } from "@/constants";
+import { TablesInsert } from "@/database.types";
 import { useTeam } from "@/hooks/useTeam";
-import { Player, Squad } from "@/types";
-import { assertType } from "@/utils/assert";
+import { ComboboxItem, Player, Squad } from "@/types";
 import { supabase } from "@/utils/supabase";
 
 type PlayerOption = Pick<Player, "id" | "name" | "status" | "pos" | "ovr">;
@@ -51,7 +51,6 @@ function SquadsPage() {
       if (error) {
         console.error(error);
       } else {
-        assertType<Squad[]>(data);
         setSquads(data);
       }
     };
@@ -146,7 +145,7 @@ const SquadCard: React.FC<
     onCancel?: () => void;
   }
 > = ({ squad, players, teamId, onCancel, ...rest }) => {
-  const form = useForm({
+  const form = useForm<TablesInsert<"squads">>({
     initialValues: {
       id: squad?.id,
       name: squad?.name || "",
@@ -345,8 +344,11 @@ const SquadCard: React.FC<
             searchable
             clearable
             data={playerOptions}
-            renderOption={({ option }) => {
-              assertType<PlayerOption>(option);
+            renderOption={({
+              option,
+            }: {
+              option: ComboboxItem<PlayerOption>;
+            }) => {
               return (
                 <Group>
                   <Text size="xs" fw="bold">
