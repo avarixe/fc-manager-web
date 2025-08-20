@@ -174,16 +174,24 @@ export const useMatchCallbacks = () => {
           start_minute: change.minute,
           stop_minute: match.extra_time ? 120 : 90,
           pos: change.in.pos,
-          rating: playerStats.rating,
+          rating: playerStats?.rating,
           // Only the first cap for a player gets the accumulated stats
-          num_goals: isFirstCapForPlayer ? playerStats.num_goals : 0,
-          num_own_goals: isFirstCapForPlayer ? playerStats.num_own_goals : 0,
-          num_assists: isFirstCapForPlayer ? playerStats.num_assists : 0,
-          num_yellow_cards: isFirstCapForPlayer
-            ? playerStats.num_yellow_cards
+          num_goals: isFirstCapForPlayer ? (playerStats?.num_goals ?? 0) : 0,
+          num_own_goals: isFirstCapForPlayer
+            ? (playerStats?.num_own_goals ?? 0)
             : 0,
-          num_red_cards: isFirstCapForPlayer ? playerStats.num_red_cards : 0,
-          clean_sheet: isFirstCapForPlayer ? playerStats.clean_sheet : false,
+          num_assists: isFirstCapForPlayer
+            ? (playerStats?.num_assists ?? 0)
+            : 0,
+          num_yellow_cards: isFirstCapForPlayer
+            ? (playerStats?.num_yellow_cards ?? 0)
+            : 0,
+          num_red_cards: isFirstCapForPlayer
+            ? (playerStats?.num_red_cards ?? 0)
+            : 0,
+          clean_sheet: isFirstCapForPlayer
+            ? (playerStats?.clean_sheet ?? false)
+            : false,
         };
 
         const outCap = currentCapByPlayer[change.out.name];
