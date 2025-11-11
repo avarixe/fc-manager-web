@@ -75,7 +75,9 @@ export const MatchFormation: React.FC<{
 
   useEffect(() => {
     if (changeMinutes.length > 1 && !readonly) {
-      setMinute(changeMinutes[changeMinutes.length - 1]);
+      queueMicrotask(() => {
+        setMinute(changeMinutes[changeMinutes.length - 1]);
+      });
     }
   }, [changeMinutes, readonly]);
 

@@ -12,7 +12,7 @@ export const TeamAutocomplete: React.FC<AutocompleteProps> = ({
 }) => {
   const [options, setOptions] = useState(defaultOptions ?? []);
   const [loading, setLoading] = useState(false);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const timeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const onChangeValue = useCallback(
     async (input: string) => {

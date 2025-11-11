@@ -119,6 +119,7 @@ export const PlayerRatingHeatmap: React.FC<PlayerRatingHeatmapProps> = ({
         endDate={dateRange.endDate}
         withTooltip
         withMonthLabels
+        splitMonths
         firstDayOfWeek={0}
         gap={4}
         domain={[1, 5]}

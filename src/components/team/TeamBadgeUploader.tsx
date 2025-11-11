@@ -8,7 +8,7 @@ import {
   Paper,
 } from "@mantine/core";
 import { useAtom } from "jotai";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { teamAtom } from "@/atoms";
 import { BaseIcon } from "@/components/base/CommonIcons";
@@ -23,12 +23,11 @@ export const TeamBadgeUploader: React.FC<{
   const [badge, setBadge] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const onClick = useCallback(async () => {
+  const onClick = async () => {
     if (badge && team?.id) {
       setLoading(true);
 
       const value = await fileToBase64(badge);
-      // TODO: save team badge
       await supabase
         .from("teams")
         .update({ badge_path: value })
@@ -37,7 +36,7 @@ export const TeamBadgeUploader: React.FC<{
       setLoading(false);
     }
     onClose();
-  }, [badge, onClose, setTeam, team?.id]);
+  };
 
   const [dragging, setDragging] = useState(false);
   const onDrop = useCallback((event: React.DragEvent<HTMLDivElement>) => {
@@ -58,12 +57,18 @@ export const TeamBadgeUploader: React.FC<{
     setDragging(false);
   }, []);
 
-  const [preview, setPreview] = useState<string>();
+  const preview = useMemo(
+    () => (badge ? URL.createObjectURL(badge) : undefined),
+    [badge],
+  );
+
   useEffect(() => {
-    if (badge) {
-      setPreview(URL.createObjectURL(badge));
-    }
-  }, [badge]);
+    return () => {
+      if (preview) {
+        URL.revokeObjectURL(preview);
+      }
+    };
+  }, [preview]);
 
   const inputRef = useRef<HTMLButtonElement>(null);
 

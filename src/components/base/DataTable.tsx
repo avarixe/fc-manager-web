@@ -1,3 +1,5 @@
+"use no memo";
+
 import {
   Box,
   Button,
@@ -44,6 +46,7 @@ export const DataTable = <TData extends RowData>({
   setTableState,
   ...props
 }: DataTableProps<TData>) => {
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data,
     columns,

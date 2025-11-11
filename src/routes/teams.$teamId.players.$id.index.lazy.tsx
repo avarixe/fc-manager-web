@@ -34,6 +34,7 @@ import { PlayerStatus } from "@/components/player/PlayerStatus";
 import { PlayerTimeline } from "@/components/player/PlayerTimeline";
 import { useTeam } from "@/hooks/useTeam";
 import { Player } from "@/types";
+import { assertType } from "@/utils/assert";
 import { ratingColor } from "@/utils/match";
 import { supabase } from "@/utils/supabase";
 
@@ -348,13 +349,16 @@ const PlayerHistoryChart: React.FC<{ player: Player }> = ({ player }) => {
         tickFormatter: (value) => shortHandValue(value, team.currency),
       }}
       tooltipProps={{
-        content: ({ label, payload }) => (
-          <PlayerHistoryChartTooltip
-            label={label}
-            payload={payload}
-            currency={team.currency}
-          />
-        ),
+        content: ({ label, payload }) => {
+          assertType<ChartTooltipProps["payload"]>(payload);
+          return (
+            <PlayerHistoryChartTooltip
+              label={String(label)}
+              payload={payload}
+              currency={team.currency}
+            />
+          );
+        },
       }}
     />
   );

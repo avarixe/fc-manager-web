@@ -187,7 +187,7 @@ type PlayerOption = ComboboxItem<Pick<Player, "name" | "pos">>;
 const PlayerSearch = () => {
   const [options, setOptions] = useState<PlayerOption[]>([]);
   const [loading, setLoading] = useState(false);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const timeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const team = useAtomValue(teamAtom)!;
   const onSearchChange = useCallback(

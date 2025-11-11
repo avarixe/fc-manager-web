@@ -1,3 +1,5 @@
+"use no memo";
+
 import { Box, Button, Center, Flex, Table, TableProps } from "@mantine/core";
 import {
   flexRender,
@@ -21,6 +23,7 @@ export const LocalDataTable = <TData extends RowData>({
   sortBy,
   ...props
 }: LocalDataTableProps<TData> & { sortBy: string }) => {
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data,
     columns,
