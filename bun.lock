@@ -1,5 +1,6 @@
 {
   "lockfileVersion": 1,
+  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "fc-manager-web",
@@ -37,6 +38,7 @@
         "@unocss/preset-icons": "^66.5.6",
         "@unocss/preset-wind3": "66.5.6",
         "@vitejs/plugin-react": "^5.1.0",
+        "babel-plugin-react-compiler": "^1.0.0",
         "cross-var": "^1.1.0",
         "dotenv-cli": "^11.0.0",
         "eslint": "^9.39.1",
@@ -546,6 +548,8 @@
     "babel-messages": ["babel-messages@6.23.0", "", { "dependencies": { "babel-runtime": "^6.22.0" } }, "sha512-Bl3ZiA+LjqaMtNYopA9TYE9HP1tQ+E5dLxE0XrAzcIJeK2UqF0/EaqXwBn9esd4UmTfEab+P+UYQ1GnioFIb/w=="],
 
     "babel-plugin-check-es2015-constants": ["babel-plugin-check-es2015-constants@6.22.0", "", { "dependencies": { "babel-runtime": "^6.22.0" } }, "sha512-B1M5KBP29248dViEo1owyY32lk1ZSH2DaNNrXLGt8lyjjHm7pBqAdQ7VKUPR6EEDO323+OvT3MQXbCin8ooWdA=="],
+
+    "babel-plugin-react-compiler": ["babel-plugin-react-compiler@1.0.0", "", { "dependencies": { "@babel/types": "^7.26.0" } }, "sha512-Ixm8tFfoKKIPYdCCKYTsqv+Fd4IJ0DQqMyEimo+pxUOMUR9cVPlwTrFt9Avu+3cb6Zp3mAzl+t1MrG2fxxKsxw=="],
 
     "babel-plugin-syntax-async-functions": ["babel-plugin-syntax-async-functions@6.13.0", "", {}, "sha512-4Zp4unmHgw30A1eWI5EpACji2qMocisdXhAftfhXoSV9j0Tvj6nRFE3tOmRY912E0FMRm/L5xWE7MGVT2FoLnw=="],
 
