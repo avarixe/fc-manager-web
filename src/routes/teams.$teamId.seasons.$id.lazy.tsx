@@ -13,7 +13,6 @@ import {
 import { createLazyFileRoute, Link } from "@tanstack/react-router";
 import { useAtomValue, useSetAtom } from "jotai";
 import { orderBy, sumBy } from "lodash-es";
-import { Odometer } from "odometer_countup";
 import { useEffect, useMemo, useState } from "react";
 import CountUp from "react-countup";
 
@@ -261,8 +260,10 @@ const SeasonSummary: React.FC<{
                 <Box c={ledgerColor(teamStats.ovr[1] - teamStats.ovr[0])}>
                   <CountUp
                     end={teamStats.ovr[1] - teamStats.ovr[0]}
-                    plugin={new Odometer({ lastDigitDelay: 0 })}
                     prefix={teamStats.ovr[1] >= teamStats.ovr[0] ? "+" : ""}
+                    duration={1}
+                    useEasing
+                    preserveValue
                   />
                 </Box>
               }
@@ -272,9 +273,10 @@ const SeasonSummary: React.FC<{
               zIndex={1}
             >
               <CountUp
-                start={teamStats.ovr[0]}
                 end={teamStats.ovr[1]}
-                plugin={new Odometer({ lastDigitDelay: 0 })}
+                duration={1}
+                useEasing
+                preserveValue
               />
             </Indicator>
           </Title>
@@ -290,9 +292,11 @@ const SeasonSummary: React.FC<{
                       (100 * (teamStats.value[1] - teamStats.value[0])) /
                       (teamStats.value[0] || 1)
                     }
-                    plugin={new Odometer({ lastDigitDelay: 0 })}
                     prefix={teamStats.value[1] >= teamStats.value[0] ? "+" : ""}
                     suffix={"%"}
+                    duration={1}
+                    useEasing
+                    preserveValue
                   />
                 </Box>
               }
@@ -302,10 +306,11 @@ const SeasonSummary: React.FC<{
               zIndex={1}
             >
               <CountUp
-                start={teamStats.value[0]}
                 end={teamStats.value[1]}
-                plugin={new Odometer({ lastDigitDelay: 0 })}
                 prefix={team.currency}
+                duration={1}
+                useEasing
+                preserveValue
               />
             </Indicator>
           </Title>
