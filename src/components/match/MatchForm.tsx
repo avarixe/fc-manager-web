@@ -74,19 +74,43 @@ export function MatchForm({ record, team }: { record?: Match; team: Team }) {
   const [competitions, setCompetitions] = useState<CompetitionOption[]>([]);
   useEffect(() => {
     const fetchCompetitions = async () => {
-      const { data } = await supabase
+      const query = supabase
         .from("competitions")
         .select("name, stages")
         .eq("team_id", team.id)
-        .eq("season", form.values.season)
-        .is("champion", null)
         .order("name");
+      if (record?.season) {
+        query.eq("season", record.season);
+      } else {
+        query.is("champion", null);
+      }
+      const { data } = await query;
       if (data) {
         setCompetitions(data);
       }
     };
     fetchCompetitions();
-  }, [form.values.season, team.id]);
+  }, [team.id, record?.season]);
+
+  useEffect(() => {
+    const setSeason = async () => {
+      if (!form.values.competition || record?.season) return;
+
+      const { data } = await supabase
+        .from("competitions")
+        .select("season")
+        .eq("name", form.values.competition)
+        .eq("team_id", team.id)
+        .is("champion", null)
+        .single();
+      form.setFieldValue(
+        "season",
+        data?.season ?? record?.season ?? currentSeason,
+      );
+    };
+    setSeason();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form.values.competition, currentSeason, team.id]);
 
   const stageOptions = useMemo(() => {
     const competition = competitions.find(
