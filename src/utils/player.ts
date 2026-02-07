@@ -29,7 +29,7 @@ export function playerValueAt(
 const ovrThresholds = [90, 85, 80, 75, 70, 65, 60, 55, 50];
 const playerValueThresholds = [
   150_000_000, 50_000_000, 25_000_000, 10_000_000, 5_000_000, 1_000_000,
-  700_000, 300_000,
+  700_000, 300_000, 100_000,
 ];
 
 export function ovrColor(ovr: number) {

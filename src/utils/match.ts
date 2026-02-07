@@ -51,7 +51,7 @@ export function matchScoreColor(
   }
 }
 
-const ratingThresholds = [5, 4.5, 4, 3.5, 3, 2.5, 2, 1.5, 1];
+const ratingThresholds = [90, 85, 80, 75, 70, 65, 60, 55, 50, 40];
 
 export function ratingColor(rating: number | null) {
   if (rating === null) {

@@ -68,16 +68,16 @@ export const positionsByType = positions.reduce(
 );
 
 export const statGradientColors = [
-  "green.8",
-  "green.6",
+  "green.9",
   "green",
-  "lime.2",
-  "yellow",
-  "orange.2",
-  "orange",
-  "orange.6",
-  "red",
+  "lime.8",
+  "lime.4",
+  "yellow.2",
+  "yellow.4",
+  "yellow.8",
+  "orange.8",
   "red.6",
+  "red.8",
 ];
 
 export enum PlayerEventKey {
