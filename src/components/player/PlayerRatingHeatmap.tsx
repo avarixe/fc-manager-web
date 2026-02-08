@@ -89,7 +89,19 @@ export const PlayerRatingHeatmap: React.FC<PlayerRatingHeatmapProps> = ({
 
         data.forEach((cap) => {
           if (cap.rating) {
-            newChartData[cap.matches.played_on] = cap.rating;
+            let rating: number;
+            if (cap.rating >= 85) {
+              rating = 5;
+            } else if (cap.rating >= 75) {
+              rating = 4;
+            } else if (cap.rating >= 65) {
+              rating = 3;
+            } else if (cap.rating >= 55) {
+              rating = 2;
+            } else {
+              rating = 1;
+            }
+            newChartData[cap.matches.played_on] = rating;
             newMatchData[cap.matches.played_on] = cap.matches;
           }
         });
