@@ -457,6 +457,12 @@ const TransferActivity: React.FC<{
     }, []);
   }, [players, season, seasonOn, team.name]);
 
+  const seasonStart = useMemo(
+    () => startOfSeason(season),
+    [season, startOfSeason],
+  );
+  const seasonEnd = useMemo(() => endOfSeason(season), [season, endOfSeason]);
+
   const loanItems = useMemo(() => {
     return players.reduce((loans: TransferActivityItem[], player) => {
       player.loans.forEach((loan) => {
@@ -487,7 +493,13 @@ const TransferActivity: React.FC<{
           const loanEndedByTransfer = transferItems.some((item) => {
             return item.playerId === player.id && item.date === loan.ended_on;
           });
-          if (seasonOn(loan.ended_on) === season && !loanEndedByTransfer) {
+          // Match contract departure window: dates on the next season's start
+          // belong to this season (seasonOn() would assign them to the next year).
+          if (
+            seasonStart < loan.ended_on &&
+            loan.ended_on <= seasonEnd &&
+            !loanEndedByTransfer
+          ) {
             loans.push({
               playerId: player.id,
               name: player.name,
@@ -511,7 +523,15 @@ const TransferActivity: React.FC<{
 
       return loans;
     }, []);
-  }, [players, season, seasonOn, team.name, transferItems]);
+  }, [
+    players,
+    season,
+    seasonEnd,
+    seasonOn,
+    seasonStart,
+    team.name,
+    transferItems,
+  ]);
 
   const arrivalItems = useMemo(() => {
     return players.reduce((arrivals: TransferActivityItem[], player) => {
@@ -567,18 +587,18 @@ const TransferActivity: React.FC<{
     }, []);
   }, [loanItems, players, season, seasonOn, team.started_on, transferItems]);
 
-  const seasonStart = useMemo(
-    () => startOfSeason(season),
-    [season, startOfSeason],
-  );
-  const seasonEnd = useMemo(() => endOfSeason(season), [season, endOfSeason]);
   const departureItems = useMemo(() => {
     return players.reduce((departures: TransferActivityItem[], player) => {
       player.contracts.forEach((contract) => {
+        const expiredFromLoanEnd =
+          (!contract.conclusion || contract.conclusion === "Expired") &&
+          player.loans.some((loan) => loan.ended_on === contract.ended_on);
+
         if (
           seasonStart < contract.ended_on &&
           contract.ended_on <= seasonEnd &&
           !["Renewed", "Transferred"].includes(contract.conclusion ?? "") &&
+          !expiredFromLoanEnd &&
           // Exclude loaned out players that triggered Buy-out clauses.
           !loanItems.some(
             (loan) =>
