@@ -95,7 +95,7 @@ export const MatchTimeline: React.FC<{
         type: MatchEventType.Change as const,
         timestamp: Number(timestamp),
         minute: Number(minute),
-        stoppageTime: Number(stoppageTime),
+        stoppage_time: Number(stoppageTime),
         home: team.name === match.home_team,
         index: 0,
         changes,
@@ -116,7 +116,11 @@ export const MatchTimeline: React.FC<{
           ...booking,
         })),
       ],
-      ["minute", "stoppage_time", "timestamp"],
+      [
+        "minute",
+        (item) => item.stoppage_time ?? 0,
+        (item) => item.timestamp ?? 0,
+      ],
       ["asc", "asc", "asc"],
     );
   }, [match.changes, match.goals, match.bookings, match.home_team, team.name]);
