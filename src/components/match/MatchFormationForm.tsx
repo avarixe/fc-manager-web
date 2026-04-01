@@ -13,7 +13,7 @@ import { useAtom, useAtomValue } from "jotai";
 import { keyBy } from "lodash-es";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { capsAtom, matchAtom, teamAtom } from "@/atoms";
+import { capsAtom, matchAtom, sessionAtom, teamAtom } from "@/atoms";
 import { FormationGrid } from "@/components/formation/FormationGrid";
 import { useMatchCallbacks } from "@/hooks/useMatchCallbacks";
 import { useMatchState } from "@/hooks/useMatchState";
@@ -31,7 +31,7 @@ interface FormationItem {
   playerId: number;
 }
 
-type PlayerOption = Pick<Player, "id" | "name" | "pos">;
+type PlayerOption = Pick<Player, "id" | "name" | "pos" | "ovr" | "kit_no">;
 
 export const MatchFormationForm: React.FC<{
   opened: boolean;
@@ -44,7 +44,7 @@ export const MatchFormationForm: React.FC<{
     const fetchPlayers = async () => {
       const { data } = await supabase
         .from("players")
-        .select("id, name, pos")
+        .select("id, name, pos, ovr, kit_no")
         .eq("team_id", team.id)
         .eq("status", "Active")
         .order("pos_order");
@@ -57,9 +57,10 @@ export const MatchFormationForm: React.FC<{
 
   const [loading, setLoading] = useState(false);
   const [match, setMatch] = useAtom(matchAtom)!;
+  const session = useAtomValue(sessionAtom);
   const { resolveFormationChanges } = useMatchCallbacks();
 
-  const caps = useAtomValue(capsAtom);
+  const [caps, setCaps] = useAtom(capsAtom);
   const form = useForm<FormationChange>({
     initialValues: {
       minute: "",
@@ -90,6 +91,8 @@ export const MatchFormationForm: React.FC<{
   const { capsAtMinute, inStoppageTime } = useMatchState(
     Number(form.values.minute),
   );
+  const isStartingLineup = Number(form.values.minute) === 0;
+
   const handleSubmit = useCallback(async () => {
     if (!form.isValid()) {
       return;
@@ -97,39 +100,136 @@ export const MatchFormationForm: React.FC<{
 
     setLoading(true);
 
-    const oldItems: FormationItem[] = capsAtMinute.map((cap) => ({
-      pos: cap.pos,
-      playerId: cap.player_id,
-    }));
-    const newItems: FormationItem[] = Object.entries(form.values.formation).map(
-      ([pos, playerId]) => ({
+    if (isStartingLineup) {
+      // Delete all existing caps
+      await supabase
+        .from("caps")
+        .delete()
+        .in(
+          "id",
+          caps.map((cap) => cap.id),
+        );
+
+      // Reset all match events
+      const matchChanges = {
+        goals: [],
+        bookings: [],
+        changes: [],
+        extra_time: false,
+        home_score: 0,
+        away_score: 0,
+        home_xg: 0,
+        away_xg: 0,
+        home_possession: 50,
+        away_possession: 50,
+        home_penalty_score: null,
+        away_penalty_score: null,
+      };
+      await supabase.from("matches").update(matchChanges).eq("id", match!.id);
+      setMatch((prev) => (prev ? { ...prev, ...matchChanges } : prev));
+
+      // Insert new caps from the formation grid
+      const capData = Object.entries(form.values.formation).map(
+        ([pos, playerId]) => ({
+          user_id: session?.user?.id,
+          match_id: match!.id,
+          player_id: playerId,
+          pos,
+          ovr: playersById[playerId]?.ovr ?? 0,
+          kit_no: playersById[playerId]?.kit_no ?? 0,
+        }),
+      );
+      const { data, error } = await supabase
+        .from("caps")
+        .insert(capData)
+        .select("*, players(name)");
+      if (error) {
+        console.error(error);
+      } else {
+        setCaps(data);
+      }
+    } else {
+      const oldItems: FormationItem[] = capsAtMinute.map((cap) => ({
+        pos: cap.pos,
+        playerId: cap.player_id,
+      }));
+      const newItems: FormationItem[] = Object.entries(
+        form.values.formation,
+      ).map(([pos, playerId]) => ({
         pos,
         playerId,
-      }),
-    );
-    for (let i = newItems.length - 1; i >= 0; i--) {
-      const item = newItems[i];
-      const oldIndex = oldItems.findIndex(
-        (cap) => cap.pos === item.pos && cap.playerId === item.playerId,
-      );
+      }));
+      for (let i = newItems.length - 1; i >= 0; i--) {
+        const item = newItems[i];
+        const oldIndex = oldItems.findIndex(
+          (cap) => cap.pos === item.pos && cap.playerId === item.playerId,
+        );
 
-      if (oldIndex >= 0) {
-        oldItems.splice(oldIndex, 1);
-        newItems.splice(i, 1);
+        if (oldIndex >= 0) {
+          oldItems.splice(oldIndex, 1);
+          newItems.splice(i, 1);
+        }
       }
-    }
 
-    const changes: Change[] = [...match!.changes];
-    const timestamp = new Date().valueOf();
+      const changes: Change[] = [...match!.changes];
+      const timestamp = new Date().valueOf();
 
-    // Match by player id to prioritize position changes
-    for (let i = newItems.length - 1; i >= 0; i--) {
-      const item = newItems[i];
-      const oldItemIndex = oldItems.findIndex(
-        (cap) => cap.playerId === item.playerId,
-      );
-      if (oldItemIndex >= 0) {
-        const oldItem = oldItems[oldItemIndex];
+      // Match by player id to prioritize position changes
+      for (let i = newItems.length - 1; i >= 0; i--) {
+        const item = newItems[i];
+        const oldItemIndex = oldItems.findIndex(
+          (cap) => cap.playerId === item.playerId,
+        );
+        if (oldItemIndex >= 0) {
+          const oldItem = oldItems[oldItemIndex];
+          changes.push({
+            timestamp,
+            minute: Number(form.values.minute),
+            stoppage_time: form.values.stoppage_time,
+            injured: false,
+            out: {
+              pos: oldItem.pos,
+              name: playersById[oldItem.playerId].name,
+            },
+            in: {
+              pos: item.pos,
+              name: playersById[item.playerId].name,
+            },
+          });
+          oldItems.splice(oldItemIndex, 1);
+          newItems.splice(i, 1);
+        }
+      }
+
+      // Then match by position to prioritize position changes
+      for (let i = newItems.length - 1; i >= 0; i--) {
+        const item = newItems[i];
+        const oldItemIndex = oldItems.findIndex((cap) => cap.pos === item.pos);
+        if (oldItemIndex >= 0) {
+          const oldItem = oldItems[oldItemIndex];
+          changes.push({
+            timestamp,
+            minute: Number(form.values.minute),
+            stoppage_time: form.values.stoppage_time,
+            injured: false,
+            out: {
+              pos: oldItem.pos,
+              name: playersById[oldItem.playerId].name,
+            },
+            in: {
+              pos: item.pos,
+              name: playersById[item.playerId].name,
+            },
+          });
+          oldItems.splice(oldItemIndex, 1);
+          newItems.splice(i, 1);
+        }
+      }
+
+      // Then match remaining items
+      for (let i = 0; i < newItems.length; i++) {
+        const item = newItems[i];
+        const oldItem = oldItems[i];
         changes.push({
           timestamp,
           minute: Number(form.values.minute),
@@ -144,70 +244,27 @@ export const MatchFormationForm: React.FC<{
             name: playersById[item.playerId].name,
           },
         });
-        oldItems.splice(oldItemIndex, 1);
-        newItems.splice(i, 1);
       }
-    }
 
-    // Then match by position to prioritize position changes
-    for (let i = newItems.length - 1; i >= 0; i--) {
-      const item = newItems[i];
-      const oldItemIndex = oldItems.findIndex((cap) => cap.pos === item.pos);
-      if (oldItemIndex >= 0) {
-        const oldItem = oldItems[oldItemIndex];
-        changes.push({
-          timestamp,
-          minute: Number(form.values.minute),
-          stoppage_time: form.values.stoppage_time,
-          injured: false,
-          out: {
-            pos: oldItem.pos,
-            name: playersById[oldItem.playerId].name,
-          },
-          in: {
-            pos: item.pos,
-            name: playersById[item.playerId].name,
-          },
-        });
-        oldItems.splice(oldItemIndex, 1);
-        newItems.splice(i, 1);
-      }
+      // Update match.changes
+      await supabase.from("matches").update({ changes }).eq("id", match!.id);
+      setMatch((prev) => (prev ? { ...prev, changes } : prev));
+      resolveFormationChanges({ ...match!, changes });
     }
-
-    // Then match remaining items
-    for (let i = 0; i < newItems.length; i++) {
-      const item = newItems[i];
-      const oldItem = oldItems[i];
-      changes.push({
-        timestamp,
-        minute: Number(form.values.minute),
-        stoppage_time: form.values.stoppage_time,
-        injured: false,
-        out: {
-          pos: oldItem.pos,
-          name: playersById[oldItem.playerId].name,
-        },
-        in: {
-          pos: item.pos,
-          name: playersById[item.playerId].name,
-        },
-      });
-    }
-
-    // Update match.changes
-    await supabase.from("matches").update({ changes }).eq("id", match!.id);
-    setMatch((prev) => (prev ? { ...prev, changes } : prev));
-    resolveFormationChanges({ ...match!, changes });
 
     setLoading(false);
     onClose();
   }, [
+    caps,
     capsAtMinute,
     form,
+    isStartingLineup,
     match,
     onClose,
     playersById,
     resolveFormationChanges,
+    session?.user?.id,
+    setCaps,
     setMatch,
   ]);
 
@@ -286,7 +343,7 @@ export const MatchFormationForm: React.FC<{
     <Modal
       opened={opened}
       onClose={onClose}
-      title="Formation Change"
+      title={isStartingLineup ? "Edit Starting Lineup" : "Formation Change"}
       centered
       closeOnClickOutside={false}
       trapFocus
@@ -320,7 +377,7 @@ export const MatchFormationForm: React.FC<{
             label="Minute"
             suffix="'"
             required
-            min={1}
+            min={0}
             max={match!.extra_time ? 120 : 90}
           />
           {inStoppageTime && (
