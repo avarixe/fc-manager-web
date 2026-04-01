@@ -79,30 +79,30 @@ const TeamsIndexLazyRoute = TeamsIndexLazyRouteImport.update({
   id: '/teams/',
   path: '/teams/',
   getParentRoute: () => rootRouteImport,
-} as any).lazy(() => import('./routes/teams.index.lazy').then((d) => d.Route))
+} as any).lazy(() => import('./routes/teams/index.lazy').then((d) => d.Route))
 const TeamsNewLazyRoute = TeamsNewLazyRouteImport.update({
   id: '/teams/new',
   path: '/teams/new',
   getParentRoute: () => rootRouteImport,
-} as any).lazy(() => import('./routes/teams.new.lazy').then((d) => d.Route))
+} as any).lazy(() => import('./routes/teams/new.lazy').then((d) => d.Route))
 const TeamsImportLazyRoute = TeamsImportLazyRouteImport.update({
   id: '/teams/import',
   path: '/teams/import',
   getParentRoute: () => rootRouteImport,
-} as any).lazy(() => import('./routes/teams.import.lazy').then((d) => d.Route))
+} as any).lazy(() => import('./routes/teams/import.lazy').then((d) => d.Route))
 const TeamsTeamIdIndexLazyRoute = TeamsTeamIdIndexLazyRouteImport.update({
   id: '/teams/$teamId/',
   path: '/teams/$teamId/',
   getParentRoute: () => rootRouteImport,
 } as any).lazy(() =>
-  import('./routes/teams.$teamId.index.lazy').then((d) => d.Route),
+  import('./routes/teams/$teamId/index.lazy').then((d) => d.Route),
 )
 const TeamsTeamIdEditLazyRoute = TeamsTeamIdEditLazyRouteImport.update({
   id: '/teams/$teamId/edit',
   path: '/teams/$teamId/edit',
   getParentRoute: () => rootRouteImport,
 } as any).lazy(() =>
-  import('./routes/teams.$teamId.edit.lazy').then((d) => d.Route),
+  import('./routes/teams/$teamId/edit.lazy').then((d) => d.Route),
 )
 const TeamsTeamIdSquadsIndexLazyRoute =
   TeamsTeamIdSquadsIndexLazyRouteImport.update({
@@ -110,7 +110,7 @@ const TeamsTeamIdSquadsIndexLazyRoute =
     path: '/teams/$teamId/squads/',
     getParentRoute: () => rootRouteImport,
   } as any).lazy(() =>
-    import('./routes/teams.$teamId.squads.index.lazy').then((d) => d.Route),
+    import('./routes/teams/$teamId/squads/index.lazy').then((d) => d.Route),
   )
 const TeamsTeamIdPlayersIndexLazyRoute =
   TeamsTeamIdPlayersIndexLazyRouteImport.update({
@@ -118,7 +118,7 @@ const TeamsTeamIdPlayersIndexLazyRoute =
     path: '/teams/$teamId/players/',
     getParentRoute: () => rootRouteImport,
   } as any).lazy(() =>
-    import('./routes/teams.$teamId.players.index.lazy').then((d) => d.Route),
+    import('./routes/teams/$teamId/players/index.lazy').then((d) => d.Route),
   )
 const TeamsTeamIdMatchesIndexLazyRoute =
   TeamsTeamIdMatchesIndexLazyRouteImport.update({
@@ -126,7 +126,7 @@ const TeamsTeamIdMatchesIndexLazyRoute =
     path: '/teams/$teamId/matches/',
     getParentRoute: () => rootRouteImport,
   } as any).lazy(() =>
-    import('./routes/teams.$teamId.matches.index.lazy').then((d) => d.Route),
+    import('./routes/teams/$teamId/matches/index.lazy').then((d) => d.Route),
   )
 const TeamsTeamIdCompetitionsIndexLazyRoute =
   TeamsTeamIdCompetitionsIndexLazyRouteImport.update({
@@ -134,7 +134,7 @@ const TeamsTeamIdCompetitionsIndexLazyRoute =
     path: '/teams/$teamId/competitions/',
     getParentRoute: () => rootRouteImport,
   } as any).lazy(() =>
-    import('./routes/teams.$teamId.competitions.index.lazy').then(
+    import('./routes/teams/$teamId/competitions/index.lazy').then(
       (d) => d.Route,
     ),
   )
@@ -144,7 +144,7 @@ const TeamsTeamIdSeasonsIdLazyRoute =
     path: '/teams/$teamId/seasons/$id',
     getParentRoute: () => rootRouteImport,
   } as any).lazy(() =>
-    import('./routes/teams.$teamId.seasons.$id.lazy').then((d) => d.Route),
+    import('./routes/teams/$teamId/seasons/$id.lazy').then((d) => d.Route),
   )
 const TeamsTeamIdPlayersStatisticsLazyRoute =
   TeamsTeamIdPlayersStatisticsLazyRouteImport.update({
@@ -152,7 +152,7 @@ const TeamsTeamIdPlayersStatisticsLazyRoute =
     path: '/teams/$teamId/players/statistics',
     getParentRoute: () => rootRouteImport,
   } as any).lazy(() =>
-    import('./routes/teams.$teamId.players.statistics.lazy').then(
+    import('./routes/teams/$teamId/players/statistics.lazy').then(
       (d) => d.Route,
     ),
   )
@@ -162,7 +162,7 @@ const TeamsTeamIdPlayersNewLazyRoute =
     path: '/teams/$teamId/players/new',
     getParentRoute: () => rootRouteImport,
   } as any).lazy(() =>
-    import('./routes/teams.$teamId.players.new.lazy').then((d) => d.Route),
+    import('./routes/teams/$teamId/players/new.lazy').then((d) => d.Route),
   )
 const TeamsTeamIdPlayersDevelopmentLazyRoute =
   TeamsTeamIdPlayersDevelopmentLazyRouteImport.update({
@@ -170,7 +170,7 @@ const TeamsTeamIdPlayersDevelopmentLazyRoute =
     path: '/teams/$teamId/players/development',
     getParentRoute: () => rootRouteImport,
   } as any).lazy(() =>
-    import('./routes/teams.$teamId.players.development.lazy').then(
+    import('./routes/teams/$teamId/players/development.lazy').then(
       (d) => d.Route,
     ),
   )
@@ -180,7 +180,7 @@ const TeamsTeamIdPlayersAnalyticsLazyRoute =
     path: '/teams/$teamId/players/analytics',
     getParentRoute: () => rootRouteImport,
   } as any).lazy(() =>
-    import('./routes/teams.$teamId.players.analytics.lazy').then(
+    import('./routes/teams/$teamId/players/analytics.lazy').then(
       (d) => d.Route,
     ),
   )
@@ -190,7 +190,7 @@ const TeamsTeamIdMatchesNewLazyRoute =
     path: '/teams/$teamId/matches/new',
     getParentRoute: () => rootRouteImport,
   } as any).lazy(() =>
-    import('./routes/teams.$teamId.matches.new.lazy').then((d) => d.Route),
+    import('./routes/teams/$teamId/matches/new.lazy').then((d) => d.Route),
   )
 const TeamsTeamIdCompetitionsNewLazyRoute =
   TeamsTeamIdCompetitionsNewLazyRouteImport.update({
@@ -198,7 +198,7 @@ const TeamsTeamIdCompetitionsNewLazyRoute =
     path: '/teams/$teamId/competitions/new',
     getParentRoute: () => rootRouteImport,
   } as any).lazy(() =>
-    import('./routes/teams.$teamId.competitions.new.lazy').then((d) => d.Route),
+    import('./routes/teams/$teamId/competitions/new.lazy').then((d) => d.Route),
   )
 const TeamsTeamIdPlayersIdIndexLazyRoute =
   TeamsTeamIdPlayersIdIndexLazyRouteImport.update({
@@ -206,7 +206,7 @@ const TeamsTeamIdPlayersIdIndexLazyRoute =
     path: '/teams/$teamId/players/$id/',
     getParentRoute: () => rootRouteImport,
   } as any).lazy(() =>
-    import('./routes/teams.$teamId.players.$id.index.lazy').then(
+    import('./routes/teams/$teamId/players/$id/index.lazy').then(
       (d) => d.Route,
     ),
   )
@@ -216,7 +216,7 @@ const TeamsTeamIdMatchesIdIndexLazyRoute =
     path: '/teams/$teamId/matches/$id/',
     getParentRoute: () => rootRouteImport,
   } as any).lazy(() =>
-    import('./routes/teams.$teamId.matches.$id.index.lazy').then(
+    import('./routes/teams/$teamId/matches/$id/index.lazy').then(
       (d) => d.Route,
     ),
   )
@@ -226,7 +226,7 @@ const TeamsTeamIdCompetitionsIdIndexLazyRoute =
     path: '/teams/$teamId/competitions/$id/',
     getParentRoute: () => rootRouteImport,
   } as any).lazy(() =>
-    import('./routes/teams.$teamId.competitions.$id.index.lazy').then(
+    import('./routes/teams/$teamId/competitions/$id/index.lazy').then(
       (d) => d.Route,
     ),
   )
@@ -236,7 +236,7 @@ const TeamsTeamIdPlayersIdEditLazyRoute =
     path: '/teams/$teamId/players/$id/edit',
     getParentRoute: () => rootRouteImport,
   } as any).lazy(() =>
-    import('./routes/teams.$teamId.players.$id.edit.lazy').then((d) => d.Route),
+    import('./routes/teams/$teamId/players/$id/edit.lazy').then((d) => d.Route),
   )
 const TeamsTeamIdMatchesIdEditLazyRoute =
   TeamsTeamIdMatchesIdEditLazyRouteImport.update({
@@ -244,7 +244,7 @@ const TeamsTeamIdMatchesIdEditLazyRoute =
     path: '/teams/$teamId/matches/$id/edit',
     getParentRoute: () => rootRouteImport,
   } as any).lazy(() =>
-    import('./routes/teams.$teamId.matches.$id.edit.lazy').then((d) => d.Route),
+    import('./routes/teams/$teamId/matches/$id/edit.lazy').then((d) => d.Route),
   )
 const TeamsTeamIdCompetitionsIdEditLazyRoute =
   TeamsTeamIdCompetitionsIdEditLazyRouteImport.update({
@@ -252,7 +252,7 @@ const TeamsTeamIdCompetitionsIdEditLazyRoute =
     path: '/teams/$teamId/competitions/$id/edit',
     getParentRoute: () => rootRouteImport,
   } as any).lazy(() =>
-    import('./routes/teams.$teamId.competitions.$id.edit.lazy').then(
+    import('./routes/teams/$teamId/competitions/$id/edit.lazy').then(
       (d) => d.Route,
     ),
   )
