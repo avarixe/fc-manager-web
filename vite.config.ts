@@ -1,3 +1,4 @@
+import babel from "@rolldown/plugin-babel";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import react from "@vitejs/plugin-react";
 import jotaiDebugLabel from "jotai/babel/plugin-debug-label";
@@ -10,14 +11,13 @@ import { defineConfig } from "vite";
 export default defineConfig({
   plugins: [
     tanstackRouter({ target: "react", autoCodeSplitting: true }),
-    react({
-      babel: {
-        plugins: [
-          jotaiDebugLabel,
-          jotaiReactRefresh,
-          "babel-plugin-react-compiler",
-        ],
-      },
+    react(),
+    babel({
+      plugins: [
+        jotaiDebugLabel,
+        jotaiReactRefresh,
+        "babel-plugin-react-compiler",
+      ],
     }),
     UnoCSS(),
   ],

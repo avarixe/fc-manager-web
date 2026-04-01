@@ -261,9 +261,9 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexLazyRoute
   '/teams/import': typeof TeamsImportLazyRoute
   '/teams/new': typeof TeamsNewLazyRoute
-  '/teams': typeof TeamsIndexLazyRoute
+  '/teams/': typeof TeamsIndexLazyRoute
   '/teams/$teamId/edit': typeof TeamsTeamIdEditLazyRoute
-  '/teams/$teamId': typeof TeamsTeamIdIndexLazyRoute
+  '/teams/$teamId/': typeof TeamsTeamIdIndexLazyRoute
   '/teams/$teamId/competitions/new': typeof TeamsTeamIdCompetitionsNewLazyRoute
   '/teams/$teamId/matches/new': typeof TeamsTeamIdMatchesNewLazyRoute
   '/teams/$teamId/players/analytics': typeof TeamsTeamIdPlayersAnalyticsLazyRoute
@@ -271,16 +271,16 @@ export interface FileRoutesByFullPath {
   '/teams/$teamId/players/new': typeof TeamsTeamIdPlayersNewLazyRoute
   '/teams/$teamId/players/statistics': typeof TeamsTeamIdPlayersStatisticsLazyRoute
   '/teams/$teamId/seasons/$id': typeof TeamsTeamIdSeasonsIdLazyRoute
-  '/teams/$teamId/competitions': typeof TeamsTeamIdCompetitionsIndexLazyRoute
-  '/teams/$teamId/matches': typeof TeamsTeamIdMatchesIndexLazyRoute
-  '/teams/$teamId/players': typeof TeamsTeamIdPlayersIndexLazyRoute
-  '/teams/$teamId/squads': typeof TeamsTeamIdSquadsIndexLazyRoute
+  '/teams/$teamId/competitions/': typeof TeamsTeamIdCompetitionsIndexLazyRoute
+  '/teams/$teamId/matches/': typeof TeamsTeamIdMatchesIndexLazyRoute
+  '/teams/$teamId/players/': typeof TeamsTeamIdPlayersIndexLazyRoute
+  '/teams/$teamId/squads/': typeof TeamsTeamIdSquadsIndexLazyRoute
   '/teams/$teamId/competitions/$id/edit': typeof TeamsTeamIdCompetitionsIdEditLazyRoute
   '/teams/$teamId/matches/$id/edit': typeof TeamsTeamIdMatchesIdEditLazyRoute
   '/teams/$teamId/players/$id/edit': typeof TeamsTeamIdPlayersIdEditLazyRoute
-  '/teams/$teamId/competitions/$id': typeof TeamsTeamIdCompetitionsIdIndexLazyRoute
-  '/teams/$teamId/matches/$id': typeof TeamsTeamIdMatchesIdIndexLazyRoute
-  '/teams/$teamId/players/$id': typeof TeamsTeamIdPlayersIdIndexLazyRoute
+  '/teams/$teamId/competitions/$id/': typeof TeamsTeamIdCompetitionsIdIndexLazyRoute
+  '/teams/$teamId/matches/$id/': typeof TeamsTeamIdMatchesIdIndexLazyRoute
+  '/teams/$teamId/players/$id/': typeof TeamsTeamIdPlayersIdIndexLazyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexLazyRoute
@@ -339,9 +339,9 @@ export interface FileRouteTypes {
     | '/'
     | '/teams/import'
     | '/teams/new'
-    | '/teams'
+    | '/teams/'
     | '/teams/$teamId/edit'
-    | '/teams/$teamId'
+    | '/teams/$teamId/'
     | '/teams/$teamId/competitions/new'
     | '/teams/$teamId/matches/new'
     | '/teams/$teamId/players/analytics'
@@ -349,16 +349,16 @@ export interface FileRouteTypes {
     | '/teams/$teamId/players/new'
     | '/teams/$teamId/players/statistics'
     | '/teams/$teamId/seasons/$id'
-    | '/teams/$teamId/competitions'
-    | '/teams/$teamId/matches'
-    | '/teams/$teamId/players'
-    | '/teams/$teamId/squads'
+    | '/teams/$teamId/competitions/'
+    | '/teams/$teamId/matches/'
+    | '/teams/$teamId/players/'
+    | '/teams/$teamId/squads/'
     | '/teams/$teamId/competitions/$id/edit'
     | '/teams/$teamId/matches/$id/edit'
     | '/teams/$teamId/players/$id/edit'
-    | '/teams/$teamId/competitions/$id'
-    | '/teams/$teamId/matches/$id'
-    | '/teams/$teamId/players/$id'
+    | '/teams/$teamId/competitions/$id/'
+    | '/teams/$teamId/matches/$id/'
+    | '/teams/$teamId/players/$id/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -449,7 +449,7 @@ declare module '@tanstack/react-router' {
     '/teams/': {
       id: '/teams/'
       path: '/teams'
-      fullPath: '/teams'
+      fullPath: '/teams/'
       preLoaderRoute: typeof TeamsIndexLazyRouteImport
       parentRoute: typeof rootRouteImport
     }
@@ -470,7 +470,7 @@ declare module '@tanstack/react-router' {
     '/teams/$teamId/': {
       id: '/teams/$teamId/'
       path: '/teams/$teamId'
-      fullPath: '/teams/$teamId'
+      fullPath: '/teams/$teamId/'
       preLoaderRoute: typeof TeamsTeamIdIndexLazyRouteImport
       parentRoute: typeof rootRouteImport
     }
@@ -484,28 +484,28 @@ declare module '@tanstack/react-router' {
     '/teams/$teamId/squads/': {
       id: '/teams/$teamId/squads/'
       path: '/teams/$teamId/squads'
-      fullPath: '/teams/$teamId/squads'
+      fullPath: '/teams/$teamId/squads/'
       preLoaderRoute: typeof TeamsTeamIdSquadsIndexLazyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/teams/$teamId/players/': {
       id: '/teams/$teamId/players/'
       path: '/teams/$teamId/players'
-      fullPath: '/teams/$teamId/players'
+      fullPath: '/teams/$teamId/players/'
       preLoaderRoute: typeof TeamsTeamIdPlayersIndexLazyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/teams/$teamId/matches/': {
       id: '/teams/$teamId/matches/'
       path: '/teams/$teamId/matches'
-      fullPath: '/teams/$teamId/matches'
+      fullPath: '/teams/$teamId/matches/'
       preLoaderRoute: typeof TeamsTeamIdMatchesIndexLazyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/teams/$teamId/competitions/': {
       id: '/teams/$teamId/competitions/'
       path: '/teams/$teamId/competitions'
-      fullPath: '/teams/$teamId/competitions'
+      fullPath: '/teams/$teamId/competitions/'
       preLoaderRoute: typeof TeamsTeamIdCompetitionsIndexLazyRouteImport
       parentRoute: typeof rootRouteImport
     }
@@ -561,21 +561,21 @@ declare module '@tanstack/react-router' {
     '/teams/$teamId/players/$id/': {
       id: '/teams/$teamId/players/$id/'
       path: '/teams/$teamId/players/$id'
-      fullPath: '/teams/$teamId/players/$id'
+      fullPath: '/teams/$teamId/players/$id/'
       preLoaderRoute: typeof TeamsTeamIdPlayersIdIndexLazyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/teams/$teamId/matches/$id/': {
       id: '/teams/$teamId/matches/$id/'
       path: '/teams/$teamId/matches/$id'
-      fullPath: '/teams/$teamId/matches/$id'
+      fullPath: '/teams/$teamId/matches/$id/'
       preLoaderRoute: typeof TeamsTeamIdMatchesIdIndexLazyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/teams/$teamId/competitions/$id/': {
       id: '/teams/$teamId/competitions/$id/'
       path: '/teams/$teamId/competitions/$id'
-      fullPath: '/teams/$teamId/competitions/$id'
+      fullPath: '/teams/$teamId/competitions/$id/'
       preLoaderRoute: typeof TeamsTeamIdCompetitionsIdIndexLazyRouteImport
       parentRoute: typeof rootRouteImport
     }
