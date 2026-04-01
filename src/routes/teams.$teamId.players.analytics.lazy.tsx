@@ -184,8 +184,6 @@ const WageDistribution: React.FC<{
         y: (value) => new Intl.NumberFormat("en-US").format(value),
       }}
       h={250}
-      // TODO: re-enable tooltip once ScatterChart tooltips are fixed.
-      withTooltip={false}
     />
   );
 };

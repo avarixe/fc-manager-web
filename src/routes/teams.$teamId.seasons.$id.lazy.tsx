@@ -14,10 +14,10 @@ import { createLazyFileRoute, Link } from "@tanstack/react-router";
 import { useAtomValue, useSetAtom } from "jotai";
 import { orderBy, sumBy } from "lodash-es";
 import { useEffect, useMemo, useState } from "react";
-import CountUp from "react-countup";
 
 import { breadcrumbsAtom, teamAtom } from "@/atoms";
 import { BaseIcon } from "@/components/base/CommonIcons";
+import { CountUp } from "@/components/base/CountUp";
 import { CompetitionStatusIcon } from "@/components/competition/CompetitionList";
 import { useTeam } from "@/hooks/useTeam";
 import { useTeamHelpers } from "@/hooks/useTeamHelpers";

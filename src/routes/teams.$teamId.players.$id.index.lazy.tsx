@@ -338,6 +338,7 @@ const PlayerHistoryChart: React.FC<{ player: Player }> = ({ player }) => {
         { name: "value", color: "cyan.6", yAxisId: "right" },
       ]}
       xAxisProps={{
+        type: "number",
         scale: "time",
         domain: [data[0].date, dayjs(team.currently_on).valueOf()],
         tickFormatter: (date) => dayjs(date).format("MMM YYYY"),
@@ -372,7 +373,7 @@ const PlayerHistoryChartTooltip: React.FC<
   return (
     <Paper px="md" py="sm" withBorder shadow="md" radius="md">
       <Box fw={500} mb={5}>
-        {dayjs(label).format("MMM DD, YYYY")}
+        {dayjs(Number(label)).format("MMM DD, YYYY")}
         {getFilteredChartTooltipPayload(payload).map((item) => (
           <Group key={item.name}>
             <ColorSwatch color={item.color} size={10} />
