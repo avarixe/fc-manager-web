@@ -10,6 +10,7 @@ import { FormationOvr } from "@/components/formation/FormationOvr";
 import { matchPositionTypes } from "@/constants";
 import { useTeam } from "@/hooks/useTeam";
 import { Player } from "@/types";
+import { abbrevValue, ovrColor } from "@/utils/player";
 import { supabase } from "@/utils/supabase";
 
 export const Route = createLazyFileRoute("/teams/$teamId/players/analytics")({
@@ -18,7 +19,15 @@ export const Route = createLazyFileRoute("/teams/$teamId/players/analytics")({
 
 type PlayerData = Pick<
   Player,
-  "id" | "name" | "nationality" | "status" | "pos" | "youth" | "ovr" | "wage"
+  | "id"
+  | "name"
+  | "nationality"
+  | "status"
+  | "pos"
+  | "youth"
+  | "ovr"
+  | "value"
+  | "wage"
 >;
 
 function PlayerAnalyticsPage() {
@@ -31,7 +40,7 @@ function PlayerAnalyticsPage() {
     const fetchPlayers = async () => {
       const { data } = await supabase
         .from("players")
-        .select("id, name, nationality, status, pos, youth, ovr, wage")
+        .select("id, name, nationality, status, pos, youth, ovr, value, wage")
         .eq("team_id", Number(teamId))
         .in("status", ["Active", "Injured"])
         .order("pos_order");
@@ -74,12 +83,34 @@ function PlayerAnalyticsPage() {
         <Stack>
           <Card bg="transparent" withBorder>
             <Title order={4} mb="lg">
+              Player Value
+            </Title>
+            <TopPlayersPanel
+              players={players}
+              metric="value"
+              currency={team?.currency}
+              totalLabel="Total Value"
+            />
+          </Card>
+          <Card bg="transparent" withBorder>
+            <Title order={4} mb="lg">
               Position Distribution
             </Title>
             <PositionDistribution players={players} />
           </Card>
         </Stack>
         <Stack>
+          <Card bg="transparent" withBorder>
+            <Title order={4} mb="lg">
+              Player Wage
+            </Title>
+            <TopPlayersPanel
+              players={players}
+              metric="wage"
+              currency={team?.currency}
+              totalLabel="Total Wage"
+            />
+          </Card>
           <Card bg="transparent" withBorder>
             <Title order={4} mb="lg">
               Wage Distribution
@@ -149,6 +180,65 @@ const PositionDistribution: React.FC<{
         ))}
       </Stack>
     </Group>
+  );
+};
+
+const TopPlayersPanel: React.FC<{
+  players: PlayerData[];
+  metric: "value" | "wage";
+  currency?: string;
+  totalLabel: string;
+}> = ({ players, metric, currency = "", totalLabel }) => {
+  const sortedPlayers = [...players].sort(
+    (a, b) => (b[metric] ?? 0) - (a[metric] ?? 0),
+  );
+  const topPlayers = sortedPlayers.slice(0, 5);
+  const total = players.reduce((sum, player) => sum + (player[metric] ?? 0), 0);
+
+  return (
+    <Stack gap="xs">
+      <Group justify="space-between" align="end">
+        <Text c="dimmed" size="sm">
+          {totalLabel}
+        </Text>
+        <Text fw={700} size="lg">
+          {abbrevValue(total, currency)}
+        </Text>
+      </Group>
+
+      <Stack gap={6} mt="xs">
+        <Group wrap="nowrap" gap="sm">
+          <Text c="dimmed" size="xs" w={40}>
+            POS
+          </Text>
+          <Text c="dimmed" size="xs" style={{ flex: 1, minWidth: 0 }}>
+            PLAYER
+          </Text>
+          <Text c="dimmed" size="xs" ta="right" w={60}>
+            OVR
+          </Text>
+          <Text c="dimmed" size="xs" ta="right" w={90}>
+            {metric === "value" ? "VALUE" : "WAGE"}
+          </Text>
+        </Group>
+        {topPlayers.map((player) => (
+          <Group key={player.id} wrap="nowrap" gap="sm">
+            <Text w={40}>{player.pos}</Text>
+            <Text truncate style={{ flex: 1, minWidth: 0 }}>
+              {player.name}
+            </Text>
+            <Text ta="right" w={60}>
+              <Text c={ovrColor(player.ovr)} component="span" fw={500}>
+                {player.ovr}
+              </Text>
+            </Text>
+            <Text fw={500} ta="right" w={90}>
+              {abbrevValue(player[metric] ?? 0, currency)}
+            </Text>
+          </Group>
+        ))}
+      </Stack>
+    </Stack>
   );
 };
 
