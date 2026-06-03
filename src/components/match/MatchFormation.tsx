@@ -70,7 +70,7 @@ export const MatchFormation: React.FC<{
           .filter((booking) => booking.red_card && isTeamHome === booking.home)
           .map((booking) => booking.minute),
       ]),
-    ].sort();
+    ].sort((a, b) => a - b);
   }, [caps, isTeamHome, match.bookings]);
 
   useEffect(() => {
