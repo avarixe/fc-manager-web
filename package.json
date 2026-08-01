@@ -14,7 +14,12 @@
     "prepare": "husky",
     "precommit": "bun run tsc && lint-staged",
     "db:login": "npx supabase login",
+    "db:link": "dotenv cross-var npx supabase link --project-ref %SUPABASE_PROJECT_ID%",
     "db:generate": "dotenv cross-var npx supabase gen types typescript --project-id %SUPABASE_PROJECT_ID% --schema public > src/database-generated.types.ts",
+    "db:migrate": "bun supabase/scripts/migrate.ts",
+    "db:migrate:baseline": "bun supabase/scripts/migrate.ts baseline",
+    "db:migrate:status": "bun supabase/scripts/migrate.ts status",
+    "db:rpc": "bun supabase/scripts/rpc.ts",
     "deploy": "bun run build && wrangler deploy"
   },
   "dependencies": {
