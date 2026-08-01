@@ -17,6 +17,7 @@ import { capsAtom, matchAtom, teamAtom } from "@/atoms";
 import { RedCardIcon, YellowCardIcon } from "@/components/base/CommonIcons";
 import { useMatchState } from "@/hooks/useMatchState";
 import { Booking, Cap, ComboboxItem } from "@/types";
+import { accentInsensitiveOptionsFilter } from "@/utils/select";
 
 type CapOption = ComboboxItem<Cap>;
 
@@ -176,6 +177,7 @@ export const BaseBookingForm: React.FC<{
           label="Player"
           placeholder="Select player"
           searchable
+          filter={accentInsensitiveOptionsFilter}
           required
           data={capOptions}
           renderOption={({ option }: { option: CapOption }) => {

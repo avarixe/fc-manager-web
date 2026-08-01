@@ -18,6 +18,7 @@ import { FormationGrid } from "@/components/formation/FormationGrid";
 import { useMatchCallbacks } from "@/hooks/useMatchCallbacks";
 import { useMatchState } from "@/hooks/useMatchState";
 import { Change, Player } from "@/types";
+import { accentInsensitiveOptionsFilter } from "@/utils/select";
 import { supabase } from "@/utils/supabase";
 
 interface FormationChange {
@@ -361,6 +362,7 @@ export const MatchFormationForm: React.FC<{
             label="Assign player"
             placeholder="Select player"
             searchable
+            filter={accentInsensitiveOptionsFilter}
             clearable
             data={playerOptions}
             renderOption={({ option }) => (

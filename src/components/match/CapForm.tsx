@@ -13,6 +13,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { capsAtom, matchAtom, sessionAtom } from "@/atoms";
 import { matchPositions } from "@/constants";
 import { ComboboxItem, Player } from "@/types";
+import { accentInsensitiveOptionsFilter } from "@/utils/select";
 import { supabase } from "@/utils/supabase";
 
 type PlayerOption = Pick<
@@ -119,6 +120,7 @@ export const CapForm: React.FC<{
           {...form.getInputProps("playerId")}
           label="Player"
           searchable
+          filter={accentInsensitiveOptionsFilter}
           required
           data={playerIdOptions}
           renderOption={({ option }: { option: PlayerIdOption }) => {

@@ -26,6 +26,7 @@ import { matchPositionTypes } from "@/constants";
 import { TablesInsert } from "@/database.types";
 import { useTeam } from "@/hooks/useTeam";
 import { ComboboxItem, Player, Squad } from "@/types";
+import { accentInsensitiveOptionsFilter } from "@/utils/select";
 import { supabase } from "@/utils/supabase";
 
 type PlayerOption = Pick<Player, "id" | "name" | "status" | "pos" | "ovr">;
@@ -342,6 +343,7 @@ const SquadCard: React.FC<
             label="Assign player"
             placeholder="Select player"
             searchable
+            filter={accentInsensitiveOptionsFilter}
             clearable
             data={playerOptions}
             renderOption={({

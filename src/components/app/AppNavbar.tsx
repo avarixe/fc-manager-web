@@ -12,13 +12,14 @@ import {
 } from "@mantine/core";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useAtomValue } from "jotai";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { teamAtom } from "@/atoms";
 import { BaseIcon } from "@/components/base/CommonIcons";
 import { TeamDatePicker } from "@/components/team/TeamDatePicker";
 import { useTeamHelpers } from "@/hooks/useTeamHelpers";
 import { ComboboxItem, Player } from "@/types";
+import { accentInsensitiveOptionsFilter } from "@/utils/select";
 import { supabase } from "@/utils/supabase";
 
 export const AppNavbar = () => {
@@ -187,40 +188,37 @@ type PlayerOption = ComboboxItem<Pick<Player, "name" | "pos">>;
 const PlayerSearch = () => {
   const [options, setOptions] = useState<PlayerOption[]>([]);
   const [loading, setLoading] = useState(false);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const team = useAtomValue(teamAtom)!;
-  const onSearchChange = useCallback(
-    async (input: string) => {
-      clearTimeout(timeoutRef.current);
-      if (!input || input.includes("·")) {
-        return;
-      }
 
-      timeoutRef.current = setTimeout(async () => {
-        setLoading(true);
-        const { data } = await supabase
-          .from("players")
-          .select("id, name, pos")
-          .or(`pos.ilike.%${input}%, name.ilike.%${input}%`)
-          .eq("team_id", team.id)
-          .order("pos_order");
-        if (data) {
-          setOptions(
-            data.map((option) => ({
-              ...option,
-              label: `${option.pos} · ${option.name}`,
-              value: String(option.id),
-            })),
-          );
-        } else {
-          setOptions([]);
-        }
+  useEffect(() => {
+    let cancelled = false;
+
+    const fetchPlayers = async () => {
+      setLoading(true);
+      const { data } = await supabase
+        .from("players")
+        .select("id, name, pos")
+        .eq("team_id", team.id)
+        .order("pos_order");
+      if (!cancelled) {
+        setOptions(
+          (data ?? []).map((option) => ({
+            ...option,
+            label: `${option.pos} · ${option.name}`,
+            value: String(option.id),
+          })),
+        );
         setLoading(false);
-      }, 300);
-    },
-    [team.id],
-  );
+      }
+    };
+
+    void fetchPlayers();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [team.id]);
 
   const navigate = useNavigate();
   const onChange = useCallback(
@@ -232,17 +230,13 @@ const PlayerSearch = () => {
     [navigate, team.id],
   );
 
-  useEffect(() => {
-    return () => clearTimeout(timeoutRef.current);
-  }, []);
-
   return (
     <Select
       data={options}
-      onSearchChange={onSearchChange}
       onChange={onChange}
       leftSection={loading ? <Loader size="xs" type="dots" /> : null}
       searchable
+      filter={accentInsensitiveOptionsFilter}
       renderOption={({ option }: { option: PlayerOption }) => {
         return (
           <Group gap="xs" wrap="nowrap">

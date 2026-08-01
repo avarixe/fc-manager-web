@@ -6,6 +6,7 @@ import { useMemo, useState } from "react";
 import { capsAtom } from "@/atoms";
 import { matchPositions } from "@/constants";
 import { Cap, ComboboxItem, Player } from "@/types";
+import { accentInsensitiveOptionsFilter } from "@/utils/select";
 import { supabase } from "@/utils/supabase";
 
 type PlayerOption = Pick<
@@ -77,6 +78,7 @@ export const CapEditor: React.FC<{
         {...form.getInputProps("playerId")}
         label="Player"
         searchable
+        filter={accentInsensitiveOptionsFilter}
         required
         data={playerIdOptions}
         renderOption={({ option }: { option: PlayerIdOption }) => {

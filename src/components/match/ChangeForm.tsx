@@ -16,6 +16,7 @@ import { capsAtom, matchAtom } from "@/atoms";
 import { matchPositions } from "@/constants";
 import { useMatchState } from "@/hooks/useMatchState";
 import { Cap, Change, ComboboxItem, Player } from "@/types";
+import { accentInsensitiveOptionsFilter } from "@/utils/select";
 
 type CapOption = ComboboxItem<Cap>;
 type PlayerOption = Pick<Player, "id" | "name" | "status" | "pos" | "ovr">;
@@ -187,6 +188,7 @@ export const BaseChangeForm: React.FC<{
           label="Player"
           placeholder="Select player"
           searchable
+          filter={accentInsensitiveOptionsFilter}
           required
           data={capOptions}
           renderOption={({ option }: { option: CapOption }) => {
@@ -207,6 +209,7 @@ export const BaseChangeForm: React.FC<{
         label="Replaced By"
         placeholder="Select player"
         searchable
+        filter={accentInsensitiveOptionsFilter}
         required
         data={replacementOptions}
         renderOption={({ option }: { option: ReplacementOption }) => {

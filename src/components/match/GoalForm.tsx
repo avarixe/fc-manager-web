@@ -17,6 +17,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { matchAtom, teamAtom } from "@/atoms";
 import { useMatchState } from "@/hooks/useMatchState";
 import { Cap, ComboboxItem, Goal } from "@/types";
+import { accentInsensitiveOptionsFilter } from "@/utils/select";
 
 type CapOption = ComboboxItem<Cap>;
 
@@ -180,6 +181,7 @@ export const BaseGoalForm: React.FC<{
               placeholder="Select player"
               required
               searchable
+              filter={accentInsensitiveOptionsFilter}
               data={capOptions}
               renderOption={({ option }: { option: CapOption }) => {
                 return (
@@ -210,6 +212,7 @@ export const BaseGoalForm: React.FC<{
               );
             }}
             searchable
+            filter={accentInsensitiveOptionsFilter}
             mb="xs"
           />
         </>
