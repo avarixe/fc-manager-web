@@ -436,6 +436,28 @@ export type Database = {
         Args: { player_ids: Json }
         Returns: Json
       }
+      search_options: {
+        Args: {
+          search: string
+          option_category?: string
+          result_limit?: number
+        }
+        Returns: { value: string }[]
+      }
+      list_matches: {
+        Args: {
+          p_team_id: number
+          p_user_team_name: string
+          p_season?: number | null
+          p_competition?: string | null
+          p_opponent?: string | null
+          p_results?: string[] | null
+          p_sort_desc?: boolean
+          p_limit?: number
+          p_offset?: number
+        }
+        Returns: Json
+      }
     }
     Enums: {
       [_ in never]: never

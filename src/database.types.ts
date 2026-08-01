@@ -99,6 +99,45 @@ export type Database = MergeDeep<
             avg_rating: number;
           }[];
         };
+        search_options: {
+          Args: {
+            search: string;
+            option_category?: string;
+            result_limit?: number;
+          };
+          Returns: {
+            value: string;
+          }[];
+        };
+        list_matches: {
+          Args: {
+            p_team_id: number;
+            p_user_team_name: string;
+            p_season?: number | null;
+            p_competition?: string | null;
+            p_opponent?: string | null;
+            p_results?: string[] | null;
+            p_sort_desc?: boolean;
+            p_limit?: number;
+            p_offset?: number;
+          };
+          Returns: {
+            count: number;
+            items: {
+              id: number;
+              home_team: string;
+              away_team: string;
+              home_score: number | null;
+              away_score: number | null;
+              home_penalty_score: number | null;
+              away_penalty_score: number | null;
+              played_on: string;
+              competition: string | null;
+              season: number | null;
+              stage: string | null;
+            }[];
+          };
+        };
       };
     };
   }

@@ -26,6 +26,11 @@ type MatchItem = Pick<
   | "stage"
 >;
 
+type ListMatchesResult = {
+  count: number;
+  items: MatchItem[];
+};
+
 export const MatchTable: React.FC<{ filters?: MatchFilters }> = ({
   filters,
 }) => {
@@ -44,93 +49,39 @@ export const MatchTable: React.FC<{ filters?: MatchFilters }> = ({
   });
   useEffect(() => {
     const fetchPage = async () => {
-      const pageQuery = supabase
-        .from("matches")
-        .select(
-          "id, home_team, away_team, home_score, away_score, played_on, competition, season, stage, home_penalty_score, away_penalty_score",
-        )
-        .range(
-          tableState.pageSize * tableState.pageIndex,
-          tableState.pageSize * (tableState.pageIndex + 1) - 1,
-        )
-        .eq("team_id", team.id);
-      const countQuery = supabase
-        .from("matches")
-        .select("id", { count: "exact", head: true })
-        .eq("team_id", team.id);
-
-      if (filters) {
-        if (filters.season) {
-          pageQuery.eq("season", Number(filters.season));
-          countQuery.eq("season", Number(filters.season));
-        }
-        if (filters.competition) {
-          pageQuery.eq("competition", filters.competition);
-          countQuery.eq("competition", filters.competition);
-        }
-        if (filters.team) {
-          pageQuery.or(
-            `home_team.ilike.%${filters.team}%, away_team.ilike.%${filters.team}%`,
-          );
-          countQuery.or(
-            `home_team.ilike.%${filters.team}%, away_team.ilike.%${filters.team}%`,
-          );
-        }
-        if (filters.results && filters.results.length < 3) {
-          const queries: string[] = [];
-          filters.results.forEach((result) => {
-            switch (result) {
-              case "W":
-                queries.push(
-                  `and(home_team.eq.${team.name},home_result.eq.W)`,
-                  `and(away_team.eq.${team.name},home_result.eq.L)`,
-                );
-                break;
-              case "D":
-                queries.push(
-                  `and(home_team.eq.${team.name},home_result.eq.D)`,
-                  `and(away_team.eq.${team.name},home_result.eq.D)`,
-                );
-                break;
-              case "L":
-                queries.push(
-                  `and(home_team.eq.${team.name},home_result.eq.L)`,
-                  `and(away_team.eq.${team.name},home_result.eq.W)`,
-                );
-            }
-          });
-          pageQuery.or(queries.join(","));
-          countQuery.or(queries.join(","));
-        }
-      }
-
-      pageQuery.order(tableState.sorting.id, {
-        ascending: !tableState.sorting.desc,
+      const { data, error } = await supabase.rpc("list_matches", {
+        p_team_id: team.id,
+        p_user_team_name: team.name,
+        p_season: filters?.season ? Number(filters.season) : null,
+        p_competition: filters?.competition || null,
+        p_opponent: filters?.team || null,
+        p_results: filters?.results ?? null,
+        p_sort_desc: tableState.sorting.desc,
+        p_limit: tableState.pageSize,
+        p_offset: tableState.pageSize * tableState.pageIndex,
       });
-      pageQuery.order("id", { ascending: !tableState.sorting.desc });
 
-      const { data, error } = await pageQuery;
-      const { count } = await countQuery;
       if (error) {
         console.error(error);
-      } else {
-        setMatches(data);
-        setTableState((prev) => ({
-          ...prev,
-          rowCount: count ?? 0,
-        }));
+        return;
       }
+
+      const result = data as unknown as ListMatchesResult | null;
+      setMatches(result?.items ?? []);
+      setTableState((prev) => ({
+        ...prev,
+        rowCount: result?.count ?? 0,
+      }));
     };
 
-    fetchPage();
+    void fetchPage();
   }, [
     tableState.pageIndex,
     tableState.pageSize,
-    tableState.sorting.id,
     tableState.sorting.desc,
     team.id,
-    filters,
     team.name,
+    filters,
   ]);
 
   const columnHelper = createColumnHelper<MatchItem>();

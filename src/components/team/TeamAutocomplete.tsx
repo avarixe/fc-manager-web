@@ -51,11 +51,10 @@ export const TeamAutocomplete: React.FC<AutocompleteProps> = ({
         // can skip instead of queueing another query.
         lastQueryRef.current = input;
         setLoading(true);
-        const { data } = await supabase
-          .from("options")
-          .select("value")
-          .ilike("value", `%${input}%`)
-          .eq("category", "Team");
+        const { data } = await supabase.rpc("search_options", {
+          search: input,
+          option_category: "Team",
+        });
 
         if (searchId !== searchIdRef.current) {
           return;
