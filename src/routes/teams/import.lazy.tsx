@@ -9,6 +9,7 @@ import {
 } from "@mantine/core";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { useAtomValue, useSetAtom } from "jotai";
+import { groupBy, minBy } from "lodash-es";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { breadcrumbsAtom, sessionAtom } from "@/atoms";
@@ -435,28 +436,34 @@ function ImportTeamPage() {
     }
 
     // Create Cap
-    const capData: TablesInsert<"caps">[] = caps.map((cap) => ({
-      import_id: Number(cap.id),
-      user_id: session?.user.id,
-      player_id: idMap.current.player[cap.playerId],
-      match_id: idMap.current.match[cap.matchId],
-      pos: cap.pos,
-      start_minute: cap.start,
-      stop_minute: cap.stop,
-      rating: cap.rating,
-      ovr: cap.ovr,
-      num_goals: capStats.current[cap.playerId]?.[cap.matchId]?.num_goals ?? 0,
-      num_assists:
-        capStats.current[cap.playerId]?.[cap.matchId]?.num_assists ?? 0,
-      num_yellow_cards:
-        capStats.current[cap.playerId]?.[cap.matchId]?.num_yellow_cards ?? 0,
-      num_red_cards:
-        capStats.current[cap.playerId]?.[cap.matchId]?.num_red_cards ?? 0,
-      clean_sheet:
-        capStats.current[cap.playerId]?.[cap.matchId]?.clean_sheet ?? false,
-      num_own_goals:
-        capStats.current[cap.playerId]?.[cap.matchId]?.num_own_goals ?? 0,
-    }));
+    // Only the first cap for a player in a match gets the accumulated stats
+    const firstCapIds = new Set(
+      Object.values(
+        groupBy(caps, (cap) => `${cap.matchId}:${cap.playerId}`),
+      ).map((playerCaps) => minBy(playerCaps, "start")!.id),
+    );
+    const capData: TablesInsert<"caps">[] = caps.map((cap) => {
+      const stats = firstCapIds.has(cap.id)
+        ? capStats.current[cap.playerId]?.[cap.matchId]
+        : undefined;
+      return {
+        import_id: Number(cap.id),
+        user_id: session?.user.id,
+        player_id: idMap.current.player[cap.playerId],
+        match_id: idMap.current.match[cap.matchId],
+        pos: cap.pos,
+        start_minute: cap.start,
+        stop_minute: cap.stop,
+        rating: cap.rating,
+        ovr: cap.ovr,
+        num_goals: stats?.num_goals ?? 0,
+        num_assists: stats?.num_assists ?? 0,
+        num_yellow_cards: stats?.num_yellow_cards ?? 0,
+        num_red_cards: stats?.num_red_cards ?? 0,
+        clean_sheet: stats?.clean_sheet ?? false,
+        num_own_goals: stats?.num_own_goals ?? 0,
+      };
+    });
     const { error } = await supabase.from("caps").insert(capData);
     if (error) {
       console.error(`Could not create caps! Error: ${error.message}`);

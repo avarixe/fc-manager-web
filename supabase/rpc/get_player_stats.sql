@@ -29,7 +29,14 @@ BEGIN
       LEFT JOIN public.matches AS m ON m.id = a.match_id
       WHERE m.competition IS NOT NULL
         AND m.season IS NOT NULL
-        AND a.rating IS NOT NULL
+        -- Stats live on a player's first cap in a match, which may not be the rated one
+        AND EXISTS (
+          SELECT 1
+          FROM public.caps AS r
+          WHERE r.player_id = a.player_id
+            AND r.match_id = a.match_id
+            AND r.rating IS NOT NULL
+        )
       GROUP BY
         sub.player_id,
         m.competition,
