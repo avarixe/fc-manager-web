@@ -1,5 +1,91 @@
+import { orderBy } from "lodash-es";
+
 import { statGradientColors } from "@/constants";
 import { Match } from "@/types";
+
+interface TimedEvent {
+  minute: number;
+  stoppage_time?: number;
+}
+
+function compareEventTime(a: TimedEvent, b: TimedEvent) {
+  return a.minute - b.minute || (a.stoppage_time ?? 0) - (b.stoppage_time ?? 0);
+}
+
+function earliestEvent<T extends TimedEvent>(events: T[]) {
+  return orderBy(events, ["minute", (event) => event.stoppage_time ?? 0])[0];
+}
+
+// A player keeps a clean sheet if no goal was conceded while he was on the
+// pitch. A goal in the same minute as his entry counts against him, and one in
+// the same minute as his exit does not.
+export function keptCleanSheet(
+  match: Pick<Match, "goals" | "changes" | "bookings">,
+  playerName: string,
+  isTeamHome: boolean,
+) {
+  const entry = earliestEvent(
+    match.changes.filter(
+      (change) =>
+        change.in.name === playerName && change.out.name !== playerName,
+    ),
+  );
+  const exit = earliestEvent<TimedEvent>([
+    ...match.changes.filter(
+      (change) =>
+        change.out.name === playerName && change.in.name !== playerName,
+    ),
+    ...match.bookings.filter(
+      (booking) =>
+        booking.player_name === playerName &&
+        booking.home === isTeamHome &&
+        booking.red_card,
+    ),
+  ]);
+
+  return !match.goals.some((goal) => {
+    const isHomeGoal = goal.home !== goal.own_goal;
+    return (
+      isHomeGoal !== isTeamHome &&
+      (!entry || compareEventTime(goal, entry) >= 0) &&
+      (!exit || compareEventTime(goal, exit) < 0)
+    );
+  });
+}
+
+export function playerMatchStats(
+  match: Pick<Match, "goals" | "changes" | "bookings">,
+  playerName: string,
+  isTeamHome: boolean,
+) {
+  const stats = {
+    num_goals: 0,
+    num_own_goals: 0,
+    num_assists: 0,
+    num_yellow_cards: 0,
+    num_red_cards: 0,
+    clean_sheet: keptCleanSheet(match, playerName, isTeamHome),
+  };
+
+  for (const goal of match.goals) {
+    if (goal.home !== isTeamHome) {
+      continue;
+    }
+    if (goal.player_name === playerName) {
+      stats[goal.own_goal ? "num_own_goals" : "num_goals"]++;
+    } else if (goal.assisted_by === playerName) {
+      stats.num_assists++;
+    }
+  }
+
+  for (const booking of match.bookings) {
+    if (booking.player_name === playerName && booking.home === isTeamHome) {
+      stats[booking.red_card ? "num_red_cards" : "num_yellow_cards"]++;
+    }
+  }
+
+  return stats;
+}
 
 export function matchScore(
   match: Pick<

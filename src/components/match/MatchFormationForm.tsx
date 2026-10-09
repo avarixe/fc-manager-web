@@ -138,6 +138,7 @@ export const MatchFormationForm: React.FC<{
           pos,
           ovr: playersById[playerId]?.ovr ?? 0,
           kit_no: playersById[playerId]?.kit_no ?? 0,
+          clean_sheet: true,
         }),
       );
       const { data, error } = await supabase

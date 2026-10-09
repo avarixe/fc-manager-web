@@ -7,6 +7,7 @@ import { TablesInsert } from "@/database.types";
 import { useCapHelpers } from "@/hooks/useCapHelpers";
 import { Cap, Match } from "@/types";
 import { assertDefined } from "@/utils/assert";
+import { keptCleanSheet, playerMatchStats } from "@/utils/match";
 import { supabase } from "@/utils/supabase";
 
 export const useMatchCallbacks = () => {
@@ -29,38 +30,18 @@ export const useMatchCallbacks = () => {
             return cap;
           }
 
-          const newCap = { ...cap };
-          newCap.num_yellow_cards = 0;
-          newCap.num_red_cards = 0;
-          newCap.num_goals = 0;
-          newCap.num_assists = 0;
-          newCap.num_own_goals = 0;
-          newCap.clean_sheet =
-            team.name === updatedMatch.home_team
-              ? updatedMatch.away_score === 0
-              : updatedMatch.home_score === 0;
+          const newCap = {
+            ...cap,
+            ...playerMatchStats(updatedMatch, cap.players.name, isTeamHome),
+          };
 
           for (const booking of updatedMatch.bookings) {
             if (
               booking.player_name === cap.players.name &&
-              booking.home === isTeamHome
+              booking.home === isTeamHome &&
+              booking.red_card
             ) {
-              newCap[booking.red_card ? "num_red_cards" : "num_yellow_cards"]++;
-              if (booking.red_card) {
-                newCap.stop_minute = booking.minute;
-              }
-            }
-          }
-
-          for (const goal of updatedMatch.goals) {
-            if (goal.home === isTeamHome) {
-              switch (cap.players.name) {
-                case goal.player_name:
-                  newCap[goal.own_goal ? "num_own_goals" : "num_goals"] += 1;
-                  break;
-                case goal.assisted_by:
-                  newCap.num_assists += 1;
-              }
+              newCap.stop_minute = booking.minute;
             }
           }
 
@@ -125,37 +106,23 @@ export const useMatchCallbacks = () => {
         playerMap[player.name] = player;
       }
 
-      const statsMap: Record<
-        string,
-        {
-          num_goals: number;
-          num_own_goals: number;
-          num_assists: number;
-          num_yellow_cards: number;
-          num_red_cards: number;
-          clean_sheet: boolean;
-          rating: number | null;
-        }
-      > = {};
+      const ratingMap: Record<string, number | null> = {};
       for (const cap of caps) {
-        if (!statsMap[cap.players.name]) {
-          // Only set stats once per player
-          statsMap[cap.players.name] = {
-            num_goals: cap.num_goals,
-            num_assists: cap.num_assists,
-            num_own_goals: cap.num_own_goals,
-            num_yellow_cards: cap.num_yellow_cards,
-            num_red_cards: cap.num_red_cards,
-            clean_sheet: cap.clean_sheet,
-            rating: cap.rating,
-          };
+        if (!(cap.players.name in ratingMap)) {
+          ratingMap[cap.players.name] = cap.rating;
         }
       }
 
+      const isTeamHome = team.name === updatedMatch.home_team;
       const starters = caps.filter((cap) => cap.start_minute === 0);
       // Reset stop_minute for all starters
       starters.forEach((cap) => {
         cap.stop_minute = updatedMatch.extra_time ? 120 : 90;
+        cap.clean_sheet = keptCleanSheet(
+          updatedMatch,
+          cap.players.name,
+          isTeamHome,
+        );
       });
       const currentCapByPlayer: Record<string, Cap | TablesInsert<"caps">> =
         keyBy(starters, (cap) => cap.players.name);
@@ -163,7 +130,6 @@ export const useMatchCallbacks = () => {
       // For each sorted change, create corresponding cap
       const newCapData: TablesInsert<"caps">[] = [];
       for (const change of sortedChanges) {
-        const playerStats = statsMap[change.in.name];
         const isFirstCapForPlayer = !currentCapByPlayer[change.in.name];
         const newCap = {
           user_id: session.user.id,
@@ -174,24 +140,18 @@ export const useMatchCallbacks = () => {
           start_minute: change.minute,
           stop_minute: match.extra_time ? 120 : 90,
           pos: change.in.pos,
-          rating: playerStats?.rating,
+          rating: ratingMap[change.in.name],
           // Only the first cap for a player gets the accumulated stats
-          num_goals: isFirstCapForPlayer ? (playerStats?.num_goals ?? 0) : 0,
-          num_own_goals: isFirstCapForPlayer
-            ? (playerStats?.num_own_goals ?? 0)
-            : 0,
-          num_assists: isFirstCapForPlayer
-            ? (playerStats?.num_assists ?? 0)
-            : 0,
-          num_yellow_cards: isFirstCapForPlayer
-            ? (playerStats?.num_yellow_cards ?? 0)
-            : 0,
-          num_red_cards: isFirstCapForPlayer
-            ? (playerStats?.num_red_cards ?? 0)
-            : 0,
-          clean_sheet: isFirstCapForPlayer
-            ? (playerStats?.clean_sheet ?? false)
-            : false,
+          ...(isFirstCapForPlayer
+            ? playerMatchStats(updatedMatch, change.in.name, isTeamHome)
+            : {
+                num_goals: 0,
+                num_own_goals: 0,
+                num_assists: 0,
+                num_yellow_cards: 0,
+                num_red_cards: 0,
+                clean_sheet: false,
+              }),
         };
 
         const outCap = currentCapByPlayer[change.out.name];
@@ -204,7 +164,10 @@ export const useMatchCallbacks = () => {
         starters.map(async (cap) => {
           await supabase
             .from("caps")
-            .update({ stop_minute: cap.stop_minute })
+            .update({
+              stop_minute: cap.stop_minute,
+              clean_sheet: cap.clean_sheet,
+            })
             .eq("id", cap.id);
         }),
       );
@@ -214,7 +177,7 @@ export const useMatchCallbacks = () => {
         .select("*, players(name)");
       setCaps([...starters, ...(newCaps ?? [])]);
     },
-    [caps, match, session.user.id, setCaps, team.id],
+    [caps, match, session.user.id, setCaps, team.id, team.name],
   );
 
   return {

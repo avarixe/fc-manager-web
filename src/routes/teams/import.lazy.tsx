@@ -17,6 +17,7 @@ import { TablesInsert } from "@/database.types";
 import { useProgress } from "@/hooks/useProgress";
 import { Cap, Change } from "@/types";
 import { assertType } from "@/utils/assert";
+import { keptCleanSheet } from "@/utils/match";
 import { supabase } from "@/utils/supabase";
 
 export const Route = createLazyFileRoute("/teams/import")({
@@ -373,7 +374,7 @@ function ImportTeamPage() {
 
     // Collate Cap statistics
     let numGoals = 0;
-    for (const match of matches) {
+    for (const [matchIndex, match] of matches.entries()) {
       for (const goal of match.goals) {
         if (goal.playerId) {
           capStats.current[goal.playerId] =
@@ -414,14 +415,15 @@ function ImportTeamPage() {
           }
         }
       }
-      const cleanSheet =
-        (match.home === teamData.name && match.awayScore === 0) ||
-        (teamData.name === match.away && match.homeScore === 0);
       for (const cap of match.caps) {
         capStats.current[cap.playerId] = capStats.current[cap.playerId] || {};
         capStats.current[cap.playerId][match.id] =
           capStats.current[cap.playerId][match.id] || {};
-        capStats.current[cap.playerId][match.id].clean_sheet = cleanSheet;
+        capStats.current[cap.playerId][match.id].clean_sheet = keptCleanSheet(
+          matchInsertData[matchIndex],
+          cap.player.name,
+          match.home === teamData.name,
+        );
       }
     }
 
